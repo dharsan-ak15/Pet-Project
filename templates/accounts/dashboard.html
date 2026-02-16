@@ -1,0 +1,61 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>User Dashboard</h2>
+    <div>
+        <a href="{% url 'report-pet' %}" class="btn btn-primary">Report Lost/Found Pet</a>
+        <a href="{% url 'search-pets' %}" class="btn btn-outline-primary">Search Pets</a>
+    </div>
+</div>
+
+{% if notifications %}
+<div class="alert alert-info">
+    <h5>Recent Notifications</h5>
+    <ul class="mb-0">
+        {% for notification in notifications %}
+        <li>{{ notification.message }} <small class="text-muted">({{ notification.created_at|date:"Y-m-d H:i" }})</small></li>
+        {% endfor %}
+    </ul>
+</div>
+{% endif %}
+
+<div class="card shadow-sm">
+    <div class="card-header bg-light">
+        <h5 class="mb-0">Your Submitted Requests</h5>
+    </div>
+    <div class="table-responsive">
+        <table class="table table-striped mb-0">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Type</th>
+                    <th>Pet</th>
+                    <th>Breed</th>
+                    <th>Location</th>
+                    <th>Status</th>
+                    <th>Created</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for req in pet_requests %}
+                <tr>
+                    <td>#{{ req.id }}</td>
+                    <td>{{ req.request_type }}</td>
+                    <td>{{ req.pet_type }}</td>
+                    <td>{{ req.breed }}</td>
+                    <td>{{ req.location }}</td>
+                    <td>
+                        <span class="badge {% if req.status == 'Accepted' %}bg-success{% elif req.status == 'Rejected' %}bg-danger{% else %}bg-warning text-dark{% endif %}">
+                            {{ req.status }}
+                        </span>
+                    </td>
+                    <td>{{ req.created_at|date:"Y-m-d" }}</td>
+                </tr>
+                {% empty %}
+                <tr><td colspan="7" class="text-center py-4">No requests submitted yet.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}
