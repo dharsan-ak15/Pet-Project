@@ -50,13 +50,28 @@ def logout_view(request):
 
 @login_required
 def dashboard_view(request):
-    pet_requests = PetRequest.objects.filter(user=request.user).order_by('-created_at')
-    unread_notifications = Notification.objects.filter(user=request.user, is_read=False).order_by('-created_at')
+    pet_requests = PetRequest.objects.filter(
+        user=request.user
+    ).order_by('-created_at')
 
-    Notification.objects.filter(id__in=unread_notifications.values_list('id', flat=True)).update(is_read=True)
+    unread_notifications = Notification.objects.filter(
+        user=request.user,
+        is_read=False
+    ).order_by('-created_at')
+
+    # ✅ SAFE for MySQL (no subquery update)
+    for notification in unread_notifications:
+        notification.is_read = True
+        notification.save()
+
+    # Fetch all notifications after marking read
+    notifications = Notification.objects.filter(
+        user=request.user
+    ).order_by('-created_at')
 
     context = {
         'pet_requests': pet_requests,
-        'notifications': unread_notifications,
+        'notifications': notifications,
     }
+
     return render(request, 'accounts/dashboard.html', context)
