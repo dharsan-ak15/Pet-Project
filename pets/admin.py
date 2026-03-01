@@ -12,14 +12,9 @@ def mark_accepted(modeladmin, request, queryset):
 def mark_rejected(modeladmin, request, queryset):
     queryset.update(status='Rejected')
 
-
 @admin.register(PetRequest)
 class PetRequestAdmin(admin.ModelAdmin):
-    list_display = ('id', 'user', 'pet_type', 'breed', 'location', 'request_type', 'status', 'created_at')
-    list_filter = ('status', 'request_type', 'pet_type', 'created_at')
-    search_fields = ('breed', 'location', 'description', 'user__username')
-    actions = [mark_accepted, mark_rejected]
-
+    list_display = ('user', 'pet_type', 'request_type', 'status', 'created_at')
 
 @admin.register(Notification)
 class NotificationAdmin(admin.ModelAdmin):

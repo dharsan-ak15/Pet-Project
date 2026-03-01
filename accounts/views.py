@@ -6,6 +6,28 @@ from django.shortcuts import redirect, render
 from .forms import LoginForm, RegisterForm
 from pets.models import Notification, PetRequest
 
+from django.contrib.auth.forms import UserCreationForm
+from django.shortcuts import render, redirect
+
+from .forms import CustomUserRegisterForm
+
+def register(request):
+    if request.method == 'POST':
+        form = CustomUserRegisterForm(request.POST, request.FILES)
+        if form.is_valid():
+            user = form.save()
+
+            # Save profile image
+            profile = user.profile
+            if 'profile_image' in request.FILES:
+                profile.profile_image = request.FILES['profile_image']
+                profile.save()
+
+            return redirect('login')
+    else:
+        form = CustomUserRegisterForm()
+
+    return render(request, 'registration/register.html', {'form': form})
 
 def register_view(request):
     if request.user.is_authenticated:
@@ -14,7 +36,8 @@ def register_view(request):
     if request.method == 'POST':
         form = RegisterForm(request.POST)
         if form.is_valid():
-            user = form.save()
+            user = form.save(commit=False)
+            user.save()
             login(request, user)
             messages.success(request, 'Registration successful. Welcome!')
             return redirect('dashboard')
@@ -22,7 +45,6 @@ def register_view(request):
         form = RegisterForm()
 
     return render(request, 'accounts/register.html', {'form': form})
-
 
 def login_view(request):
     if request.user.is_authenticated:

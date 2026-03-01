@@ -20,10 +20,27 @@ class PetRequest(models.Model):
         ('Rejected', 'Rejected'),
     ]
 
+    GENDER_CHOICES = [
+    ('Male', 'Male'),
+    ('Female', 'Female'),
+    ('Unknown', 'Unknown'),
+    ]
+
+    SIZE_CHOICES = [
+    ('Small', 'Small'),
+    ('Medium', 'Medium'),
+    ('Large', 'Large'),
+    ]
+
+    
+
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='pet_requests')
     pet_type = models.CharField(max_length=10, choices=PET_TYPES)
     breed = models.CharField(max_length=100)
     color = models.CharField(max_length=100)
+    gender = models.CharField(max_length=10, choices=GENDER_CHOICES)
+    age = models.PositiveIntegerField()
+    size = models.CharField(max_length=10, choices=SIZE_CHOICES)
     location = models.CharField(max_length=255)
     description = models.TextField()
     contact_information = models.CharField(max_length=255)

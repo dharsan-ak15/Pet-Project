@@ -1,0 +1,80 @@
+{% extends 'base.html' %}
+
+{% load static %}
+{% block content %}
+
+<!-- HERO -->
+<section class="hero-section">
+    <div class="hero-content">
+        <h1>Find Your Forever Friend</h1>
+        <p>Adopt. Love. Care.</p>
+
+        {% if not user.is_authenticated %}
+            <a href="{% url 'login' %}" class="btn-primary">Get Started</a>
+        {% endif %}
+
+        <div class="action-buttons">
+            <!-- <a href="{% url 'report-pet' %}" class="btn-report">
+                Report Lost / Found Pet
+            </a> -->
+
+            <form method="GET" action="{% url 'search-pets' %}" class="search-form">
+                <input type="text" name="q" placeholder="Search pets...">
+                <button type="submit">Search</button>
+            </form>
+        </div>
+
+    </div>
+</section>
+
+<!-- LOST PETS -->
+<section class="py-5 bg-light">
+    <div class="container">
+        <h2 class="text-center section-title mb-4">Recently Lost Pets</h2>
+
+        <div class="row">
+            {% for pet in lost_pets %}
+            <div class="col-md-3 mb-4">
+                <div class="card shadow-sm h-100">
+                    {% if pet.image %}
+                    <img src="{{ pet.image.url }}" class="card-img-top">
+                    {% endif %}
+                    <div class="card-body text-center">
+                        <h6 class="fw-bold">{{ pet.breed }}</h6>
+                        <p class="text-muted">{{ pet.location }}</p>
+                    </div>
+                </div>
+            </div>
+            {% empty %}
+            <p class="text-center">No lost pets listed yet.</p>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+<!-- FOUND PETS -->
+<section class="py-5 teal-section">
+    <div class="container">
+        <h2 class="text-center text-white section-title mb-4">Recently Found Pets</h2>
+
+        <div class="row">
+            {% for pet in found_pets %}
+            <div class="col-md-3 mb-4">
+                <div class="card shadow-sm h-100">
+                    {% if pet.image %}
+                    <img src="{{ pet.image.url }}" class="card-img-top">
+                    {% endif %}
+                    <div class="card-body text-center">
+                        <h6 class="fw-bold">{{ pet.breed }}</h6>
+                        <p class="text-muted">{{ pet.location }}</p>
+                    </div>
+                </div>
+            </div>
+            {% empty %}
+            <p class="text-center text-white">No found pets listed yet.</p>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+{% endblock %}

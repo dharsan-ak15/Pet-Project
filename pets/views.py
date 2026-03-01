@@ -15,17 +15,32 @@ def create_pet_request(request):
 
     if request.method == 'POST':
         form = PetRequestForm(request.POST, request.FILES)
+
+        print("POST DATA:", request.POST)
+        print("FILES:", request.FILES)
+
         if form.is_valid():
+            print("FORM IS VALID ✅")
+
             pet_request = form.save(commit=False)
             pet_request.user = request.user
             pet_request.save()
-            messages.success(request, 'Your pet request has been submitted and is pending review.')
+
+            print("SAVED SUCCESSFULLY ✅")
+
+            messages.success(
+                request,
+                'Your pet request has been submitted and is pending review.'
+            )
             return redirect('dashboard')
+        else:
+            print("FORM IS INVALID ❌")
+            print("ERRORS:", form.errors)
+
     else:
         form = PetRequestForm()
 
     return render(request, 'pets/pet_request_form.html', {'form': form})
-
 
 def search_pets(request):
     form = PetSearchForm(request.GET or None)
@@ -35,8 +50,17 @@ def search_pets(request):
         pet_type = form.cleaned_data.get('pet_type')
         breed = form.cleaned_data.get('breed')
         location = form.cleaned_data.get('location')
+        request_type = form.cleaned_data.get('request_type') 
+        gender = form.cleaned_data.get('gender')
+        size = form.cleaned_data.get('size')
 
-        query = Q(status='Accepted')
+        query = Q()
+        if gender:
+            query &= Q(gender=gender)
+        if size:
+            query &= Q(size=size)
+        if request_type:
+            query &= Q(request_type=request_type)
         if pet_type:
             query &= Q(pet_type=pet_type)
         if breed:
@@ -94,3 +118,44 @@ def delete_request(request, request_id):
     pet_request.delete()
     messages.warning(request, f'Request #{request_id} has been deleted.')
     return redirect('admin-request-list')
+
+from pets.models import PetRequest
+
+def landing_page(request):
+    lost_pets = PetRequest.objects.filter(
+        request_type='Lost',
+        status='Accepted'
+    ).order_by('-created_at')[:4]
+
+    found_pets = PetRequest.objects.filter(
+        request_type='Found',
+        status='Accepted'
+    ).order_by('-created_at')[:4]
+
+    context = {
+        'lost_pets': lost_pets,
+        'found_pets': found_pets,
+    }
+
+    return render(request, 'landing.html', context)
+
+def profile_view(request):
+    profile = request.user.profile
+
+    if not request.user.is_authenticated:
+        return redirect('login')
+
+    user_requests = PetRequest.objects.filter(user=request.user)
+
+    return render(request, 'pets/profile.html', {
+        'user_requests': user_requests,
+        'profile': profile
+    })
+
+def lost_pets(request):
+    pets = Pet.objects.filter(status='lost')
+    return render(request, 'lost_pets.html', {'pets': pets})
+
+def found_pets(request):
+    pets = Pet.objects.filter(status='found')
+    return render(request, 'found_pets.html', {'pets': pets})

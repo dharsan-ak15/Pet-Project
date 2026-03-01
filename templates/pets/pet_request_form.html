@@ -1,17 +1,82 @@
 {% extends 'base.html' %}
 {% block content %}
+
 <div class="row justify-content-center">
-    <div class="col-lg-8">
+    <div class="col-md-8">
         <div class="card shadow-sm">
             <div class="card-body">
-                <h3 class="mb-3">Report Lost or Found Pet</h3>
-                <form method="post" enctype="multipart/form-data" novalidate>
+
+                <h3 class="mb-4">Report Lost / Found Pet</h3>
+
+                <form method="POST" enctype="multipart/form-data">
                     {% csrf_token %}
-                    {{ form.as_p }}
-                    <button type="submit" class="btn btn-primary">Submit Request</button>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <label>Request Type *</label>
+                            {{ form.request_type }}
+                        </div>
+
+                        <div class="col-md-6">
+                            <label>Pet Type *</label>
+                            {{ form.pet_type }}
+                        </div>
+
+                        <div class="col-md-6 mt-3">
+                            <label>Breed *</label>
+                            {{ form.breed }}
+                        </div>
+
+                        <div class="col-md-6 mt-3">
+                            <label>Gender *</label>
+                            {{ form.gender }}
+                        </div>
+
+                        <div class="col-md-6 mt-3">
+                            <label>Age (in years) *</label>
+                            {{ form.age }}
+                        </div>
+
+                        <div class="col-md-6 mt-3">
+                            <label>Size *</label>
+                            {{ form.size }}
+                        </div>
+
+                        <div class="col-md-6 mt-3">
+                            <label>Color</label>
+                            {{ form.color }}
+                        </div>
+
+                        <div class="col-md-6 mt-3">
+                            <label>Location *</label>
+                            {{ form.location }}
+                        </div>
+
+                        <div class="col-md-12 mt-3">
+                            <label>Description *</label>
+                            {{ form.description }}
+                        </div>
+
+                        <div class="col-md-12 mt-3">
+                            <label>Contact Information *</label>
+                            {{ form.contact_information }}
+                        </div>
+
+                        <div class="col-md-12 mt-3">
+                            <label>Pet Image *</label>
+                            {{ form.image }}
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary mt-4 w-100">
+                        Submit Request
+                    </button>
+
                 </form>
+
             </div>
         </div>
     </div>
 </div>
+
 {% endblock %}
