@@ -1,6 +1,6 @@
 from django import forms
 
-from .models import PetRequest
+from .models import PetRequest, Comment
 
 
 class PetRequestForm(forms.ModelForm):
@@ -12,6 +12,7 @@ class PetRequestForm(forms.ModelForm):
             'breed',
             'gender',
             'age',
+            'age_unit',
             'size',
             'color',
             'location',
@@ -22,6 +23,16 @@ class PetRequestForm(forms.ModelForm):
         widgets = {
             'description': forms.Textarea(attrs={'rows': 4}),
         }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        for name, field in self.fields.items():
+            if isinstance(field.widget, forms.CheckboxInput):
+                field.widget.attrs.update({'class': 'form-check-input'})
+            elif hasattr(field.widget, 'choices') or isinstance(field.widget, forms.Select):
+                field.widget.attrs.update({'class': 'form-select'})
+            else:
+                field.widget.attrs.update({'class': 'form-control'})
 
 
 class PetSearchForm(forms.Form):
@@ -38,8 +49,17 @@ class PetSearchForm(forms.Form):
     choices=[('', 'All'), ('Lost', 'Lost'), ('Found', 'Found')],
     required=False)
 
-    def clean(self):
-        cleaned_data = super().clean()
-        if not any(cleaned_data.values()):
-            raise forms.ValidationError('Please provide at least one search criteria.')
-        return cleaned_data
+class CommentForm(forms.ModelForm):
+    class Meta:
+        model = Comment
+        fields = ['content']
+        widgets = {
+            'content': forms.Textarea(attrs={
+                'rows': 3, 
+                'placeholder': 'Add a comment or share a sighting...',
+                'class': 'form-control rounded-3 bg-light border-0'
+            }),
+        }
+        labels = {
+            'content': ''
+        }

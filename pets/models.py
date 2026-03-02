@@ -4,8 +4,17 @@ from django.db import models
 
 class PetRequest(models.Model):
     PET_TYPES = [
-        ('Dog', 'Dog'),
+        ('Bird', 'Bird'),
         ('Cat', 'Cat'),
+        ('Chinchilla', 'Chinchilla'),
+        ('Dog', 'Dog'),
+        ('Ferret', 'Ferret'),
+        ('Gerbil', 'Gerbil'),
+        ('Guinea Pig', 'Guinea Pig'),
+        ('Hamster', 'Hamster'),
+        ('Mouse', 'Mouse'),
+        ('Rabbit', 'Rabbit'),
+        ('Reptile', 'Reptile'),
         ('Other', 'Other'),
     ]
 
@@ -18,6 +27,7 @@ class PetRequest(models.Model):
         ('Pending', 'Pending'),
         ('Accepted', 'Accepted'),
         ('Rejected', 'Rejected'),
+        ('Reunited', 'Reunited'),
     ]
 
     GENDER_CHOICES = [
@@ -32,20 +42,25 @@ class PetRequest(models.Model):
     ('Large', 'Large'),
     ]
 
-    
+    AGE_UNIT_CHOICES = [
+        ('Months', 'Months'),
+        ('Years', 'Years'),
+    ]
 
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='pet_requests')
-    pet_type = models.CharField(max_length=10, choices=PET_TYPES)
+    pet_type = models.CharField(max_length=20, choices=PET_TYPES)
     breed = models.CharField(max_length=100)
     color = models.CharField(max_length=100)
     gender = models.CharField(max_length=10, choices=GENDER_CHOICES)
     age = models.PositiveIntegerField()
+    age_unit = models.CharField(max_length=10, choices=AGE_UNIT_CHOICES, default='Years')
     size = models.CharField(max_length=10, choices=SIZE_CHOICES)
     location = models.CharField(max_length=255)
     description = models.TextField()
     contact_information = models.CharField(max_length=255)
     request_type = models.CharField(max_length=10, choices=REQUEST_TYPES)
     status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='Pending')
+    is_verified_vet = models.BooleanField(default=False)
     image = models.ImageField(upload_to='pets/', blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -69,3 +84,15 @@ class Notification(models.Model):
 
     def __str__(self):
         return f"Notification for {self.user.username}: {self.message}"
+
+class Comment(models.Model):
+    pet_request = models.ForeignKey(PetRequest, on_delete=models.CASCADE, related_name='comments')
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='comments')
+    content = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['created_at']
+
+    def __str__(self):
+        return f"Comment by {self.user.username} on {self.pet_request}"

@@ -1,0 +1,157 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+
+<div class="container py-5 my-4">
+    <!-- Back Button -->
+    <a href="javascript:history.back()" class="btn btn-outline-secondary mb-4 rounded-pill shadow-sm">
+        <i class="bi bi-arrow-left"></i> Back to Search
+    </a>
+
+    <div class="card border-0 shadow-lg rounded-4 overflow-hidden">
+        <div class="row g-0">
+            <!-- Left Column: Image -->
+            <div class="col-md-6 bg-light d-flex align-items-center justify-content-center p-0 position-relative">
+                {% if pet.image %}
+                <img src="{{ pet.image.url }}" alt="{{ pet.pet_type }}" class="img-fluid w-100 h-100 object-fit-cover"
+                    style="min-height: 400px; max-height: 600px;">
+                {% else %}
+                <div class="text-muted text-center py-5">
+                    <i class="bi bi-image" style="font-size: 5rem;"></i>
+                    <p class="mt-2">No Image Provided</p>
+                </div>
+                {% endif %}
+
+                <!-- Status Badge overlaid on image -->
+                <span
+                    class="position-absolute top-0 start-0 m-4 badge {% if pet.request_type == 'Lost' %}bg-danger{% else %}bg-success{% endif %} p-3 fs-5 shadow rounded-pill">
+                    {{ pet.request_type }}
+                </span>
+
+                {% if pet.is_verified_vet %}
+                <span class="position-absolute bottom-0 end-0 m-4 badge bg-info text-dark p-2 fs-6 shadow rounded-pill">
+                    <i class="bi bi-patch-check-fill text-primary"></i> Verified by Vet
+                </span>
+                {% endif %}
+            </div>
+
+            <!-- Right Column: Details -->
+            <div class="col-md-6 d-flex flex-column">
+                <div class="card-body p-5">
+
+                    <h2 class="card-title fw-bold mb-1">{{ pet.breed|default:pet.pet_type }}
+                        {% if pet.gender == 'Male' %}<i class="bi bi-gender-male text-primary fs-4"></i>
+                        {% elif pet.gender == 'Female' %}<i class="bi bi-gender-female text-danger fs-4"></i>{% endif %}
+                    </h2>
+
+                    <p class="text-muted fs-5 mb-4">
+                        <i class="bi bi-geo-alt-fill text-danger me-1"></i> {{ pet.location }}
+                    </p>
+
+                    <div class="row g-3 mb-4 bg-light p-3 rounded-3">
+                        <div class="col-sm-6">
+                            <span class="text-muted d-block small text-uppercase fw-bold">Pet Type</span>
+                            <strong>{{ pet.pet_type }}</strong>
+                        </div>
+                        <div class="col-sm-6">
+                            <span class="text-muted d-block small text-uppercase fw-bold">Color</span>
+                            <strong>{{ pet.color|default:'Not specified' }}</strong>
+                        </div>
+                        <div class="col-sm-6">
+                            <span class="text-muted d-block small text-uppercase fw-bold">Size</span>
+                            <strong>{{ pet.size|default:'Unknown' }}</strong>
+                        </div>
+                        <div class="col-sm-6">
+                            <span class="text-muted d-block small text-uppercase fw-bold">Age</span>
+                            <strong>{{ pet.age|default:'Unknown' }} {{ pet.age_unit }}</strong>
+                        </div>
+                    </div>
+
+                    <h5 class="fw-bold mb-3">Description</h5>
+                    <p class="card-text mb-5 text-secondary" style="line-height: 1.7;">
+                        {{ pet.description|default:"No additional details provided."|linebreaks }}
+                    </p>
+
+                    <div class="mt-auto">
+                        <h5 class="fw-bold mb-3 border-bottom pb-2">Contact Information</h5>
+                        <p class="mb-2"><i class="bi bi-person-fill text-muted me-2"></i> {{ pet.user.first_name }} {{
+                            pet.user.last_name }}</p>
+
+                        {% if pet.contact_information %}
+                        <p class="mb-4"><i class="bi bi-telephone-fill text-muted me-2"></i> {{ pet.contact_information
+                            }}</p>
+                        {% endif %}
+
+                        <div class="d-grid mt-4">
+                            <a href="mailto:{{ pet.user.email }}?subject={{ pet.request_type }} Pet: {{ pet.breed }} in {{ pet.location }}"
+                                class="btn btn-primary btn-lg rounded-pill shadow-sm">
+                                <i class="bi bi-envelope-fill me-2"></i> Email Reporter
+                            </a>
+                        </div>
+                    </div>
+
+                </div>
+                <div class="card-footer bg-white border-top-0 px-5 pt-0 pb-4 text-muted small">
+                    <i class="bi bi-clock me-1"></i> Reported {{ pet.created_at|timesince }} ago
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+
+<!-- Comments Section -->
+<div class="row mt-5">
+    <div class="col-md-8 mx-auto">
+        <h4 class="fw-bold mb-4">Comments & Tips ({{ comments.count }})</h4>
+
+        <!-- Comment Form -->
+        <div class="card border-0 shadow-sm mb-4 rounded-4">
+            <div class="card-body p-4">
+                {% if user.is_authenticated %}
+                <form method="POST" action="{% url 'pet-detail' pet.id %}">
+                    {% csrf_token %}
+                    {{ form.as_p }}
+                    <div class="d-flex justify-content-end">
+                        <button type="submit" class="btn btn-primary rounded-pill px-4">Post Comment</button>
+                    </div>
+                </form>
+                {% else %}
+                <div class="text-center py-3">
+                    <p class="text-muted mb-2">You must be logged in to leave a comment.</p>
+                    <a href="{% url 'login' %}?next={{ request.path }}"
+                        class="btn btn-outline-primary rounded-pill px-4">Log In to Comment</a>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Comment List -->
+        <div class="comment-list">
+            {% for comment in comments %}
+            <div class="card border-0 shadow-sm mb-3 rounded-4">
+                <div class="card-body p-4">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <h6 class="fw-bold mb-0">
+                            {% if comment.user == pet.user %}
+                            <span class="badge bg-primary me-2">Owner</span>
+                            {% endif %}
+                            {{ comment.user.first_name|default:comment.user.username }}
+                        </h6>
+                        <small class="text-muted">{{ comment.created_at|timesince }} ago</small>
+                    </div>
+                    <p class="mb-0 text-secondary">{{ comment.content|linebreaksbr }}</p>
+                </div>
+            </div>
+            {% empty %}
+            <div class="text-center py-5 text-muted">
+                <i class="bi bi-chat-dots fs-1 d-block mb-3"></i>
+                <p>No comments yet. Be the first to share a sighting or tip!</p>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+</div>
+
+{% endblock %}

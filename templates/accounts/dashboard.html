@@ -1,73 +1,221 @@
 {% extends 'base.html' %}
+{% load pet_extras %}
 {% block content %}
 
-<div>
-    <h2>User Dashboard</h2>
-    <p class="mb-1"><strong>Name:</strong> {{ user.username }}</p>
-    <p class="mb-2"><strong>Email:</strong> {{ user.email }}</p>
+<div class="container mt-5">
+    <div class="row">
+        <!-- Dashboard Sidebar -->
+        <div class="col-md-4 mb-4">
+            <div class="card shadow-sm text-center p-4">
+                {% if user.profile.profile_image %}
+                <img src="{{ user.profile.profile_image.url }}" class="rounded-circle mx-auto mb-3" width="150"
+                    height="150" style="object-fit: cover; border: 3px solid #0f7c82;">
+                {% else %}
+                <div class="rounded-circle bg-secondary text-white d-inline-flex mx-auto mb-3 align-items-center justify-content-center"
+                    style="width: 150px; height: 150px; font-size: 4rem;">
+                    {{ user.username|make_list|first|upper }}
+                </div>
+                {% endif %}
+                <h4>{{ user.username }}</h4>
+                <p class="text-muted mb-2">{{ user.email }}</p>
+                <div class="d-grid gap-2">
+                    <a href="{% url 'profile' %}" class="btn btn-outline-primary">Edit Profile</a>
+                    <a href="{% url 'report-pet' %}" class="btn btn-primary">Report a Pet</a>
+                </div>
+            </div>
 
-    {% if user.profile.profile_image %}
-        <img src="{{ user.profile.profile_image.url }}" width="120" class="rounded-circle mt-3">
-    {% else %}
-        <p class="text-muted">No profile photo uploaded.</p>
-    {% endif %}
-</div>
+            {% if notifications %}
+            <div class="card shadow-sm mt-4">
+                <div class="card-header bg-light">
+                    <h5 class="mb-0">Notifications</h5>
+                </div>
+                <div class="list-group list-group-flush" style="max-height: 300px; overflow-y: auto;">
+                    {% for notification in notifications %}
+                    <div class="list-group-item list-group-item-action">
+                        <p class="mb-1">{{ notification.message }}</p>
+                        <small class="text-muted">{{ notification.created_at|date:"Y-m-d H:i" }}</small>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endif %}
 
-<div class="d-flex justify-content-between align-items-center mb-4">
-    <div>
-        <a href="{% url 'report-pet' %}" class="btn btn-primary">Report Lost/Found Pet</a>
-        <a href="{% url 'search-pets' %}" class="btn btn-outline-primary">Search Pets</a>
-    </div>
-</div>
+            <!-- Pet Suggestions -->
+            <div class="card shadow-sm mt-4">
+                <div class="card-header bg-light d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0 text-primary"><i class="bi bi-stars me-1 text-warning"></i> Suggested for You</h5>
+                </div>
+                <div class="card-body bg-light bg-opacity-50">
+                    {% if suggested_pets %}
+                    <p class="small text-muted mb-3">Based on your preferences and location.</p>
+                    <div class="d-flex flex-column gap-3">
+                        {% for pet in suggested_pets %}
+                        <div class="d-flex align-items-center bg-white p-2 border rounded-3 shadow-sm"
+                            style="transition: transform 0.2s;" onmouseover="this.style.transform='translateY(-2px)'"
+                            onmouseout="this.style.transform='translateY(0)'">
+                            {% if pet.image %}
+                            <img src="{{ pet.image.url }}" alt="{{ pet.breed }}" class="rounded-3 flex-shrink-0"
+                                width="60" height="60" style="object-fit:cover;">
+                            {% else %}
+                            <div class="rounded-3 bg-secondary d-flex align-items-center justify-content-center flex-shrink-0 text-white"
+                                style="width: 60px; height: 60px;">
+                                <i class="bi bi-image fs-4"></i>
+                            </div>
+                            {% endif %}
+                            <div class="ms-3 w-100 overflow-hidden">
+                                <div class="d-flex justify-content-between">
+                                    <h6 class="mb-0 fw-bold text-truncate">{{ pet.breed|default:pet.pet_type }}</h6>
+                                    <span
+                                        class="badge {% if pet.request_type|is_equal:'Lost' %}bg-danger{% else %}bg-success{% endif %} ms-1"
+                                        style="font-size: 0.65rem;">{{ pet.request_type }}</span>
+                                </div>
+                                <small class="text-muted d-block text-truncate"><i
+                                        class="bi bi-geo-alt-fill text-danger me-1"></i>{{ pet.location }}</small>
+                                <a href="{% url 'pet-detail' pet.id %}" class="stretched-link"></a>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% else %}
+                    <div class="text-center py-3">
+                        <i class="bi bi-inbox text-muted fs-3 block mb-2"></i>
+                        <p class="mb-0 small text-muted">No matches right now. Make sure your Profile has your preferred
+                            pet type and city filled out!</p>
+                        <a href="{% url 'profile' %}" class="btn btn-outline-primary btn-sm mt-3 rounded-pill">Update
+                            Profile</a>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
 
-{% if notifications %}
-<div class="alert alert-info">
-    <h5>Recent Notifications</h5>
-    <ul class="mb-0">
-        {% for notification in notifications %}
-        <li>{{ notification.message }} <small class="text-muted">({{ notification.created_at|date:"Y-m-d H:i" }})</small></li>
-        {% endfor %}
-    </ul>
-</div>
-{% endif %}
+        <!-- Main Content Area -->
+        <div class="col-md-8">
+            <div class="card shadow-sm">
+                <div class="card-header bg-light d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">Your Pet Reports <span class="badge bg-secondary">{{ pet_requests.count }}</span>
+                    </h5>
+                    <a href="{% url 'search-pets' %}" class="btn btn-sm btn-outline-secondary">Search All Pets</a>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Type</th>
+                                    <th>Pet</th>
+                                    <th>Breed</th>
+                                    <th>Status</th>
+                                    <th>Date</th>
+                                    <th class="text-end">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for req in pet_requests %}
+                                <tr>
+                                    <td>
+                                        <span
+                                            class="badge {% if req.request_type|is_equal:'Lost' %}bg-danger{% else %}bg-success{% endif %}">
+                                            {{ req.request_type }}
+                                        </span>
+                                    </td>
+                                    <td>{{ req.pet_type }}</td>
+                                    <td>{{ req.breed }}</td>
+                                    <td>
+                                        <span
+                                            class="badge {% if req.status|is_equal:'Accepted' %}bg-success{% elif req.status|is_equal:'Rejected' %}bg-danger{% else %}bg-warning text-dark{% endif %}">
+                                            {{ req.status }}
+                                        </span>
+                                    </td>
+                                    <td>{{ req.created_at|date:"M d, Y" }}</td>
+                                    <td class="text-end">
+                                        <div class="d-flex justify-content-end gap-2 align-items-center">
+                                            <div class="btn-group btn-group-sm" role="group">
+                                                <a href="{% url 'pet-detail' req.id %}" class="btn btn-outline-info"
+                                                    title="View">
+                                                    View
+                                                </a>
+                                                <a href="{% url 'edit-pet-request' req.id %}"
+                                                    class="btn btn-outline-primary" title="Edit">
+                                                    Edit
+                                                </a>
+                                                <a href="{% url 'delete-pet-request' req.id %}"
+                                                    class="btn btn-outline-danger" title="Delete">
+                                                    Delete
+                                                </a>
+                                            </div>
+                                            {% if req.status in 'Pending,Accepted' %}
+                                            <form method="POST" action="{% url 'mark-reunited' req.id %}"
+                                                class="d-inline m-0 p-0"
+                                                onsubmit="return confirm('Are you sure this pet has been reunited? This will update the status and notify the community.');">
+                                                {% csrf_token %}
+                                                <button type="submit" class="btn btn-sm btn-success shadow-sm">
+                                                    <i class="bi bi-check-circle-fill me-1"></i> Reunited
+                                                </button>
+                                            </form>
+                                            {% endif %}
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% empty %}
+                                <tr>
+                                    <td colspan="6" class="text-center py-4 text-muted">You haven't submitted any
+                                        reports yet.</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
 
-<div class="card shadow-sm">
-    <div class="card-header bg-light">
-        <h5 class="mb-0">Your Submitted Requests</h5>
-    </div>
-    <div class="table-responsive">
-        <table class="table table-striped mb-0">
-            <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>Type</th>
-                    <th>Pet</th>
-                    <th>Breed</th>
-                    <th>Location</th>
-                    <th>Status</th>
-                    <th>Created</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for req in pet_requests %}
-                <tr>
-                    <td>#{{ req.id }}</td>
-                    <td>{{ req.request_type }}</td>
-                    <td>{{ req.pet_type }}</td>
-                    <td>{{ req.breed }}</td>
-                    <td>{{ req.location }}</td>
-                    <td>
-                        <span class="badge {% if req.status == 'Accepted' %}bg-success{% elif req.status == 'Rejected' %}bg-danger{% else %}bg-warning text-dark{% endif %}">
-                            {{ req.status }}
-                        </span>
-                    </td>
-                    <td>{{ req.created_at|date:"Y-m-d" }}</td>
-                </tr>
-                {% empty %}
-                <tr><td colspan="7" class="text-center py-4">No requests submitted yet.</td></tr>
-                {% endfor %}
-            </tbody>
-        </table>
+                <!-- Pagination -->
+                {% if pet_requests.has_other_pages %}
+                <div class="card-footer bg-white border-top-0 pt-3 flex-column">
+                    <nav aria-label="Dashboard pagination">
+                        <ul class="pagination justify-content-center mb-0">
+                            {% if pet_requests.has_previous %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ pet_requests.previous_page_number }}"
+                                    aria-label="Previous">
+                                    <span aria-hidden="true">&laquo;</span>
+                                </a>
+                            </li>
+                            {% else %}
+                            <li class="page-item disabled">
+                                <a class="page-link" href="#" aria-label="Previous">
+                                    <span aria-hidden="true">&laquo;</span>
+                                </a>
+                            </li>
+                            {% endif %}
+
+                            {% for num in pet_requests.paginator.page_range %}
+                            {% if pet_requests.number|is_equal:num %}
+                            <li class="page-item active" aria-current="page"><span class="page-link">{{ num }}</span>
+                            </li>
+                            {% else %}
+                            <li class="page-item"><a class="page-link" href="?page={{ num }}">{{ num }}</a></li>
+                            {% endif %}
+                            {% endfor %}
+
+                            {% if pet_requests.has_next %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ pet_requests.next_page_number }}" aria-label="Next">
+                                    <span aria-hidden="true">&raquo;</span>
+                                </a>
+                            </li>
+                            {% else %}
+                            <li class="page-item disabled">
+                                <a class="page-link" href="#" aria-label="Next">
+                                    <span aria-hidden="true">&raquo;</span>
+                                </a>
+                            </li>
+                            {% endif %}
+                        </ul>
+                    </nav>
+                </div>
+                {% endif %}
+            </div>
+        </div>
     </div>
 </div>
 {% endblock %}

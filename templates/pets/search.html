@@ -1,43 +1,194 @@
 {% extends 'base.html' %}
 {% load static %}
+{% load pet_extras %}
 {% block content %}
-<h2 class="mb-3">Search for Pets</h2>
-<div class="card shadow-sm mb-4">
-    <div class="card-body">
-        <form method="get" class="row g-3">
-            <div class="col-md-3">
-                {{ form.request_type.label_tag }}
-                 {{ form.request_type }}
-            </div>
-            <div class="col-md-3">{{ form.pet_type.label_tag }}{{ form.pet_type }}</div>
-            <div class="col-md-4">{{ form.breed.label_tag }}{{ form.breed }}</div>
-            <div class="col-md-4">{{ form.location.label_tag }}{{ form.location }}</div>
-            <div class="col-md-1 d-flex align-items-end"><button class="btn btn-primary w-100">Search</button></div>
-        </form>
-        {% if form.non_field_errors %}
-        <div class="text-danger mt-2">{{ form.non_field_errors }}</div>
-        {% endif %}
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>Search Pet Reports</h2>
+        <a href="{% url 'report-pet' %}" class="btn btn-primary">Report a Pet</a>
     </div>
-</div>
 
-{% if results %}
-<div class="row g-3">
-    {% for pet in results %}
-    <div class="col-md-6">
-        <div class="card h-100">
-            {% if pet.image %}<img src="{{ pet.image.url }}" class="card-img-top" alt="Pet image">{% endif %}
-            <div class="card-body">
-                <h5 class="card-title">{{ pet.pet_type }} - {{ pet.breed }}</h5>
-                <p class="card-text mb-1"><strong>Color:</strong> {{ pet.color }}</p>
-                <p class="card-text mb-1"><strong>Location:</strong> {{ pet.location }}</p>
-                <p class="card-text mb-1"><strong>Description:</strong> {{ pet.description }}</p>
-                <p class="card-text"><strong>Contact:</strong> {{ pet.contact_information }}</p>
-            </div>
+    <div class="card shadow-sm mb-5 border-0 bg-body-tertiary">
+        <div class="card-body p-4">
+            <form method="get" class="row g-3 align-items-end">
+                <div class="col-md-3">
+                    <label class="form-label text-muted fw-bold small text-uppercase">Status</label>
+                    <select name="{{ form.request_type.name }}" class="form-select">
+                        {% for value, text in form.request_type.field.choices %}
+                        <option value="{{ value }}" {% if form.request_type.value|is_equal:value %}selected{% endif %}>
+                            {{ text }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label text-muted fw-bold small text-uppercase">Pet Type</label>
+                    <select name="{{ form.pet_type.name }}" class="form-select">
+                        {% for value, text_label in form.pet_type.field.choices %}
+                        <option value="{{ value }}" {% if form.pet_type.value|is_equal:value %}selected{% endif %}>
+                            {{ text_label }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label text-muted fw-bold small text-uppercase">Breed</label>
+                    <input type="text" name="{{ form.breed.name }}" class="form-control"
+                        placeholder="e.g. Golden Retriever" value="{{ form.breed.value|default_if_none:'' }}">
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label text-muted fw-bold small text-uppercase">Location</label>
+                    <input type="text" name="{{ form.location.name }}" class="form-control" placeholder="City or ZIP"
+                        value="{{ form.location.value|default_if_none:'' }}">
+                </div>
+
+                <!-- Advanced Filters row (collapsed or expanded based on preference... keeping simple for now) -->
+                <div class="col-md-2">
+                    <label class="form-label text-muted fw-bold small text-uppercase">Gender</label>
+                    <select name="{{ form.gender.name }}" class="form-select">
+                        {% for value, text_label in form.gender.field.choices %}
+                        <option value="{{ value }}" {% if form.gender.value|is_equal:value %}selected{% endif %}>
+                            {{ text_label }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label text-muted fw-bold small text-uppercase">Size</label>
+                    <select name="{{ form.size.name }}" class="form-select">
+                        {% for value, text_label in form.size.field.choices %}
+                        <option value="{{ value }}" {% if form.size.value|is_equal:value %}selected{% endif %}>
+                            {{ text_label }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="col-md-2 d-grid">
+                    <button type="submit" class="btn btn-primary btn-block">Search</button>
+                </div>
+                <div class="col-md-2 d-grid">
+                    <a href="{% url 'search-pets' %}" class="btn btn-outline-secondary">Reset</a>
+                </div>
+            </form>
         </div>
     </div>
-    {% endfor %}
+
+    <div class="mb-4">
+        <h4>Recent Reports</h4>
+    </div>
+
+    {% if results %}
+    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+        {% for pet in results %}
+        <div class="col">
+            <div class="card h-100 shadow-sm border-0 pet-card">
+                <div class="position-relative">
+                    {% if pet.image %}
+                    <img src="{{ pet.image.url }}" class="card-img-top pct-img-cover" alt="Pet image"
+                        style="height: 250px; object-fit: cover;">
+                    {% else %}
+                    <div class="bg-secondary d-flex align-items-center justify-content-center" style="height: 250px;">
+                        <span class="text-white">No Image Provided</span>
+                    </div>
+                    {% endif %}
+                    <span
+                        class="position-absolute top-0 start-0 m-3 badge {% if pet.request_type|is_equal:'Lost' %}bg-danger{% else %}bg-success{% endif %} p-2 px-3 fade-in">
+                        {{ pet.request_type }}
+                    </span>
+                </div>
+                <div class="card-body">
+                    <h5 class="card-title fw-bold mb-1">{{ pet.pet_type }} - {{ pet.breed }}
+                        {% if pet.gender|is_equal:'Male' %}<i class="bi bi-gender-male text-primary"></i>
+                        {% elif pet.gender|is_equal:'Female' %}<i class="bi bi-gender-female text-danger"></i>
+                        {% endif %}
+                    </h5>
+                    <p class="text-muted small mb-3"><i class="bi bi-geo-alt-fill"></i> {{ pet.location }}</p>
+
+                    <div class="row text-sm mb-3 g-2">
+                        <div class="col-6"><strong>Color:</strong> <span class="text-muted">{{ pet.color }}</span></div>
+                        <div class="col-6"><strong>Size:</strong> <span class="text-muted">{{ pet.size }}</span></div>
+                        <div class="col-6"><strong>Age:</strong> <span class="text-muted">{{ pet.age }}</span></div>
+                    </div>
+
+                    <p class="card-text text-truncate-2">{{ pet.description|truncatewords:20 }}</p>
+                </div>
+                <div class="card-footer bg-body border-top-0 pt-0 d-flex justify-content-between align-items-center">
+                    <small class="text-muted">Reported {{ pet.created_at|timesince }} ago</small>
+                    <a href="{% url 'pet-detail' pet.id %}" class="btn btn-sm btn-outline-primary">View Details</a>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <!-- Pagination -->
+    {% if results.has_other_pages %}
+    <nav class="mt-5" aria-label="Search results pagination">
+        <ul class="pagination justify-content-center">
+            {% if results.has_previous %}
+            <li class="page-item">
+                <a class="page-link"
+                    href="?page={{ results.previous_page_number }}{% if request.GET.urlencode %}&{{ request.GET.urlencode|slice:'6:' }}{% endif %}"
+                    aria-label="Previous">
+                    <span aria-hidden="true">&laquo;</span>
+                </a>
+            </li>
+            {% else %}
+            <li class="page-item disabled">
+                <a class="page-link" href="#" aria-label="Previous">
+                    <span aria-hidden="true">&laquo;</span>
+                </a>
+            </li>
+            {% endif %}
+
+            {% for num in results.paginator.page_range %}
+            {% if num == results.number %}
+            <li class="page-item active" aria-current="page"><span class="page-link">{{ num }}</span></li>
+            {% elif num > results.number|add:"-4" and num < results.number|add:"4" %} <li class="page-item"><a
+                    class="page-link"
+                    href="?page={{ num }}{% if request.GET.urlencode %}&{{ request.GET.urlencode|slice:'6:' }}{% endif %}">{{
+                    num }}</a></li>
+                {% endif %}
+                {% endfor %}
+
+                {% if results.has_next %}
+                <li class="page-item">
+                    <a class="page-link"
+                        href="?page={{ results.next_page_number }}{% if request.GET.urlencode %}&{{ request.GET.urlencode|slice:'6:' }}{% endif %}"
+                        aria-label="Next">
+                        <span aria-hidden="true">&raquo;</span>
+                    </a>
+                </li>
+                {% else %}
+                <li class="page-item disabled">
+                    <a class="page-link" href="#" aria-label="Next">
+                        <span aria-hidden="true">&raquo;</span>
+                    </a>
+                </li>
+                {% endif %}
+        </ul>
+    </nav>
+    {% endif %}
+
+    {% else %}
+    <div class="alert alert-info py-4 text-center">
+        No pet reports match your search criteria. Try adjusting your filters or <a href="{% url 'search-pets' %}"
+            class="alert-link">clear the search</a>.
+    </div>
+    {% endif %}
 </div>
-{% elif request.GET %}
-<p class="text-muted">No matching pet found.</p>
-{% endif %}
+
+<style>
+    .pet-card {
+        transition: transform 0.2s;
+    }
+
+    .pet-card:hover {
+        transform: translateY(-5px);
+    }
+
+    .text-truncate-2 {
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+</style>
 {% endblock %}

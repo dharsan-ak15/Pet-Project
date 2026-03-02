@@ -1,0 +1,74 @@
+{% extends 'admin_portal/admin_base.html' %}
+{% block admin_content %}
+
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-4 border-bottom">
+    <h1 class="h2 fw-bold">User Management</h1>
+</div>
+
+<div class="card shadow-sm border-0 rounded-4">
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="bg-light text-muted small text-uppercase">
+                    <tr>
+                        <th class="ps-4">Username</th>
+                        <th>Email</th>
+                        <th>Joined Date</th>
+                        <th>Staff Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for user_obj in users %}
+                    <tr>
+                        <td class="ps-4 fw-bold">{{ user_obj.username }}</td>
+                        <td>{{ user_obj.email }}</td>
+                        <td>{{ user_obj.date_joined|date:"M d, Y" }}</td>
+                        <td>
+                            {% if user_obj.is_staff %}
+                            <span class="badge bg-success bg-opacity-25 text-success rounded-pill px-3">Staff</span>
+                            {% else %}
+                            <span
+                                class="badge bg-secondary bg-opacity-25 text-secondary rounded-pill px-3">Standard</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <button class="btn btn-sm btn-outline-primary rounded-circle" data-bs-toggle="tooltip"
+                                title="View Details">
+                                <i class="bi bi-eye"></i>
+                            </button>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="5" class="text-center py-5 text-muted">No users found.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- Pagination -->
+{% if users.has_other_pages %}
+<nav aria-label="Page navigation" class="mt-4">
+    <ul class="pagination justify-content-center">
+        {% if users.has_previous %}
+        <li class="page-item">
+            <a class="page-link shadow-sm border-0 text-dark" href="?page={{ users.previous_page_number }}">Previous</a>
+        </li>
+        {% endif %}
+
+        <li class="page-item active"><span class="page-link border-0 shadow-sm">{{ users.number }}</span></li>
+
+        {% if users.has_next %}
+        <li class="page-item">
+            <a class="page-link shadow-sm border-0 text-dark" href="?page={{ users.next_page_number }}">Next</a>
+        </li>
+        {% endif %}
+    </ul>
+</nav>
+{% endif %}
+
+{% endblock %}

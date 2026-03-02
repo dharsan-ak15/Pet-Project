@@ -1,0 +1,35 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-5">
+            <div class="card shadow-sm border-0 rounded-4">
+                <div class="card-body p-5 text-center">
+                    <div class="mb-4">
+                        <i class="bi bi-shield-lock-fill text-primary" style="font-size: 3rem;"></i>
+                    </div>
+                    <h4 class="fw-bold mb-3">Moderator Access</h4>
+                    <p class="text-muted small mb-4">Please enter the staff master password to access the moderation
+                        queue and dashboard.</p>
+
+                    <form method="POST" action="{% url 'custom-admin-login' %}">
+                        {% csrf_token %}
+                        <div class="mb-4 text-start">
+                            <label class="form-label fw-semibold small">Staff Password</label>
+                            <input type="password" name="password" class="form-control form-control-lg"
+                                placeholder="••••••••" required>
+                        </div>
+                        <button type="submit" class="btn btn-primary btn-lg w-100 rounded-pill shadow-sm">Access
+                            Portal</button>
+                    </form>
+
+                    <div class="mt-4">
+                        <a href="{% url 'landing' %}" class="text-decoration-none text-muted small"><i
+                                class="bi bi-arrow-left me-1"></i>Return to Home</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,6 +1,7 @@
 {% load static %}
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <title>Pet Rescue Portal</title>
@@ -8,18 +9,26 @@
 
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
 
     <style>
         body {
             margin: 0;
             font-family: 'Poppins', sans-serif;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            background-color: var(--bs-body-bg);
+            color: var(--bs-body-color);
+            transition: background-color 0.3s ease, color 0.3s ease;
         }
 
         /* HERO SECTION */
         .hero-section {
             height: 90vh;
-             background: url("{% static 'images/landing-pets.jpg' %}") center center/cover no-repeat;
+            background: url("{% static 'images/landing-pets.jpg' %}") center center/cover no-repeat;
             position: relative;
             display: flex;
             align-items: center;
@@ -32,16 +41,17 @@
             content: "";
             position: absolute;
             inset: 0;
-            background: rgba(0,0,0,0.35);
+            background: rgba(0, 0, 0, 0.35);
             z-index: 1;
-            pointer-events: none;  /* 👈 THIS FIXES CLICK ISSUE */
+            pointer-events: none;
+            /* 👈 THIS FIXES CLICK ISSUE */
         }
 
         .hero-section .container {
             position: relative;
             z-index: 2;
         }
-        
+
 
         /* SECTION STYLING */
         .section-title {
@@ -52,17 +62,83 @@
             background-color: #0f7c82;
         }
 
+        /* GLOBAL STYLES & COMPONENTS */
+        a,
+        button,
+        .btn {
+            transition: all 0.3s ease;
+        }
+
+        .btn {
+            border-radius: 8px;
+            font-weight: 500;
+        }
+
+        /* ANIMATIONS */
+        .fade-in-up {
+            animation: fadeInUp 0.8s ease-out forwards;
+            opacity: 0;
+            transform: translateY(20px);
+        }
+
+        .delay-1 {
+            animation-delay: 0.2s;
+        }
+
+        .delay-2 {
+            animation-delay: 0.4s;
+        }
+
+        .delay-3 {
+            animation-delay: 0.6s;
+        }
+
+        @keyframes fadeInUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .btn-primary {
+            background-color: #0f7c82;
+            border-color: #0f7c82;
+        }
+
+        .btn-primary:hover {
+            background-color: #0b5f63;
+            border-color: #0b5f63;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(15, 124, 130, 0.3);
+        }
+
+        .btn-outline-primary {
+            color: #0f7c82;
+            border-color: #0f7c82;
+        }
+
+        .btn-outline-primary:hover {
+            background-color: #0f7c82;
+            color: white;
+            transform: translateY(-2px);
+        }
+
         /* CARD STYLING */
         .card {
             border: none;
-            transition: transform 0.3s ease;
+            border-radius: 12px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.06);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
         }
 
         .card:hover {
             transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.12);
         }
 
         .card img {
+            border-top-left-radius: 12px;
+            border-top-right-radius: 12px;
             height: 220px;
             object-fit: cover;
         }
@@ -75,60 +151,140 @@
         .navbar-brand {
             font-size: 1.3rem;
         }
-
     </style>
 </head>
 
 <body>
 
-<!-- NAVBAR -->
-<nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow-sm">
-    <div class="container">
-        <a class="navbar-brand fw-bold" href="{% url 'landing' %}">🐾 Pet Portal</a>
+    <!-- NAVBAR -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow-sm">
+        <div class="container">
+            <a class="navbar-brand fw-bold" href="{% url 'landing' %}">🐾 Pet Portal</a>
 
-        <div class="collapse navbar-collapse show">
-            <ul class="navbar-nav me-auto">
-                {% if user.is_authenticated %}
-                <li class="nav-item">
-                    <a class="nav-link" href="{% url 'search-pets' %}">Search</a>
-                </li>
-                {% endif %}
-            </ul>
+            <div class="collapse navbar-collapse show">
+                <ul class="navbar-nav me-auto">
+                    {% if user.is_authenticated %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'search-pets' %}">Search</a>
+                    </li>
+                    {% endif %}
+                </ul>
 
-            <ul class="navbar-nav ms-auto">
-                {% if user.is_authenticated %}
-                <li class="nav-item">
-                    <a class="nav-link" href="{% url 'dashboard' %}">Dashboard</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="{% url 'report-pet' %}">Report</a>
-                </li>
-                <li class="nav-item">
-                    <form method="post" action="{% url 'logout' %}">
-                        {% csrf_token %}
-                        <button type="submit" class="btn btn-outline-light btn-sm ms-2">
-                            Logout
+                <ul class="navbar-nav ms-auto">
+                    {% if user.is_authenticated %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'dashboard' %}">Dashboard</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'profile' %}">Profile</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'report-pet' %}">Report</a>
+                    </li>
+                    <li class="nav-item">
+                        <form method="post" action="{% url 'logout' %}">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-outline-light btn-sm ms-2">
+                                Logout
+                            </button>
+                        </form>
+                    </li>
+                    {% else %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'login' %}">Login</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'register' %}">Register</a>
+                    </li>
+                    {% endif %}
+                    <li class="nav-item ms-lg-3 mt-2 mt-lg-0 d-flex align-items-center">
+                        <button
+                            class="btn btn-outline-light btn-sm rounded-circle d-flex justify-content-center align-items-center"
+                            id="theme-toggle" title="Toggle Dark Mode" style="width: 35px; height: 35px;">
+                            <i class="bi bi-moon-fill" id="theme-icon"></i>
                         </button>
-                    </form>
-                </li>
-                {% else %}
-                <li class="nav-item">
-                    <a class="nav-link" href="{% url 'login' %}">Login</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="{% url 'register' %}">Register</a>
-                </li>
-                {% endif %}
-            </ul>
+                    </li>
+                </ul>
+            </div>
         </div>
-    </div>
-</nav>
+    </nav>
 
-{% block content %}
-{% endblock %}
+    <main class="flex-grow-1">
+        {% block content %}
+        {% endblock %}
+    </main>
 
-<!-- Bootstrap JS -->
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- FOOTER -->
+    <footer class="mt-auto pt-5 pb-4 bg-dark text-white">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-md-4 mb-4 mb-md-0 text-center text-md-start">
+                    <h5 class="fw-bold mb-2"><i class="bi bi-suit-heart-fill text-danger me-2"></i>Pet Rescue Portal
+                    </h5>
+                    <p class="text-white-50 small mb-0">Reuniting best friends every day. Join our community to help
+                        lost pets find their way home.</p>
+                </div>
+                <div class="col-md-4 mb-4 mb-md-0 text-center">
+                    <a href="{% url 'custom-admin-login' %}"
+                        class="text-white-50 text-decoration-none mx-2 custom-link"><i
+                            class="bi bi-shield-lock-fill me-1"></i> Staff Portal</a>
+                    <a href="/admin/" class="text-white-50 text-decoration-none mx-2 custom-link"><i
+                            class="bi bi-database-fill-gear me-1"></i> Django Admin</a>
+                </div>
+                <div class="col-md-4 text-center text-md-end">
+                    <a href="#" class="text-white-50 me-3 fs-5 custom-link"><i class="bi bi-facebook"></i></a>
+                    <a href="#" class="text-white-50 me-3 fs-5 custom-link"><i class="bi bi-twitter-x"></i></a>
+                    <a href="#" class="text-white-50 fs-5 custom-link"><i class="bi bi-instagram"></i></a>
+                </div>
+            </div>
+            <hr class="mt-4 mb-3 border-secondary">
+            <div class="text-center">
+                <small class="text-white-50">&copy; 2026 Pet Rescue Portal. All rights reserved.</small>
+            </div>
+        </div>
+    </footer>
 
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const themeToggleBtn = document.getElementById('theme-toggle');
+            const themeIcon = document.getElementById('theme-icon');
+            const htmlElement = document.documentElement;
+
+            const savedTheme = localStorage.getItem('theme') || 'light';
+            htmlElement.setAttribute('data-bs-theme', savedTheme);
+            updateIcon(savedTheme);
+
+            if (themeToggleBtn) {
+                themeToggleBtn.addEventListener('click', () => {
+                    const currentTheme = htmlElement.getAttribute('data-bs-theme');
+                    const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+
+                    htmlElement.setAttribute('data-bs-theme', newTheme);
+                    localStorage.setItem('theme', newTheme);
+                    updateIcon(newTheme);
+                });
+            }
+
+            function updateIcon(theme) {
+                if (!themeIcon) return;
+                if (theme === 'dark') {
+                    themeIcon.classList.replace('bi-moon-fill', 'bi-sun-fill');
+                    themeToggleBtn.classList.replace('btn-outline-light', 'btn-outline-warning');
+                } else {
+                    themeIcon.classList.replace('bi-sun-fill', 'bi-moon-fill');
+                    themeToggleBtn.classList.replace('btn-outline-warning', 'btn-outline-light');
+                }
+            }
+        });
+    </script>
+    <style>
+        .custom-link:hover {
+            color: #ffffff !important;
+            transition: color 0.3s;
+        }
+    </style>
 </body>
+
 </html>

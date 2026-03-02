@@ -1,12 +1,13 @@
 from django.contrib import messages
-from django.contrib.admin.views.decorators import staff_member_required
+from .decorators import petportal_staff_required
+from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
 from django.db.models import Q
 from django.shortcuts import get_object_or_404, redirect, render
 from django.views.decorators.http import require_POST
 
-from .forms import PetRequestForm, PetSearchForm
-from .models import PetRequest
+from .forms import PetRequestForm, PetSearchForm, CommentForm
+from .models import Notification, PetRequest
 
 
 def create_pet_request(request):
@@ -20,13 +21,13 @@ def create_pet_request(request):
         print("FILES:", request.FILES)
 
         if form.is_valid():
-            print("FORM IS VALID ✅")
+            print("FORM IS VALID")
 
             pet_request = form.save(commit=False)
             pet_request.user = request.user
             pet_request.save()
 
-            print("SAVED SUCCESSFULLY ✅")
+            print("SAVED SUCCESSFULLY")
 
             messages.success(
                 request,
@@ -34,7 +35,7 @@ def create_pet_request(request):
             )
             return redirect('dashboard')
         else:
-            print("FORM IS INVALID ❌")
+            print("FORM IS INVALID")
             print("ERRORS:", form.errors)
 
     else:
@@ -42,6 +43,40 @@ def create_pet_request(request):
 
     return render(request, 'pets/pet_request_form.html', {'form': form})
 
+
+def edit_pet_request(request, request_id):
+    if not request.user.is_authenticated:
+        return redirect('login')
+
+    pet_request = get_object_or_404(PetRequest, id=request_id, user=request.user)
+
+    if request.method == 'POST':
+        form = PetRequestForm(request.POST, request.FILES, instance=pet_request)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Your pet report has been updated.')
+            return redirect('dashboard')
+    else:
+        form = PetRequestForm(instance=pet_request)
+
+    return render(request, 'pets/pet_request_form.html', {'form': form, 'is_edit': True})
+
+
+def delete_pet_request(request, request_id):
+    if not request.user.is_authenticated:
+        return redirect('login')
+
+    pet_request = get_object_or_404(PetRequest, id=request_id, user=request.user)
+    
+    if request.method == 'POST':
+        pet_request.delete()
+        messages.success(request, 'Your pet report has been deleted.')
+        return redirect('dashboard')
+        
+    return render(request, 'pets/pet_request_confirm_delete.html', {'pet_request': pet_request})
+
+
+@login_required
 def search_pets(request):
     form = PetSearchForm(request.GET or None)
     results = []
@@ -68,15 +103,21 @@ def search_pets(request):
         if location:
             query &= Q(location__icontains=location)
 
-        results = PetRequest.objects.filter(query)
+        results = PetRequest.objects.filter(query).order_by('-created_at')
 
         if not results.exists():
             messages.info(request, 'No matching pet found.')
+    else:
+        results = PetRequest.objects.all().order_by('-created_at')
 
-    return render(request, 'pets/search.html', {'form': form, 'results': results})
+    paginator = Paginator(results, 12) # Show 12 pets per page
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+
+    return render(request, 'pets/search.html', {'form': form, 'results': page_obj})
 
 
-@staff_member_required
+@petportal_staff_required
 def admin_request_list(request):
     status_filter = request.GET.get('status', '')
     pet_requests = PetRequest.objects.all()
@@ -95,7 +136,7 @@ def admin_request_list(request):
     )
 
 
-@staff_member_required
+@petportal_staff_required
 @require_POST
 def update_request_status(request, request_id):
     pet_request = get_object_or_404(PetRequest, id=request_id)
@@ -111,15 +152,13 @@ def update_request_status(request, request_id):
     return redirect('admin-request-list')
 
 
-@staff_member_required
+@petportal_staff_required
 @require_POST
 def delete_request(request, request_id):
     pet_request = get_object_or_404(PetRequest, id=request_id)
     pet_request.delete()
     messages.warning(request, f'Request #{request_id} has been deleted.')
     return redirect('admin-request-list')
-
-from pets.models import PetRequest
 
 def landing_page(request):
     lost_pets = PetRequest.objects.filter(
@@ -132,9 +171,17 @@ def landing_page(request):
         status='Accepted'
     ).order_by('-created_at')[:4]
 
+    total_pets = PetRequest.objects.count()
+    total_reunited = PetRequest.objects.filter(status='Reunited').count()
+    from django.contrib.auth.models import User
+    total_users = User.objects.count()
+
     context = {
         'lost_pets': lost_pets,
         'found_pets': found_pets,
+        'total_pets': total_pets,
+        'total_reunited': total_reunited,
+        'total_users': total_users,
     }
 
     return render(request, 'landing.html', context)
@@ -152,10 +199,113 @@ def profile_view(request):
         'profile': profile
     })
 
+@login_required
 def lost_pets(request):
-    pets = Pet.objects.filter(status='lost')
+    pets = PetRequest.objects.filter(request_type='Lost', status='Accepted')
     return render(request, 'lost_pets.html', {'pets': pets})
 
+@login_required
 def found_pets(request):
-    pets = Pet.objects.filter(status='found')
+    pets = PetRequest.objects.filter(request_type='Found', status='Accepted')
     return render(request, 'found_pets.html', {'pets': pets})
+
+@login_required
+def pet_detail(request, request_id):
+    pet = get_object_or_404(PetRequest, pk=request_id)
+    comments = pet.comments.all()
+
+    if request.method == 'POST':
+        form = CommentForm(request.POST)
+        if form.is_valid():
+            comment = form.save(commit=False)
+            comment.pet_request = pet
+            comment.user = request.user
+            comment.save()
+
+            # Create notification for the pet owner (if the commenter isn't the owner)
+            if pet.user != request.user:
+                Notification.objects.create(
+                    user=pet.user,
+                    pet_request=pet,
+                    message=f"{request.user.username} left a comment on your '{pet.pet_type}' report."
+                )
+
+            messages.success(request, 'Your comment was added.')
+            return redirect('pet-detail', request_id=pet.id)
+    else:
+        form = CommentForm()
+
+    return render(request, 'pets/pet_detail.html', {
+        'pet': pet,
+        'comments': comments,
+        'form': form
+    })
+
+@require_POST
+def mark_reunited(request, request_id):
+    if not request.user.is_authenticated:
+        return redirect('login')
+        
+    pet_request = get_object_or_404(PetRequest, id=request_id, user=request.user)
+    pet_request.status = 'Reunited'
+    pet_request.save(update_fields=['status', 'updated_at'])
+    messages.success(request, f'Wonderful news! {pet_request.breed} has been marked as Reunited.')
+    return redirect('dashboard')
+
+
+@petportal_staff_required
+def admin_dashboard(request):
+    """
+    Overview page for the custom staff portal.
+    """
+    from django.contrib.auth.models import User
+    from django.db.models import Count
+    
+    total_users = User.objects.count()
+    total_requests = PetRequest.objects.count()
+    pending_requests = PetRequest.objects.filter(status='Pending').count()
+    
+    context = {
+        'total_users': total_users,
+        'total_requests': total_requests,
+        'pending_requests': pending_requests,
+    }
+    return render(request, 'admin_portal/dashboard.html', context)
+
+
+@petportal_staff_required
+def admin_users(request):
+    """
+    User management page for the custom staff portal.
+    """
+    from django.contrib.auth.models import User
+    users = User.objects.all().order_by('-date_joined')
+    
+    paginator = Paginator(users, 20)
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+    
+    context = {
+        'users': page_obj
+    }
+    return render(request, 'admin_portal/users.html', context)
+
+
+def staff_login_view(request):
+    """
+    Simple view to authenticate staff members using a static password
+    to grant access to the pet request admin portal.
+    """
+    if request.session.get('staff_access', False):
+        return redirect('custom-admin-dashboard')
+
+    if request.method == 'POST':
+        password = request.POST.get('password', '')
+        if password == 'Petportalstaff':
+            request.session['staff_access'] = True
+            messages.success(request, 'Staff access granted.')
+            return redirect('custom-admin-dashboard')
+        else:
+            messages.error(request, 'Incorrect staff password.')
+
+    return render(request, 'admin_portal/staff_login.html')

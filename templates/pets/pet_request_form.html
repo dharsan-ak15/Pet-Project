@@ -1,75 +1,99 @@
 {% extends 'base.html' %}
+{% load static %}
 {% block content %}
 
-<div class="row justify-content-center">
-    <div class="col-md-8">
-        <div class="card shadow-sm">
-            <div class="card-body">
+<div class="row justify-content-center align-items-center py-5 rounded-4"
+    style="background: linear-gradient(135deg, #1a1c29 0%, #0f121a 100%); min-height: 80vh; margin-top: -1.5rem; margin-bottom: -1.5rem;">
+    <!-- Left Image (Lost Pet Element) -->
+    <div class="col-md-2 d-none d-lg-flex justify-content-end">
+        <img src="{% static 'images/report_lost.png' %}" alt="Lost Pet" class="img-fluid"
+            style="max-height: 400px; object-fit: contain; animation: float 4s ease-in-out infinite;">
+    </div>
 
-                <h3 class="mb-4">Report Lost / Found Pet</h3>
+    <!-- Center Form Box -->
+    <div class="col-md-9 col-lg-7 z-1">
+        <div class="card shadow-lg border-0"
+            style="background: rgba(30, 35, 50, 0.85); backdrop-filter: blur(12px); border: 1px solid rgba(255,255,255,0.1) !important;">
+            <div class="card-body p-5">
+
+                <div class="text-center mb-5">
+                    <h2 class="fw-bold text-white"><i class="bi bi-megaphone-fill text-info me-2"></i>Report Pet</h2>
+                    <p class="text-light opacity-75">Fill out the details below to alert the community.</p>
+                </div>
 
                 <form method="POST" enctype="multipart/form-data">
                     {% csrf_token %}
 
                     <div class="row">
-                        <div class="col-md-6">
-                            <label>Request Type *</label>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label fw-semibold text-info small text-uppercase">Request Type
+                                *</label>
                             {{ form.request_type }}
                         </div>
 
-                        <div class="col-md-6">
-                            <label>Pet Type *</label>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label fw-semibold text-info small text-uppercase">Pet Type *</label>
                             {{ form.pet_type }}
                         </div>
 
-                        <div class="col-md-6 mt-3">
-                            <label>Breed *</label>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label fw-semibold text-info small text-uppercase">Breed *</label>
                             {{ form.breed }}
                         </div>
 
-                        <div class="col-md-6 mt-3">
-                            <label>Gender *</label>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label fw-semibold text-info small text-uppercase">Gender *</label>
                             {{ form.gender }}
                         </div>
 
-                        <div class="col-md-6 mt-3">
-                            <label>Age (in years) *</label>
+                        <div class="col-md-3 mb-3">
+                            <label class="form-label fw-semibold text-info small text-uppercase">Age *</label>
                             {{ form.age }}
                         </div>
+                        <div class="col-md-3 mb-3">
+                            <label class="form-label fw-semibold text-info small text-uppercase">Unit *</label>
+                            {{ form.age_unit }}
+                        </div>
 
-                        <div class="col-md-6 mt-3">
-                            <label>Size *</label>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label fw-semibold text-info small text-uppercase">Size *</label>
                             {{ form.size }}
                         </div>
 
-                        <div class="col-md-6 mt-3">
-                            <label>Color</label>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label fw-semibold text-info small text-uppercase">Color</label>
                             {{ form.color }}
                         </div>
 
-                        <div class="col-md-6 mt-3">
-                            <label>Location *</label>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label fw-semibold text-info small text-uppercase">Location *</label>
                             {{ form.location }}
                         </div>
 
-                        <div class="col-md-12 mt-3">
-                            <label>Description *</label>
+                        <div class="col-12 mb-3">
+                            <label class="form-label fw-semibold text-info small text-uppercase">Description
+                                *</label>
                             {{ form.description }}
                         </div>
 
-                        <div class="col-md-12 mt-3">
-                            <label>Contact Information *</label>
+                        <div class="col-12 mb-3">
+                            <label class="form-label fw-semibold text-info small text-uppercase">Contact
+                                Information *</label>
                             {{ form.contact_information }}
                         </div>
 
-                        <div class="col-md-12 mt-3">
-                            <label>Pet Image *</label>
-                            {{ form.image }}
+                        <div class="col-12 mb-4">
+                            <label class="form-label fw-semibold text-info small text-uppercase">Pet Image
+                                *</label>
+                            <div class="p-3 bg-dark border border-secondary rounded"
+                                style="background-color: rgba(0,0,0,0.2) !important;">
+                                {{ form.image }}
+                            </div>
                         </div>
                     </div>
 
-                    <button type="submit" class="btn btn-primary mt-4 w-100">
-                        Submit Request
+                    <button type="submit" class="btn btn-primary btn-lg mt-2 w-100 rounded-pill shadow-sm fw-bold">
+                        Submit Report <i class="bi bi-send-fill ms-2"></i>
                     </button>
 
                 </form>
@@ -77,6 +101,90 @@
             </div>
         </div>
     </div>
+
+    <!-- Right Image (Found Pet Element) -->
+    <div class="col-md-2 d-none d-lg-flex justify-content-start">
+        <img src="{% static 'images/report_found.png' %}" alt="Found Pet" class="img-fluid"
+            style="max-height: 400px; object-fit: contain; animation: float 3.5s ease-in-out infinite alternate;">
+    </div>
 </div>
 
+<style>
+    @keyframes float {
+        0% {
+            transform: translateY(0px);
+        }
+
+        50% {
+            transform: translateY(-15px);
+        }
+
+        100% {
+            transform: translateY(0px);
+        }
+    }
+
+    /* Force all form inputs into a dark glassmorphic/glow theme */
+    .card-body input[type="text"],
+    .card-body input[type="number"],
+    .card-body select,
+    .card-body textarea {
+        display: block;
+        width: 100%;
+        padding: 0.6rem 0.85rem;
+        font-size: 1rem;
+        font-weight: 500;
+        line-height: 1.5;
+        color: #e2e8f0;
+        background-color: rgba(15, 20, 30, 0.6);
+        background-clip: padding-box;
+        border: 1px solid rgba(255, 255, 255, 0.15);
+        appearance: none;
+        border-radius: 0.5rem;
+        transition: border-color .15s ease-in-out, box-shadow .15s ease-in-out, background-color .15s;
+    }
+
+    .card-body input[type="text"]:focus,
+    .card-body input[type="number"]:focus,
+    .card-body select:focus,
+    .card-body textarea:focus {
+        border-color: #0dcaf0;
+        outline: 0;
+        background-color: rgba(15, 20, 30, 0.9);
+        box-shadow: 0 0 0 0.25rem rgba(13, 202, 240, 0.3);
+    }
+
+    .card-body input[type="text"]::placeholder,
+    .card-body input[type="number"]::placeholder,
+    .card-body textarea::placeholder {
+        color: rgba(255, 255, 255, 0.4);
+    }
+
+    .card-body select option {
+        background-color: #1a1c29;
+        color: #e2e8f0;
+    }
+
+    .card-body input[type="file"] {
+        display: block;
+        width: 100%;
+        color: #e2e8f0;
+    }
+
+    .card-body input[type="file"]::file-selector-button {
+        background-color: #0dcaf0;
+        color: #000;
+        font-weight: 600;
+        border: none;
+        padding: 0.4rem 0.8rem;
+        border-radius: 4px;
+        margin-right: 1rem;
+        cursor: pointer;
+        transition: background-color 0.2s;
+    }
+
+    .card-body input[type="file"]::file-selector-button:hover {
+        background-color: #31d2f2;
+    }
+</style>
 {% endblock %}

@@ -4,26 +4,103 @@
 {% block content %}
 
 <!-- HERO -->
-<section class="hero-section">
-    <div class="hero-content">
-        <h1>Find Your Forever Friend</h1>
-        <p>Adopt. Love. Care.</p>
+<style>
+    .fade-in-up {
+        animation: fadeInUp 0.8s ease-out forwards;
+        opacity: 0;
+        transform: translateY(20px);
+    }
 
-        {% if not user.is_authenticated %}
-            <a href="{% url 'login' %}" class="btn-primary">Get Started</a>
-        {% endif %}
+    .delay-1 {
+        animation-delay: 0.2s;
+    }
 
-        <div class="action-buttons">
-            <!-- <a href="{% url 'report-pet' %}" class="btn-report">
-                Report Lost / Found Pet
-            </a> -->
+    .delay-2 {
+        animation-delay: 0.4s;
+    }
 
-            <form method="GET" action="{% url 'search-pets' %}" class="search-form">
-                <input type="text" name="q" placeholder="Search pets...">
-                <button type="submit">Search</button>
-            </form>
+    @keyframes fadeInUp {
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .hero-content {
+        max-width: 800px;
+        margin: auto;
+    }
+</style>
+
+<section class="hero-section position-relative overflow-hidden">
+    <div class="hero-content container z-2 position-relative text-center py-5">
+        <h1 class="display-3 fw-bold mb-3 fade-in-up">Reunite with Your Best Friend</h1>
+        <p class="lead mb-5 fade-in-up delay-1">Every second counts. Report a lost pet, or help someone find theirs
+            within our community.</p>
+
+        <div class="d-flex flex-column flex-sm-row justify-content-center gap-3 fade-in-up delay-2">
+            {% if user.is_authenticated %}
+            <a href="{% url 'report-pet' %}" class="btn btn-primary btn-lg px-5 py-3 rounded-pill shadow-sm"><i
+                    class="bi bi-megaphone-fill me-2"></i> Report a Pet</a>
+            {% else %}
+            <a href="{% url 'login' %}?next={% url 'report-pet' %}"
+                class="btn btn-primary btn-lg px-5 py-3 rounded-pill shadow-sm"><i
+                    class="bi bi-box-arrow-in-right me-2"></i> Login to Report</a>
+            {% endif %}
+            <a href="{% url 'search-pets' %}" class="btn btn-outline-light btn-lg px-5 py-3 rounded-pill"><i
+                    class="bi bi-search me-2"></i> Search Database</a>
         </div>
+    </div>
+</section>
 
+<!-- GLOBAL PET LOSS SURVEY / STATISTICS -->
+<section class="py-5 bg-white border-bottom">
+    <div class="container">
+        <div class="row mb-4 text-center">
+            <div class="col-12">
+                <h2 class="fw-bold section-title fade-in-up">The Global Reality of Lost Pets</h2>
+                <p class="text-muted fade-in-up delay-1">Understanding the scale of the issue helps us realize why every
+                    report matters.</p>
+            </div>
+        </div>
+        <div class="row text-center g-4 fade-in-up delay-2">
+            <div class="col-md-3">
+                <div class="p-4 rounded-4 bg-light shadow-sm h-100">
+                    <i class="bi bi-globe-americas text-primary" style="font-size: 2.5rem;"></i>
+                    <h2 class="display-6 fw-bold mt-3 text-dark">10M+</h2>
+                    <p class="text-muted fs-6 mb-0 text-uppercase fw-semibold">Pets Lost Annually</p>
+                    <small class="text-secondary mt-2 d-block">Over 10 million dogs and cats are lost or stolen each
+                        year.</small>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="p-4 rounded-4 bg-light shadow-sm h-100">
+                    <i class="bi bi-house-heart-fill text-success" style="font-size: 2.5rem;"></i>
+                    <h2 class="display-6 fw-bold mt-3 text-dark">1 in 3</h2>
+                    <p class="text-muted fs-6 mb-0 text-uppercase fw-semibold">Pets Will Get Lost</p>
+                    <small class="text-secondary mt-2 d-block">One in three pets will become lost at some point during
+                        their life.</small>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="p-4 rounded-4 bg-light shadow-sm h-100">
+                    <i class="bi bi-tags-fill text-info" style="font-size: 2.5rem;"></i>
+                    <h2 class="display-6 fw-bold mt-3 text-dark">90%</h2>
+                    <p class="text-muted fs-6 mb-0 text-uppercase fw-semibold">Return Rate with Tags</p>
+                    <small class="text-secondary mt-2 d-block">Pets with ID tags or microchips have a high chance of
+                        returning home.</small>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="p-4 rounded-4 bg-light shadow-sm h-100">
+                    <i class="bi bi-heart-fill text-danger" style="font-size: 2.5rem;"></i>
+                    <h2 class="display-6 fw-bold mt-3 text-dark">{{ total_reunited }} / {{ total_pets }}</h2>
+                    <p class="text-muted fs-6 mb-0 text-uppercase fw-semibold">Our Community Reunions</p>
+                    <small class="text-secondary mt-2 d-block">We are slowly making an impact thanks to our {{
+                        total_users }} members.</small>
+                </div>
+            </div>
+        </div>
     </div>
 </section>
 
@@ -32,22 +109,40 @@
     <div class="container">
         <h2 class="text-center section-title mb-4">Recently Lost Pets</h2>
 
-        <div class="row">
-            {% for pet in lost_pets %}
-            <div class="col-md-3 mb-4">
-                <div class="card shadow-sm h-100">
-                    {% if pet.image %}
-                    <img src="{{ pet.image.url }}" class="card-img-top">
-                    {% endif %}
-                    <div class="card-body text-center">
-                        <h6 class="fw-bold">{{ pet.breed }}</h6>
-                        <p class="text-muted">{{ pet.location }}</p>
+        <div class="row g-4">
+            {% for pet in lost_pets|slice:":4" %}
+            <div class="col-md-3">
+                <a href="{% url 'pet-detail' pet.id %}" class="text-decoration-none text-dark d-block h-100">
+                    <div class="card h-100">
+                        <div class="position-relative">
+                            {% if pet.image %}
+                            <img src="{{ pet.image.url }}" class="card-img-top w-100">
+                            {% else %}
+                            <div class="bg-secondary d-flex align-items-center justify-content-center w-100"
+                                style="height: 220px; border-top-left-radius: 12px; border-top-right-radius: 12px;">
+                                <span class="text-white small">No Image</span>
+                            </div>
+                            {% endif %}
+                            <span
+                                class="position-absolute top-0 start-0 m-3 badge bg-danger p-2 px-3 shadow-sm">Lost</span>
+                        </div>
+                        <div class="card-body text-center">
+                            <h6 class="fw-bold mb-1">{{ pet.pet_type }} - {{ pet.breed }}</h6>
+                            <p class="text-muted small mb-0"><i class="bi bi-geo-alt-fill"></i> {{ pet.location }}</p>
+                        </div>
                     </div>
-                </div>
+                </a>
             </div>
             {% empty %}
-            <p class="text-center">No lost pets listed yet.</p>
+            <div class="col-12 py-5 text-center">
+                <p class="text-muted mb-0">No lost pets listed recently.</p>
+            </div>
             {% endfor %}
+        </div>
+
+        <div class="text-center mt-5">
+            <a href="{% url 'search-pets' %}?request_type=Lost" class="btn btn-outline-primary px-4 rounded-pill">View
+                All Lost Pets <i class="bi bi-arrow-right ms-1"></i></a>
         </div>
     </div>
 </section>
@@ -57,22 +152,40 @@
     <div class="container">
         <h2 class="text-center text-white section-title mb-4">Recently Found Pets</h2>
 
-        <div class="row">
-            {% for pet in found_pets %}
-            <div class="col-md-3 mb-4">
-                <div class="card shadow-sm h-100">
-                    {% if pet.image %}
-                    <img src="{{ pet.image.url }}" class="card-img-top">
-                    {% endif %}
-                    <div class="card-body text-center">
-                        <h6 class="fw-bold">{{ pet.breed }}</h6>
-                        <p class="text-muted">{{ pet.location }}</p>
+        <div class="row g-4">
+            {% for pet in found_pets|slice:":4" %}
+            <div class="col-md-3">
+                <a href="{% url 'pet-detail' pet.id %}" class="text-decoration-none text-dark d-block h-100">
+                    <div class="card h-100 border-0">
+                        <div class="position-relative">
+                            {% if pet.image %}
+                            <img src="{{ pet.image.url }}" class="card-img-top w-100">
+                            {% else %}
+                            <div class="bg-secondary d-flex align-items-center justify-content-center w-100"
+                                style="height: 220px; border-top-left-radius: 12px; border-top-right-radius: 12px;">
+                                <span class="text-white small">No Image</span>
+                            </div>
+                            {% endif %}
+                            <span
+                                class="position-absolute top-0 start-0 m-3 badge bg-success p-2 px-3 shadow-sm">Found</span>
+                        </div>
+                        <div class="card-body text-center">
+                            <h6 class="fw-bold mb-1">{{ pet.pet_type }} - {{ pet.breed }}</h6>
+                            <p class="text-muted small mb-0"><i class="bi bi-geo-alt-fill"></i> {{ pet.location }}</p>
+                        </div>
                     </div>
-                </div>
+                </a>
             </div>
             {% empty %}
-            <p class="text-center text-white">No found pets listed yet.</p>
+            <div class="col-12 py-5 text-center text-white">
+                <p class="mb-0">No found pets listed recently.</p>
+            </div>
             {% endfor %}
+        </div>
+
+        <div class="text-center mt-5">
+            <a href="{% url 'search-pets' %}?request_type=Found" class="btn btn-outline-light px-4 rounded-pill">View
+                All Found Pets <i class="bi bi-arrow-right ms-1"></i></a>
         </div>
     </div>
 </section>
