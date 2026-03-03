@@ -213,8 +213,30 @@ def found_pets(request):
 def pet_detail(request, request_id):
     pet = get_object_or_404(PetRequest, pk=request_id)
     comments = pet.comments.all()
+    
+    # Check if user has already reported this pet
+    from .models import ReportAbuse
+    has_reported = False
+    if request.user.is_authenticated:
+        has_reported = ReportAbuse.objects.filter(reporter=request.user, pet_request=pet).exists()
 
     if request.method == 'POST':
+        # Handle report abuse POST
+        if 'report_reason' in request.POST:
+            if not has_reported:
+                reason = request.POST.get('report_reason')
+                ReportAbuse.objects.create(
+                    reporter=request.user,
+                    pet_request=pet,
+                    reason=reason
+                )
+                messages.success(request, 'Thank you. This pet profile has been reported to the administration for review.')
+                return redirect('pet-detail', request_id=pet.id)
+            else:
+                messages.warning(request, 'You have already reported this profile.')
+                return redirect('pet-detail', request_id=pet.id)
+
+        # Handle comment POST
         form = CommentForm(request.POST)
         if form.is_valid():
             comment = form.save(commit=False)
@@ -238,7 +260,8 @@ def pet_detail(request, request_id):
     return render(request, 'pets/pet_detail.html', {
         'pet': pet,
         'comments': comments,
-        'form': form
+        'form': form,
+        'has_reported': has_reported
     })
 
 @require_POST
@@ -289,6 +312,25 @@ def admin_users(request):
         'users': page_obj
     }
     return render(request, 'admin_portal/users.html', context)
+
+
+@petportal_staff_required
+def admin_abuse_reports(request):
+    """
+    Staff view to see and manage all user-submitted abuse reports.
+    """
+    from .models import ReportAbuse
+    
+    reports = ReportAbuse.objects.all().order_by('-created_at')
+    
+    paginator = Paginator(reports, 15)
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+    
+    context = {
+        'reports': page_obj
+    }
+    return render(request, 'admin_portal/abuse_reports.html', context)
 
 
 def staff_login_view(request):

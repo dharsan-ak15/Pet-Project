@@ -96,3 +96,22 @@ class Comment(models.Model):
 
     def __str__(self):
         return f"Comment by {self.user.username} on {self.pet_request}"
+
+
+class ReportAbuse(models.Model):
+    STATUS_CHOICES = [
+        ('Pending', 'Pending'),
+        ('Resolved', 'Resolved'),
+    ]
+
+    reporter = models.ForeignKey(User, on_delete=models.CASCADE, related_name='abuse_reports')
+    pet_request = models.ForeignKey(PetRequest, on_delete=models.CASCADE, related_name='abuse_reports')
+    reason = models.TextField()
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='Pending')
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['-created_at']
+
+    def __str__(self):
+        return f"Abuse Report by {self.reporter.username} on {self.pet_request}"

@@ -36,6 +36,12 @@ class CustomUserRegisterForm(UserCreationForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        
+        # Override help texts to be shorter
+        self.fields['username'].help_text = "Required. 150 chars or fewer. Letters/digits/@/./+/-/_ only."
+        if 'password1' in self.fields:
+            self.fields['password1'].help_text = "Your password must contain at least 8 characters and not be entirely numeric."
+            
         for name, field in self.fields.items():
             if isinstance(field.widget, forms.CheckboxInput):
                 field.widget.attrs.update({'class': 'form-check-input'})
@@ -72,6 +78,13 @@ class RegisterForm(UserCreationForm):
         if User.objects.filter(email=email).exists():
             raise forms.ValidationError('This email is already in use.')
         return email
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # Override help texts here as well
+        self.fields['username'].help_text = "Required. 150 chars or fewer. Letters/digits/@/./+/-/_ only."
+        if 'password1' in self.fields:
+            self.fields['password1'].help_text = "Your password must contain at least 8 characters and not be entirely numeric."
 
 
 class ProfileUpdateForm(forms.ModelForm):

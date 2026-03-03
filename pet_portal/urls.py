@@ -1,6 +1,6 @@
 from django.contrib import admin
 from django.urls import include, path
-from pets.views import landing_page, lost_pets, found_pets, admin_dashboard, admin_users, staff_login_view
+from pets.views import landing_page, lost_pets, found_pets, admin_dashboard, admin_users, staff_login_view, admin_abuse_reports
 from pet_portal.views import custom_404
 from django.conf import settings
 from django.conf.urls.static import static
@@ -19,6 +19,7 @@ urlpatterns = [
     path('portal/login/', staff_login_view, name='custom-admin-login'),
     path('portal/', admin_dashboard, name='custom-admin-dashboard'),
     path('portal/users/', admin_users, name='custom-admin-users'),
+    path('portal/abuse-reports/', admin_abuse_reports, name='custom-admin-abuse-reports'),
 ]
 
 if settings.DEBUG:

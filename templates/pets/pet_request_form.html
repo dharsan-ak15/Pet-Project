@@ -2,8 +2,8 @@
 {% load static %}
 {% block content %}
 
-<div class="row justify-content-center align-items-center py-5 rounded-4"
-    style="background: linear-gradient(135deg, #1a1c29 0%, #0f121a 100%); min-height: 80vh; margin-top: -1.5rem; margin-bottom: -1.5rem;">
+<div class="row justify-content-center align-items-center py-5 rounded-4 bg-light shadow-sm"
+    style="min-height: 80vh; margin-top: -1.5rem; margin-bottom: -1.5rem;">
     <!-- Left Image (Lost Pet Element) -->
     <div class="col-md-2 d-none d-lg-flex justify-content-end">
         <img src="{% static 'images/report_lost.png' %}" alt="Lost Pet" class="img-fluid"
@@ -12,13 +12,13 @@
 
     <!-- Center Form Box -->
     <div class="col-md-9 col-lg-7 z-1">
-        <div class="card shadow-lg border-0"
-            style="background: rgba(30, 35, 50, 0.85); backdrop-filter: blur(12px); border: 1px solid rgba(255,255,255,0.1) !important;">
+        <div class="card shadow border-0 bg-white">
             <div class="card-body p-5">
 
                 <div class="text-center mb-5">
-                    <h2 class="fw-bold text-white"><i class="bi bi-megaphone-fill text-info me-2"></i>Report Pet</h2>
-                    <p class="text-light opacity-75">Fill out the details below to alert the community.</p>
+                    <h2 class="fw-bold text-primary"><i class="bi bi-megaphone-fill text-warning me-2"></i>Report Pet
+                    </h2>
+                    <p class="text-muted">Fill out the details below to alert the community.</p>
                 </div>
 
                 <form method="POST" enctype="multipart/form-data">
@@ -26,67 +26,66 @@
 
                     <div class="row">
                         <div class="col-md-6 mb-3">
-                            <label class="form-label fw-semibold text-info small text-uppercase">Request Type
+                            <label class="form-label fw-semibold text-secondary small text-uppercase">Request Type
                                 *</label>
                             {{ form.request_type }}
                         </div>
 
                         <div class="col-md-6 mb-3">
-                            <label class="form-label fw-semibold text-info small text-uppercase">Pet Type *</label>
+                            <label class="form-label fw-semibold text-secondary small text-uppercase">Pet Type *</label>
                             {{ form.pet_type }}
                         </div>
 
                         <div class="col-md-6 mb-3">
-                            <label class="form-label fw-semibold text-info small text-uppercase">Breed *</label>
+                            <label class="form-label fw-semibold text-secondary small text-uppercase">Breed *</label>
                             {{ form.breed }}
                         </div>
 
                         <div class="col-md-6 mb-3">
-                            <label class="form-label fw-semibold text-info small text-uppercase">Gender *</label>
+                            <label class="form-label fw-semibold text-secondary small text-uppercase">Gender *</label>
                             {{ form.gender }}
                         </div>
 
                         <div class="col-md-3 mb-3">
-                            <label class="form-label fw-semibold text-info small text-uppercase">Age *</label>
+                            <label class="form-label fw-semibold text-secondary small text-uppercase">Age *</label>
                             {{ form.age }}
                         </div>
                         <div class="col-md-3 mb-3">
-                            <label class="form-label fw-semibold text-info small text-uppercase">Unit *</label>
+                            <label class="form-label fw-semibold text-secondary small text-uppercase">Unit *</label>
                             {{ form.age_unit }}
                         </div>
 
                         <div class="col-md-6 mb-3">
-                            <label class="form-label fw-semibold text-info small text-uppercase">Size *</label>
+                            <label class="form-label fw-semibold text-secondary small text-uppercase">Size *</label>
                             {{ form.size }}
                         </div>
 
                         <div class="col-md-6 mb-3">
-                            <label class="form-label fw-semibold text-info small text-uppercase">Color</label>
+                            <label class="form-label fw-semibold text-secondary small text-uppercase">Color</label>
                             {{ form.color }}
                         </div>
 
                         <div class="col-md-6 mb-3">
-                            <label class="form-label fw-semibold text-info small text-uppercase">Location *</label>
+                            <label class="form-label fw-semibold text-secondary small text-uppercase">Location *</label>
                             {{ form.location }}
                         </div>
 
                         <div class="col-12 mb-3">
-                            <label class="form-label fw-semibold text-info small text-uppercase">Description
+                            <label class="form-label fw-semibold text-secondary small text-uppercase">Description
                                 *</label>
                             {{ form.description }}
                         </div>
 
                         <div class="col-12 mb-3">
-                            <label class="form-label fw-semibold text-info small text-uppercase">Contact
+                            <label class="form-label fw-semibold text-secondary small text-uppercase">Contact
                                 Information *</label>
                             {{ form.contact_information }}
                         </div>
 
                         <div class="col-12 mb-4">
-                            <label class="form-label fw-semibold text-info small text-uppercase">Pet Image
+                            <label class="form-label fw-semibold text-secondary small text-uppercase">Pet Image
                                 *</label>
-                            <div class="p-3 bg-dark border border-secondary rounded"
-                                style="background-color: rgba(0,0,0,0.2) !important;">
+                            <div class="p-3 bg-light border rounded">
                                 {{ form.image }}
                             </div>
                         </div>
@@ -124,7 +123,7 @@
         }
     }
 
-    /* Force all form inputs into a dark glassmorphic/glow theme */
+    /* Clean light mode styling for inputs */
     .card-body input[type="text"],
     .card-body input[type="number"],
     .card-body select,
@@ -135,56 +134,34 @@
         font-size: 1rem;
         font-weight: 500;
         line-height: 1.5;
-        color: #e2e8f0;
-        background-color: rgba(15, 20, 30, 0.6);
+        color: #495057;
+        background-color: #fff;
         background-clip: padding-box;
-        border: 1px solid rgba(255, 255, 255, 0.15);
+        border: 1px solid #ced4da;
         appearance: none;
         border-radius: 0.5rem;
-        transition: border-color .15s ease-in-out, box-shadow .15s ease-in-out, background-color .15s;
+        transition: border-color .15s ease-in-out, box-shadow .15s ease-in-out;
     }
 
     .card-body input[type="text"]:focus,
     .card-body input[type="number"]:focus,
     .card-body select:focus,
     .card-body textarea:focus {
-        border-color: #0dcaf0;
+        border-color: #8bbafe;
         outline: 0;
-        background-color: rgba(15, 20, 30, 0.9);
-        box-shadow: 0 0 0 0.25rem rgba(13, 202, 240, 0.3);
+        box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
     }
 
     .card-body input[type="text"]::placeholder,
     .card-body input[type="number"]::placeholder,
     .card-body textarea::placeholder {
-        color: rgba(255, 255, 255, 0.4);
-    }
-
-    .card-body select option {
-        background-color: #1a1c29;
-        color: #e2e8f0;
+        color: #6c757d;
     }
 
     .card-body input[type="file"] {
         display: block;
         width: 100%;
-        color: #e2e8f0;
-    }
-
-    .card-body input[type="file"]::file-selector-button {
-        background-color: #0dcaf0;
-        color: #000;
-        font-weight: 600;
-        border: none;
-        padding: 0.4rem 0.8rem;
-        border-radius: 4px;
-        margin-right: 1rem;
-        cursor: pointer;
-        transition: background-color 0.2s;
-    }
-
-    .card-body input[type="file"]::file-selector-button:hover {
-        background-color: #31d2f2;
+        color: #495057;
     }
 </style>
 {% endblock %}
