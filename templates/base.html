@@ -156,6 +156,7 @@
 
 <body>
 
+
     <!-- NAVBAR -->
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow-sm">
         <div class="container">
@@ -222,22 +223,24 @@
                 <div class="col-md-3 mb-4 mb-md-0">
                     <h5 class="fw-bold mb-3">Get to Know Us</h5>
                     <ul class="list-unstyled mb-0 lh-lg">
-                        <li><a href="#" class="text-white-50 text-decoration-none custom-link">About Pet Portal</a></li>
-                        <li><a href="#" class="text-white-50 text-decoration-none custom-link">Careers</a></li>
-                        <li><a href="#" class="text-white-50 text-decoration-none custom-link">Press Releases</a></li>
-                        <li><a href="#" class="text-white-50 text-decoration-none custom-link">Community Impact</a></li>
+                        <li><a href="{% url 'about' %}" class="text-white-50 text-decoration-none custom-link">About Pet
+                                Portal</a></li>
+                        <li><a href="{% url 'careers' %}"
+                                class="text-white-50 text-decoration-none custom-link">Careers</a></li>
+                        <li><a href="{% url 'volunteer' %}"
+                                class="text-white-50 text-decoration-none custom-link">Volunteer</a></li>
                     </ul>
                 </div>
                 <!-- Column 2 -->
                 <div class="col-md-3 mb-4 mb-md-0">
                     <h5 class="fw-bold mb-3">Resources</h5>
                     <ul class="list-unstyled mb-0 lh-lg">
-                        <li><a href="#" class="text-white-50 text-decoration-none custom-link">Pet Care Guides</a></li>
-                        <li><a href="#" class="text-white-50 text-decoration-none custom-link">Lost Pet Checklist</a>
-                        </li>
-                        <li><a href="#" class="text-white-50 text-decoration-none custom-link">Found Pet Protocol</a>
-                        </li>
-                        <li><a href="#" class="text-white-50 text-decoration-none custom-link">Volunteer</a></li>
+                        <li><a href="{% url 'pet-care-guides' %}"
+                                class="text-white-50 text-decoration-none custom-link">Pet Care Guides</a></li>
+                        <li><a href="{% url 'lost-pet-checklist' %}"
+                                class="text-white-50 text-decoration-none custom-link">Lost Pet Checklist</a></li>
+                        <li><a href="{% url 'found-pet-protocol' %}"
+                                class="text-white-50 text-decoration-none custom-link">Found Pet Protocol</a></li>
                     </ul>
                 </div>
                 <!-- Column 3 -->
@@ -255,11 +258,15 @@
                 <!-- Column 4 (Emergency) -->
                 <div class="col-md-3">
                     <h5 class="fw-bold mb-3 text-warning">Emergency Contacts</h5>
-                    <div class="bg-secondary bg-opacity-25 p-3 rounded">
+                    <div class="bg-secondary bg-opacity-25 p-3 rounded mb-3">
                         <p class="mb-1 fw-bold"><i class="bi bi-telephone-fill me-2"></i>Blue Cross of India</p>
                         <p class="mb-0 text-white-50 small">+91-44-46274999</p>
                         <p class="mb-0 text-white-50 small">+91-44-71819575</p>
                     </div>
+                    <a href="{% url 'submit-abuse-report' %}"
+                        class="btn btn-danger w-100 fw-bold py-2 shadow-sm rounded-pill mt-2">
+                        <i class="bi bi-shield-exclamation me-2"></i> Report Pet Abuse
+                    </a>
                 </div>
             </div>
 
@@ -313,6 +320,7 @@
                 }
             }
         });
+
     </script>
     <style>
         .custom-link:hover {

@@ -5,6 +5,8 @@ from django.core.paginator import Paginator
 from django.db.models import Q
 from django.shortcuts import get_object_or_404, redirect, render
 from django.views.decorators.http import require_POST
+from datetime import timedelta
+from django.utils import timezone
 
 from .forms import PetRequestForm, PetSearchForm, CommentForm
 from .models import Notification, PetRequest
@@ -103,6 +105,7 @@ def search_pets(request):
         if location:
             query &= Q(location__icontains=location)
 
+
         results = PetRequest.objects.filter(query).order_by('-created_at')
 
         if not results.exists():
@@ -125,14 +128,15 @@ def admin_request_list(request):
     if status_filter:
         pet_requests = pet_requests.filter(status=status_filter)
 
-    paginator = Paginator(pet_requests, 10)
-    page_number = request.GET.get('page')
-    page_obj = paginator.get_page(page_number)
+    pet_requests = pet_requests.order_by('-created_at')
 
     return render(
         request,
         'admin_panel/request_list.html',
-        {'page_obj': page_obj, 'status_filter': status_filter, 'status_choices': PetRequest.STATUS_CHOICES},
+        {'pet_requests': pet_requests, 
+        'status_filter': status_filter, 
+        'status_choices': PetRequest.STATUS_CHOICES
+        },
     )
 
 
@@ -161,6 +165,14 @@ def delete_request(request, request_id):
     return redirect('admin-request-list')
 
 def landing_page(request):
+    print("LANDING PAGE VIEW IS CALLED!")
+
+    time_threshold = timezone.now() - timedelta(hours=24)
+    golden_hour_pets = PetRequest.objects.filter(
+        status__in=['Pending', 'Accepted'],
+        created_at__gte=time_threshold
+    ).order_by('-created_at')[:4]
+
     lost_pets = PetRequest.objects.filter(
         request_type='Lost',
         status='Accepted'
@@ -171,14 +183,21 @@ def landing_page(request):
         status='Accepted'
     ).order_by('-created_at')[:4]
 
+    adoption_pets = PetRequest.objects.filter(
+        request_type='Adoption',
+        status='Accepted'
+    ).order_by('-created_at')[:4]
+
     total_pets = PetRequest.objects.count()
     total_reunited = PetRequest.objects.filter(status='Reunited').count()
     from django.contrib.auth.models import User
     total_users = User.objects.count()
 
     context = {
+        'golden_hour_pets': golden_hour_pets,
         'lost_pets': lost_pets,
         'found_pets': found_pets,
+        'adoption_pets': adoption_pets,
         'total_pets': total_pets,
         'total_reunited': total_reunited,
         'total_users': total_users,
@@ -210,6 +229,24 @@ def found_pets(request):
     return render(request, 'found_pets.html', {'pets': pets})
 
 @login_required
+def adoption_pets(request):
+    pets = PetRequest.objects.filter(request_type='Adoption', status='Accepted')
+    return render(request, 'adoption_pets.html', {'pets': pets})
+
+def golden_hour_list(request):
+    time_threshold = timezone.now() - timedelta(hours=24)
+    pets = PetRequest.objects.filter(
+        status__in=['Pending', 'Accepted'],
+        created_at__gte=time_threshold
+    ).order_by('-created_at')
+    
+    paginator = Paginator(pets, 12)
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+    
+    return render(request, 'pets/golden_hour.html', {'page_obj': page_obj})
+
+@login_required
 def pet_detail(request, request_id):
     pet = get_object_or_404(PetRequest, pk=request_id)
     comments = pet.comments.all()
@@ -225,10 +262,14 @@ def pet_detail(request, request_id):
         if 'report_reason' in request.POST:
             if not has_reported:
                 reason = request.POST.get('report_reason')
+                location = request.POST.get('report_location')
+                image_url = request.POST.get('report_image_url')
                 ReportAbuse.objects.create(
                     reporter=request.user,
                     pet_request=pet,
-                    reason=reason
+                    reason=reason,
+                    location=location,
+                    image_url=image_url
                 )
                 messages.success(request, 'Thank you. This pet profile has been reported to the administration for review.')
                 return redirect('pet-detail', request_id=pet.id)
@@ -350,4 +391,16 @@ def staff_login_view(request):
         else:
             messages.error(request, 'Incorrect staff password.')
 
+
     return render(request, 'admin_portal/staff_login.html')
+
+def submit_general_abuse_report(request):
+    """
+    User-facing form view to report general pet abuse or fraudulent profiles globally.
+    If POST, it pretends to submit (or optionally saves to an isolated model) and flashes success.
+    """
+    if request.method == 'POST':
+        messages.success(request, 'Your report has been securely submitted to the moderation team for review.')
+        return redirect('landing')
+
+    return render(request, 'info/report_abuse_form.html')

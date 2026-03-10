@@ -96,10 +96,67 @@
                     <i class="bi bi-heart-fill text-danger" style="font-size: 2.5rem;"></i>
                     <h2 class="display-6 fw-bold mt-3 text-dark">{{ total_reunited }} / {{ total_pets }}</h2>
                     <p class="text-muted fs-6 mb-0 text-uppercase fw-semibold">Our Community Reunions</p>
-                    <small class="text-secondary mt-2 d-block">We are slowly making an impact thanks to our {{
-                        total_users }} members.</small>
+                    <small class="text-secondary mt-2 d-block">We are slowly making an impact thanks to our
+                        members.</small>
                 </div>
             </div>
+        </div>
+    </div>
+</section>
+
+<!-- GOLDEN HOUR SECTION -->
+<section class="py-5 bg-warning bg-opacity-10 border-bottom border-warning">
+    <div class="container">
+        <div class="text-center mb-4">
+            <h2 class="section-title text-warning"><i class="bi bi-hourglass-split me-2"></i>The Golden Hour</h2>
+            <p class="text-muted">Pets reported within the last 24 hours. They need immediate attention.</p>
+        </div>
+
+        <div class="row g-4">
+            {% for pet in golden_hour_pets %}
+            <div class="col-md-3">
+                <a href="{% url 'pet-detail' pet.id %}" class="text-decoration-none text-dark d-block h-100">
+                    <div class="card h-100 border-warning shadow-sm">
+                        <div class="position-relative">
+                            {% if pet.image %}
+                            <img src="{{ pet.image.url }}" class="card-img-top w-100">
+                            {% else %}
+                            <div class="bg-secondary d-flex align-items-center justify-content-center w-100"
+                                style="height: 220px; border-top-left-radius: 12px; border-top-right-radius: 12px;">
+                                <span class="text-white small">No Image</span>
+                            </div>
+                            {% endif %}
+                            <span
+                                class="position-absolute top-0 start-0 m-3 badge bg-warning text-dark p-2 px-3 shadow-sm"><i
+                                    class="bi bi-clock-history me-1"></i>Golden Hour</span>
+                            {% if pet.request_type == 'Lost' %}
+                            <span
+                                class="position-absolute top-0 end-0 m-3 badge bg-danger p-2 px-3 shadow-sm">Lost</span>
+                            {% else %}
+                            <span
+                                class="position-absolute top-0 end-0 m-3 badge bg-success p-2 px-3 shadow-sm">Found</span>
+                            {% endif %}
+                        </div>
+                        <div class="card-body text-center bg-warning bg-opacity-10"
+                            style="border-bottom-left-radius: 12px; border-bottom-right-radius: 12px;">
+                            <h6 class="fw-bold mb-1">{{ pet.pet_type }} - {{ pet.breed }}</h6>
+                            <p class="text-muted small mb-2"><i class="bi bi-geo-alt-fill"></i> {{ pet.location }}</p>
+                            <small class="text-warning fw-bold">Reported: {{ pet.created_at|timesince }} ago</small>
+                        </div>
+                    </div>
+                </a>
+            </div>
+            {% empty %}
+            <div class="col-12 py-5 text-center">
+                <p class="text-muted mb-0">No pets currently in the Golden Hour. That's a good thing!</p>
+            </div>
+            {% endfor %}
+        </div>
+
+        <div class="text-center mt-5">
+            <a href="{% url 'golden-hour' %}"
+                class="btn btn-outline-warning text-dark border-warning px-4 rounded-pill fw-medium">View All Golden
+                Hour Alerts <i class="bi bi-arrow-right ms-1"></i></a>
         </div>
     </div>
 </section>
@@ -186,6 +243,50 @@
         <div class="text-center mt-5">
             <a href="{% url 'search-pets' %}?request_type=Found" class="btn btn-outline-light px-4 rounded-pill">View
                 All Found Pets <i class="bi bi-arrow-right ms-1"></i></a>
+        </div>
+    </div>
+</section>
+
+<!-- ADOPTION PETS -->
+<section class="py-5 bg-light border-top">
+    <div class="container">
+        <h2 class="text-center section-title mb-4" style="color: #6f42c1;">Pets for Adoption</h2>
+
+        <div class="row g-4">
+            {% for pet in adoption_pets|slice:":4" %}
+            <div class="col-md-3">
+                <a href="{% url 'pet-detail' pet.id %}" class="text-decoration-none text-dark d-block h-100">
+                    <div class="card h-100 border-0 shadow-sm" style="border: 1px solid #e2d9f3 !important;">
+                        <div class="position-relative">
+                            {% if pet.image %}
+                            <img src="{{ pet.image.url }}" class="card-img-top w-100">
+                            {% else %}
+                            <div class="bg-secondary d-flex align-items-center justify-content-center w-100"
+                                style="height: 220px; border-top-left-radius: 12px; border-top-right-radius: 12px; background-color: #f1eef6 !important;">
+                                <span class="text-muted small">No Image</span>
+                            </div>
+                            {% endif %}
+                            <span class="position-absolute top-0 start-0 m-3 badge text-white p-2 px-3 shadow-sm"
+                                style="background-color: #6f42c1;">Adoption</span>
+                        </div>
+                        <div class="card-body text-center">
+                            <h6 class="fw-bold mb-1" style="color: #6f42c1;">{{ pet.pet_type }} - {{ pet.breed }}</h6>
+                            <p class="text-muted small mb-0"><i class="bi bi-geo-alt-fill"></i> {{ pet.location }}</p>
+                        </div>
+                    </div>
+                </a>
+            </div>
+            {% empty %}
+            <div class="col-12 py-5 text-center">
+                <p class="text-muted mb-0">No pets listed for adoption right now.</p>
+            </div>
+            {% endfor %}
+        </div>
+
+        <div class="text-center mt-5">
+            <a href="{% url 'search-pets' %}?request_type=Adoption" class="btn btn-outline-primary px-4 rounded-pill"
+                style="color: #6f42c1; border-color: #6f42c1;">View
+                All Adoption Pets <i class="bi bi-arrow-right ms-1"></i></a>
         </div>
     </div>
 </section>

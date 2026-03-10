@@ -93,19 +93,37 @@
                 </div>
                 <!-- Card Footer with Details and Report Abuse Button -->
                 <div
-                    class="card-footer bg-white border-top-0 px-5 pt-0 pb-4 d-flex justify-content-between align-items-center text-muted small">
+                    class="card-footer bg-white border-top-0 px-5 pt-0 pb-4 d-flex justify-content-between align-items-center text-muted small flex-wrap gap-3">
                     <span><i class="bi bi-clock me-1"></i> Reported {{ pet.created_at|timesince }} ago</span>
 
-                    {% if user.is_authenticated and pet.user != user %}
-                    {% if not has_reported %}
-                    <button type="button" class="btn btn-sm btn-outline-danger" data-bs-toggle="modal"
-                        data-bs-target="#reportAbuseModal">
-                        <i class="bi bi-flag-fill"></i> Report Fake/Abuse
-                    </button>
-                    {% else %}
-                    <span class="text-danger small"><i class="bi bi-info-circle-fill"></i> Profile Reported</span>
-                    {% endif %}
-                    {% endif %}
+                    <div class="d-flex align-items-center gap-2">
+                        {% if request.session.staff_access and pet.status != 'Accepted' %}
+                        <form method="post" action="{% url 'update-request-status' pet.id %}" class="m-0">
+                            {% csrf_token %}
+                            <input type="hidden" name="status" value="Accepted">
+                            <button class="btn btn-sm btn-success shadow-sm rounded-pill px-3 fw-bold"
+                                title="Approve"><i class="bi bi-check-lg me-1"></i>Accept Request</button>
+                        </form>
+                        <form method="post" action="{% url 'update-request-status' pet.id %}" class="m-0">
+                            {% csrf_token %}
+                            <input type="hidden" name="status" value="Rejected">
+                            <button class="btn btn-sm btn-outline-warning shadow-sm rounded-pill px-3 fw-bold"
+                                title="Reject"><i class="bi bi-x-lg me-1"></i>Reject</button>
+                        </form>
+                        {% endif %}
+
+                        {% if user.is_authenticated and pet.user != user %}
+                        {% if not has_reported %}
+                        <button type="button" class="btn btn-sm btn-outline-danger rounded-pill px-3"
+                            data-bs-toggle="modal" data-bs-target="#reportAbuseModal">
+                            <i class="bi bi-flag-fill"></i> Report Fake/Abuse
+                        </button>
+                        {% else %}
+                        <span class="text-danger small fw-bold bg-danger bg-opacity-10 px-3 py-1 rounded-pill"><i
+                                class="bi bi-info-circle-fill"></i> Profile Reported</span>
+                        {% endif %}
+                        {% endif %}
+                    </div>
                 </div>
             </div>
         </div>
@@ -127,6 +145,19 @@
                 <div class="modal-body">
                     <p class="small text-muted mb-3">If you believe this profile is fake, spam, or violates community
                         guidelines, please describe why below. Our staff will review it.</p>
+
+                    <div class="mb-3">
+                        <label for="report_location" class="col-form-label fw-bold">Location (If Applicable)</label>
+                        <input type="text" class="form-control" id="report_location" name="report_location"
+                            placeholder="City or area where the incident occurred">
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="report_image" class="col-form-label fw-bold">Supporting Image URL</label>
+                        <input type="url" class="form-control" id="report_image" name="report_image_url"
+                            placeholder="Link to a screenshot or image proof">
+                    </div>
+
                     <div class="mb-3">
                         <label for="report_reason" class="col-form-label fw-bold">Reason for reporting:</label>
                         <textarea class="form-control" id="report_reason" name="report_reason" rows="4" required

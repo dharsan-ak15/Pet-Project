@@ -2,8 +2,8 @@
 {% load static %}
 {% block content %}
 
-<div class="row mb-4">
-    <div class="col-md-4">
+<div class="row mb-4 justify-content-center">
+    <div class="col-md-5">
         <div class="card shadow-sm">
             <div class="card-body text-center">
                 {% if profile.profile_image %}
@@ -35,41 +35,6 @@
         </div>
     </div>
 
-    <div class="col-md-8">
-        <div class="card shadow-sm">
-            <div class="card-body">
-                <h5>My Pet Requests</h5>
-                <a href="{% url 'report-pet' %}" class="btn btn-primary btn-sm mb-3">
-                    + Report New Pet
-                </a>
 
-                {% if user_requests %}
-                <table class="table table-bordered">
-                    <thead>
-                        <tr>
-                            <th>Type</th>
-                            <th>Breed</th>
-                            <th>Status</th>
-                            <th>Location</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for pet in user_requests %}
-                        <tr>
-                            <td>{{ pet.pet_type }}</td>
-                            <td>{{ pet.breed }}</td>
-                            <td>{{ pet.status }}</td>
-                            <td>{{ pet.location }}</td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-                {% else %}
-                <p>No requests yet.</p>
-                {% endif %}
-            </div>
-        </div>
-    </div>
-</div>
 
-{% endblock %}
+    {% endblock %}

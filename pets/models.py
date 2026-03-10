@@ -21,6 +21,7 @@ class PetRequest(models.Model):
     REQUEST_TYPES = [
         ('Lost', 'Lost'),
         ('Found', 'Found'),
+        ('Adoption', 'Adoption'),
     ]
 
     STATUS_CHOICES = [
@@ -107,6 +108,8 @@ class ReportAbuse(models.Model):
     reporter = models.ForeignKey(User, on_delete=models.CASCADE, related_name='abuse_reports')
     pet_request = models.ForeignKey(PetRequest, on_delete=models.CASCADE, related_name='abuse_reports')
     reason = models.TextField()
+    location = models.CharField(max_length=255, blank=True, null=True)
+    image_url = models.URLField(max_length=500, blank=True, null=True)
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='Pending')
     created_at = models.DateTimeField(auto_now_add=True)
 

@@ -1,0 +1,86 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+
+<div class="bg-warning bg-opacity-10 py-5 border-bottom border-warning">
+    <div class="container text-center">
+        <h1 class="display-5 fw-bold text-warning mb-3"><i class="bi bi-hourglass-split me-2"></i>Golden Hour Alerts
+        </h1>
+        <p class="lead text-muted mx-auto" style="max-width: 700px;">
+            These pets have been reported within the last 24 hours and require immediate community attention. Help us
+            reunite them quickly!
+        </p>
+    </div>
+</div>
+
+<div class="container py-5 border-top-0">
+    <div class="row g-4">
+        {% for pet in page_obj %}
+        <div class="col-md-3">
+            <a href="{% url 'pet-detail' pet.id %}" class="text-decoration-none text-dark d-block h-100">
+                <div class="card h-100 border-warning shadow-sm">
+                    <div class="position-relative">
+                        {% if pet.image %}
+                        <img src="{{ pet.image.url }}" class="card-img-top w-100">
+                        {% else %}
+                        <div class="bg-secondary d-flex align-items-center justify-content-center w-100"
+                            style="height: 220px; border-top-left-radius: 12px; border-top-right-radius: 12px;">
+                            <span class="text-white small">No Image</span>
+                        </div>
+                        {% endif %}
+                        <span
+                            class="position-absolute top-0 start-0 m-3 badge bg-warning text-dark p-2 px-3 shadow-sm"><i
+                                class="bi bi-clock-history me-1"></i>Golden Hour</span>
+                        {% if pet.request_type == 'Lost' %}
+                        <span class="position-absolute top-0 end-0 m-3 badge bg-danger p-2 px-3 shadow-sm">Lost</span>
+                        {% else %}
+                        <span class="position-absolute top-0 end-0 m-3 badge bg-success p-2 px-3 shadow-sm">Found</span>
+                        {% endif %}
+                    </div>
+                    <div class="card-body text-center bg-warning bg-opacity-10"
+                        style="border-bottom-left-radius: 12px; border-bottom-right-radius: 12px;">
+                        <h6 class="fw-bold mb-1">{{ pet.pet_type }} - {{ pet.breed }}</h6>
+                        <p class="text-muted small mb-2"><i class="bi bi-geo-alt-fill"></i> {{ pet.location }}</p>
+                        <small class="text-warning fw-bold">Reported: {{ pet.created_at|timesince }} ago</small>
+                    </div>
+                </div>
+            </a>
+        </div>
+        {% empty %}
+        <div class="col-12 py-5 text-center">
+            <h4 class="text-muted">No pets currently in the Golden Hour.</h4>
+            <p class="text-muted">That's a great thing for our community!</p>
+            <a href="{% url 'landing' %}" class="btn btn-outline-secondary mt-3">Return Home</a>
+        </div>
+        {% endfor %}
+    </div>
+
+    {% if page_obj.has_other_pages %}
+    <nav aria-label="Page navigation" class="mt-5">
+        <ul class="pagination justify-content-center">
+            {% if page_obj.has_previous %}
+            <li class="page-item">
+                <a class="page-link text-warning" href="?page={{ page_obj.previous_page_number }}">Previous</a>
+            </li>
+            {% endif %}
+
+            {% for num in page_obj.paginator.page_range %}
+            {% if page_obj.number == num %}
+            <li class="page-item active"><span class="page-link bg-warning border-warning text-dark">{{ num }}</span>
+            </li>
+            {% else %}
+            <li class="page-item"><a class="page-link text-warning" href="?page={{ num }}">{{ num }}</a></li>
+            {% endif %}
+            {% endfor %}
+
+            {% if page_obj.has_next %}
+            <li class="page-item">
+                <a class="page-link text-warning" href="?page={{ page_obj.next_page_number }}">Next</a>
+            </li>
+            {% endif %}
+        </ul>
+    </nav>
+    {% endif %}
+</div>
+
+{% endblock %}

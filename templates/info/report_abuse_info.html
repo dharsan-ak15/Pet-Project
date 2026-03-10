@@ -1,0 +1,72 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container py-5 mt-5">
+    <div class="row align-items-center mb-5 bg-danger bg-opacity-10 rounded-4 p-5">
+        <div class="col-md-7 pe-md-5">
+            <h1 class="display-4 fw-bold text-danger mb-3"><i class="bi bi-shield-exclamation me-2"></i>Report Pet Abuse
+            </h1>
+            <p class="lead text-dark mb-4">
+                If you suspect a listing on Pet Portal is fake, a scam, or involves animal abuse, we need to know
+                immediately. Our moderation team reviews all reports.
+            </p>
+            <div class="alert alert-danger d-flex align-items-center" role="alert">
+                <i class="bi bi-exclamation-triangle-fill flex-shrink-0 me-3 fs-4"></i>
+                <div>
+                    <strong>Emergency?</strong> If you are witnessing active animal cruelty or an emergency, please call
+                    your local authorities or Animal Control immediately.
+                </div>
+            </div>
+        </div>
+        <div class="col-md-5 text-center mt-4 mt-md-0">
+            <i class="bi bi-flag-fill text-danger" style="font-size: 8rem;"></i>
+        </div>
+    </div>
+
+    <div class="row mt-5">
+        <div class="col-md-8 mx-auto">
+            <h3 class="fw-bold mb-4">How to Report a Profile</h3>
+
+            <div class="d-flex mb-4">
+                <div class="me-3">
+                    <div class="bg-danger text-white rounded-circle d-flex align-items-center justify-content-center fw-bold"
+                        style="width: 40px; height: 40px;">1</div>
+                </div>
+                <div>
+                    <h5 class="fw-bold">Navigate to the Pet Profile</h5>
+                    <p class="text-muted">Go to the specific pet page that you suspect is fraudulent or abusive.</p>
+                </div>
+            </div>
+
+            <div class="d-flex mb-4">
+                <div class="me-3">
+                    <div class="bg-danger text-white rounded-circle d-flex align-items-center justify-content-center fw-bold"
+                        style="width: 40px; height: 40px;">2</div>
+                </div>
+                <div>
+                    <h5 class="fw-bold">Click "Report Fake/Abuse"</h5>
+                    <p class="text-muted">You will find the report button at the bottom of the pet's details next to the
+                        post timestamp. Note: You must be logged in to report a profile.</p>
+                </div>
+            </div>
+
+            <div class="d-flex mb-4">
+                <div class="me-3">
+                    <div class="bg-danger text-white rounded-circle d-flex align-items-center justify-content-center fw-bold"
+                        style="width: 40px; height: 40px;">3</div>
+                </div>
+                <div>
+                    <h5 class="fw-bold">Provide Clear Details</h5>
+                    <p class="text-muted">In the popup form, clearly state why you are reporting the profile (e.g., "The
+                        phone number redirects to a scam line," or "The photo is heavily watermarked from another
+                        site").</p>
+                </div>
+            </div>
+
+            <hr class="my-5">
+            <h4 class="text-center fw-bold">Need Further Assistance?</h4>
+            <p class="text-center text-muted">Contact our support team directly at <a
+                    href="mailto:support@petportal.com" class="fw-bold text-danger">support@petportal.com</a>.</p>
+        </div>
+    </div>
+</div>
+{% endblock %}

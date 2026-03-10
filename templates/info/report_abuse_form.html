@@ -1,0 +1,80 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container py-5 mt-5">
+    <div class="row align-items-center mb-5 bg-danger bg-opacity-10 rounded-4 p-5">
+        <div class="col-md-7 pe-md-5">
+            <h1 class="display-4 fw-bold text-danger mb-3"><i class="bi bi-shield-exclamation me-2"></i>Report Pet Abuse
+            </h1>
+            <p class="lead text-dark mb-4">
+                If you suspect a listing on Pet Portal is fake, a scam, or involves animal abuse, please submit a
+                detailed report below. Our moderation team reviews all reports.
+            </p>
+            <div class="alert alert-danger d-flex align-items-center" role="alert">
+                <i class="bi bi-exclamation-triangle-fill flex-shrink-0 me-3 fs-4"></i>
+                <div>
+                    <strong>Emergency?</strong> If you are witnessing active animal cruelty or an emergency, please call
+                    your local authorities or Animal Control immediately.
+                </div>
+            </div>
+        </div>
+        <div class="col-md-5 text-center mt-4 mt-md-0">
+            <i class="bi bi-flag-fill text-danger" style="font-size: 8rem;"></i>
+        </div>
+    </div>
+
+    <div class="row mt-5">
+        <div class="col-md-8 mx-auto">
+            <h3 class="fw-bold mb-4">Submit a Report</h3>
+
+            <div class="card border border-light-subtle rounded-4" style="box-shadow: 0 4px 15px rgba(0,0,0,0.03);">
+                <div class="card-body p-5">
+                    <form method="POST" action="{% url 'submit-abuse-report' %}">
+                        {% csrf_token %}
+                        <div class="mb-4">
+                            <label class="form-label fw-bold small text-dark mb-1">Link to the Pet Profile or Pet ID
+                                numbers</label>
+                            <input type="text" name="pet_reference" class="form-control"
+                                placeholder="e.g., https://petportal.com/pet/123 or ID #123" required>
+                            <div class="form-text small mt-1">Paste the full URL or the ID number of the specific pet
+                                report.</div>
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="form-label fw-bold small text-dark mb-1">Location (If Applicable)</label>
+                            <input type="text" name="location" class="form-control"
+                                placeholder="City or area where the incident occurred">
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="form-label fw-bold small text-dark mb-1">Supporting Image URL</label>
+                            <input type="url" name="image_url" class="form-control"
+                                placeholder="Link to a screenshot or image proof">
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="form-label fw-bold small text-dark mb-1">Reason for Reporting</label>
+                            <textarea name="reason" rows="6" class="form-control"
+                                placeholder="Please describe exactly why this profile is fraudulent, abusive, or fake..."
+                                required></textarea>
+                            <div class="form-text text-danger small mt-1">Do not include your personal information. Be
+                                as specific as possible.</div>
+                        </div>
+
+                        <div class="d-grid mt-5">
+                            <button type="submit" class="btn btn-danger rounded-pill fw-bold py-3 shadow-sm"
+                                style="background-color: #dc3545; border-color: #dc3545; font-size: 1.1rem;">
+                                <i class="bi bi-send-fill me-2"></i>Submit Official Report
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <hr class="my-5">
+            <h4 class="text-center fw-bold">Need Further Assistance?</h4>
+            <p class="text-center text-muted">Contact our support team directly at <a
+                    href="mailto:support@petportal.com" class="fw-bold text-danger">support@petportal.com</a>.</p>
+        </div>
+    </div>
+</div>
+{% endblock %}

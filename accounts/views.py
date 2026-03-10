@@ -21,9 +21,9 @@ def register_view(request):
         form = CustomUserRegisterForm(request.POST, request.FILES)
         if form.is_valid():
             user = form.save()
-            login(request, user)
-            messages.success(request, 'Registration successful. Welcome!')
-            return redirect('dashboard')
+            messages.success(request, 'Registration successful. Please log in.')
+            request.session['registration_success'] = True
+            return redirect('login')
     else:
         form = CustomUserRegisterForm()
 
@@ -31,7 +31,9 @@ def register_view(request):
 
 def login_view(request):
     if request.user.is_authenticated:
-        return redirect('dashboard')
+        return redirect('landing')
+
+    registration_success = request.session.pop('registration_success', False)
 
     if request.method == 'POST':
         form = LoginForm(request, data=request.POST)
@@ -39,11 +41,11 @@ def login_view(request):
             user = form.get_user()
             login(request, user)
             messages.success(request, 'You are now logged in.')
-            return redirect('dashboard')
+            return redirect('landing')
     else:
         form = LoginForm()
 
-    return render(request, 'accounts/login.html', {'form': form})
+    return render(request, 'accounts/login.html', {'form': form, 'registration_success': registration_success})
 
 
 @login_required
@@ -81,7 +83,12 @@ def dashboard_view(request):
     
     # Suggestion Engine Logic
     suggested_pets = None
-    profile = request.user.profile
+    try:
+        profile = request.user.profile
+    except Exception:
+        from .models import Profile
+        profile, _ = Profile.objects.get_or_create(user=request.user)
+
     # Only try to suggest if they have specified what they want or where they are
     if (profile.preferred_pet_type and profile.preferred_pet_type != 'None') or profile.city:
         query = Q(status='Accepted') & ~Q(user=request.user)

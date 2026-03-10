@@ -13,49 +13,49 @@
             <form method="get" class="row g-3 align-items-end">
                 <div class="col-md-3">
                     <label class="form-label text-muted fw-bold small text-uppercase">Status</label>
-                    <select name="{{ form.request_type.name }}" class="form-select">
+                    <select name="{{ form.request_type.html_name }}" class="form-select">
                         {% for value, text in form.request_type.field.choices %}
                         <option value="{{ value }}" {% if form.request_type.value|is_equal:value %}selected{% endif %}>
-                            {{ text }}</option>
+                            {{text}}</option>
                         {% endfor %}
                     </select>
                 </div>
                 <div class="col-md-2">
                     <label class="form-label text-muted fw-bold small text-uppercase">Pet Type</label>
-                    <select name="{{ form.pet_type.name }}" class="form-select">
+                    <select name="{{ form.pet_type.html_name }}" class="form-select">
                         {% for value, text_label in form.pet_type.field.choices %}
                         <option value="{{ value }}" {% if form.pet_type.value|is_equal:value %}selected{% endif %}>
-                            {{ text_label }}</option>
+                            {{text_label}}</option>
                         {% endfor %}
                     </select>
                 </div>
                 <div class="col-md-3">
                     <label class="form-label text-muted fw-bold small text-uppercase">Breed</label>
-                    <input type="text" name="{{ form.breed.name }}" class="form-control"
+                    <input type="text" name="{{ form.breed.html_name }}" class="form-control"
                         placeholder="e.g. Golden Retriever" value="{{ form.breed.value|default_if_none:'' }}">
                 </div>
                 <div class="col-md-3">
                     <label class="form-label text-muted fw-bold small text-uppercase">Location</label>
-                    <input type="text" name="{{ form.location.name }}" class="form-control" placeholder="City or ZIP"
-                        value="{{ form.location.value|default_if_none:'' }}">
+                    <input type="text" name="{{ form.location.html_name }}" class="form-control"
+                        placeholder="City or ZIP" value="{{ form.location.value|default_if_none:'' }}">
                 </div>
 
                 <!-- Advanced Filters row (collapsed or expanded based on preference... keeping simple for now) -->
                 <div class="col-md-2">
                     <label class="form-label text-muted fw-bold small text-uppercase">Gender</label>
-                    <select name="{{ form.gender.name }}" class="form-select">
+                    <select name="{{ form.gender.html_name }}" class="form-select">
                         {% for value, text_label in form.gender.field.choices %}
                         <option value="{{ value }}" {% if form.gender.value|is_equal:value %}selected{% endif %}>
-                            {{ text_label }}</option>
+                            {{text_label}}</option>
                         {% endfor %}
                     </select>
                 </div>
                 <div class="col-md-2">
                     <label class="form-label text-muted fw-bold small text-uppercase">Size</label>
-                    <select name="{{ form.size.name }}" class="form-select">
+                    <select name="{{ form.size.html_name }}" class="form-select">
                         {% for value, text_label in form.size.field.choices %}
                         <option value="{{ value }}" {% if form.size.value|is_equal:value %}selected{% endif %}>
-                            {{ text_label }}</option>
+                            {{text_label}}</option>
                         {% endfor %}
                     </select>
                 </div>
@@ -124,9 +124,7 @@
         <ul class="pagination justify-content-center">
             {% if results.has_previous %}
             <li class="page-item">
-                <a class="page-link"
-                    href="?page={{ results.previous_page_number }}{% if request.GET.urlencode %}&{{ request.GET.urlencode|slice:'6:' }}{% endif %}"
-                    aria-label="Previous">
+                <a class="page-link" href="?page={{ results.previous_page_number }}" aria-label="Previous">
                     <span aria-hidden="true">&laquo;</span>
                 </a>
             </li>
@@ -142,17 +140,14 @@
             {% if num == results.number %}
             <li class="page-item active" aria-current="page"><span class="page-link">{{ num }}</span></li>
             {% elif num > results.number|add:"-4" and num < results.number|add:"4" %} <li class="page-item"><a
-                    class="page-link"
-                    href="?page={{ num }}{% if request.GET.urlencode %}&{{ request.GET.urlencode|slice:'6:' }}{% endif %}">{{
+                    class="page-link" href="?page={{ num }}">{{
                     num }}</a></li>
                 {% endif %}
                 {% endfor %}
 
                 {% if results.has_next %}
                 <li class="page-item">
-                    <a class="page-link"
-                        href="?page={{ results.next_page_number }}{% if request.GET.urlencode %}&{{ request.GET.urlencode|slice:'6:' }}{% endif %}"
-                        aria-label="Next">
+                    <a class="page-link" href="?page={{ results.next_page_number }}" aria-label="Next">
                         <span aria-hidden="true">&raquo;</span>
                     </a>
                 </li>

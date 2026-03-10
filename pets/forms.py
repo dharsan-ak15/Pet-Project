@@ -46,7 +46,7 @@ class PetSearchForm(forms.Form):
     choices=[('', 'Any')] + PetRequest.SIZE_CHOICES,
     required=False)
     request_type = forms.ChoiceField(
-    choices=[('', 'All'), ('Lost', 'Lost'), ('Found', 'Found')],
+    choices=[('', 'All'), ('Lost', 'Lost'), ('Found', 'Found'), ('Adoption', 'Adoption')],
     required=False)
 
 class CommentForm(forms.ModelForm):
