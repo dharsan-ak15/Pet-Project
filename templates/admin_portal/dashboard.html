@@ -1,5 +1,5 @@
-{% extends 'admin_portal/admin_base.html' %}
-{% block admin_content %}
+{% extends 'staff/base_staff.html' %}
+{% block staff_content %}
 
 <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-4 border-bottom">
     <h1 class="h2 fw-bold">Dashboard Home</h1>
@@ -7,7 +7,7 @@
 
 <div class="row g-4 mb-4">
     <!-- Stat Card 1 -->
-    <div class="col-md-4">
+    <div class="col-md-3">
         <div class="card shadow-sm border-0 border-start border-primary border-4 rounded-4 h-100">
             <div class="card-body">
                 <div class="d-flex justify-content-between align-items-center">
@@ -24,12 +24,12 @@
     </div>
 
     <!-- Stat Card 2 -->
-    <div class="col-md-4">
+    <div class="col-md-3">
         <div class="card shadow-sm border-0 border-start border-success border-4 rounded-4 h-100">
             <div class="card-body">
                 <div class="d-flex justify-content-between align-items-center">
                     <div>
-                        <h6 class="text-muted text-uppercase fw-bold mb-2">Total Requests</h6>
+                        <h6 class="text-muted text-uppercase fw-bold mb-2">Total Pet Reports</h6>
                         <h3 class="fw-bold mb-0">{{ total_requests }}</h3>
                     </div>
                     <div class="bg-success bg-opacity-10 p-3 rounded-circle">
@@ -41,18 +41,36 @@
     </div>
 
     <!-- Stat Card 3 -->
-    <div class="col-md-4">
+    <div class="col-md-3">
         <div class="card shadow-sm border-0 border-start border-warning border-4 rounded-4 h-100">
             <div class="card-body">
                 <div class="d-flex justify-content-between align-items-center">
                     <div>
-                        <h6 class="text-muted text-uppercase fw-bold mb-2">Pending Review</h6>
+                        <h6 class="text-muted text-uppercase fw-bold mb-2">Pending Pet Reports</h6>
                         <h3 class="fw-bold mb-0">{{ pending_requests }}</h3>
                     </div>
                     <div class="bg-warning bg-opacity-10 p-3 rounded-circle">
                         <i class="bi bi-hourglass-split text-warning fs-4"></i>
                     </div>
                 </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Stat Card 4 (Contact Requests) -->
+    <div class="col-md-3">
+        <div class="card shadow-sm border-0 border-start border-info border-4 rounded-4 h-100">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h6 class="text-muted text-uppercase fw-bold mb-2">Pending Contact Req.</h6>
+                        <h3 class="fw-bold mb-0">{{ pending_contact_requests }}</h3>
+                    </div>
+                    <div class="bg-info bg-opacity-10 p-3 rounded-circle">
+                        <i class="bi bi-shield-lock-fill text-info fs-4"></i>
+                    </div>
+                </div>
+                <a href="{% url 'admin-contact-requests' %}" class="stretched-link"></a>
             </div>
         </div>
     </div>

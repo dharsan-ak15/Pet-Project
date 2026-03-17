@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% load static %}
 {% load pet_extras %}
 {% block content %}
 
@@ -77,13 +78,23 @@
                         {% endfor %}
                     </div>
                     {% else %}
-                    <div class="text-center py-3">
-                        <i class="bi bi-inbox text-muted fs-3 block mb-2"></i>
-                        <p class="mb-0 small text-muted">No matches right now. Make sure your Profile has your preferred
-                            pet type and city filled out!</p>
-                        <a href="{% url 'profile' %}" class="btn btn-outline-primary btn-sm mt-3 rounded-pill">Update
-                            Profile</a>
-                    </div>
+                        {% if has_pending %}
+                        <div class="alert alert-info rounded-3">
+                            <i class="bi bi-info-circle-fill me-2"></i>
+                            You currently have a pending request. Please wait for an administrator to review it.
+                        </div>
+                        <div class="text-center mt-4">
+                            <a href="{% url 'dashboard' %}" class="btn btn-primary rounded-pill px-4">Return to Dashboard</a>
+                        </div>
+                        {% else %}
+                        <div class="text-center py-3">
+                            <i class="bi bi-inbox text-muted fs-3 block mb-2"></i>
+                            <p class="mb-0 small text-muted">No matches right now. Make sure your Profile has your preferred
+                                pet type and city filled out!</p>
+                            <a href="{% url 'profile' %}" class="btn btn-outline-primary btn-sm mt-3 rounded-pill">Update
+                                Profile</a>
+                        </div>
+                        {% endif %}
                     {% endif %}
                 </div>
             </div>
@@ -126,6 +137,11 @@
                                             class="badge {% if req.status|is_equal:'Accepted' %}bg-success{% elif req.status|is_equal:'Rejected' %}bg-danger{% else %}bg-warning text-dark{% endif %}">
                                             {{ req.status }}
                                         </span>
+                                        {% if req.status|is_equal:'Rejected' and req.rejection_reason %}
+                                        <div class="mt-1">
+                                            <small class="text-danger fw-bold"><i class="bi bi-info-circle me-1"></i>Reason: {{ req.rejection_reason }}</small>
+                                        </div>
+                                        {% endif %}
                                     </td>
                                     <td>{{ req.created_at|date:"M d, Y" }}</td>
                                     <td class="text-end">
@@ -215,7 +231,130 @@
                 </div>
                 {% endif %}
             </div>
+
+            <!-- Contact Requests Section -->
+            <div class="card shadow-sm mt-4">
+                <div class="card-header bg-light d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0"><i class="bi bi-shield-lock-fill text-primary me-2"></i>Your Contact Requests <span
+                            class="badge bg-secondary">{{ contact_requests.count }}</span>
+                    </h5>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Pet</th>
+                                    <th>Reason</th>
+                                    <th>Status</th>
+                                    <th>Date</th>
+                                    <th class="text-end">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for req in contact_requests %}
+                                <tr>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            {% if req.pet.image %}
+                                            <img src="{{ req.pet.image.url }}" alt="{{ req.pet.breed }}"
+                                                class="rounded-circle object-fit-cover me-2"
+                                                style="width: 35px; height: 35px;">
+                                            {% else %}
+                                            <div class="bg-secondary bg-opacity-10 rounded-circle d-flex align-items-center justify-content-center me-2"
+                                                style="width: 35px; height: 35px;">
+                                                <i class="bi bi-image text-secondary small"></i>
+                                            </div>
+                                            {% endif %}
+                                            <div>
+                                                <span class="d-block fw-bold small">{{ req.pet.breed|default:req.pet.pet_type }}</span>
+                                                <span
+                                                    class="badge {% if req.pet.request_type == 'Lost' %}bg-danger{% else %}bg-success{% endif %}"
+                                                    style="font-size: 0.65rem;">{{ req.pet.request_type }}</span>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td><span class="small text-muted">{{ req.reason }}</span></td>
+                                    <td>
+                                        {% if req.status == 'Pending' %}
+                                        <span class="badge bg-warning text-dark"><i
+                                                class="bi bi-hourglass-split me-1"></i> Pending</span>
+                                        {% elif req.status == 'Approved' %}
+                                        <span class="badge bg-success"><i class="bi bi-check-circle-fill me-1"></i>
+                                            Approved</span>
+                                        {% elif req.status == 'Rejected' %}
+                                        <span class="badge bg-danger"><i class="bi bi-x-circle-fill me-1"></i>
+                                            Rejected</span>
+                                        {% if req.rejection_reason %}
+                                        <div class="mt-1">
+                                            <small class="text-danger fw-bold"><i class="bi bi-info-circle me-1"></i>Reason: {{ req.rejection_reason }}</small>
+                                        </div>
+                                        {% endif %}
+                                        {% endif %}
+                                    </td>
+                                    <td class="small">{{ req.created_at|date:"M d, Y" }}</td>
+                                    <td class="text-end">
+                                        <a href="{% url 'pet-detail' req.pet.id %}"
+                                            class="btn btn-sm btn-outline-primary rounded-pill">
+                                            {% if req.status == 'Approved' %}
+                                            <i class="bi bi-unlock-fill me-1"></i> View Contact
+                                            {% else %}
+                                            View Pet
+                                            {% endif %}
+                                        </a>
+                                    </td>
+                                </tr>
+                                {% empty %}
+                                <tr>
+                                    <td colspan="5" class="text-center py-4 text-muted">You haven't made any contact
+                                        requests.</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 </div>
+    {% if popup_notifications %}
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            {% for popup in popup_notifications %}
+                let title = "";
+                let imageUrl = "";
+                let text = "{{ popup.message|escapejs }}";
+
+                if ("{{ popup.type }}" === "success") {
+                    title = "Great News!";
+                    imageUrl = "{% static 'images/acceptance-cat.png' %}";
+                } else {
+                    title = "Update on Your Request";
+                    imageUrl = "{% static 'images/Rejected-cat.png' %}";
+                    {% if popup.reason %}
+                        text += "\n\nReason: {{ popup.reason|escapejs }}";
+                    {% endif %}
+                }
+
+                Swal.fire({
+                    title: title,
+                    text: text,
+                    imageUrl: imageUrl,
+                    imageWidth: 200,
+                    imageHeight: 200,
+                    imageAlt: 'Notification Cat',
+                    confirmButtonText: 'Got it!',
+                    confirmButtonColor: '#0f7c82',
+                    padding: '2em',
+                    customClass: {
+                        popup: 'rounded-4 border-0 shadow-lg',
+                        title: 'fw-bold text-dark fs-3',
+                        htmlContainer: 'text-muted fs-5'
+                    }
+                });
+            {% endfor %}
+        });
+    </script>
+    {% endif %}
 {% endblock %}

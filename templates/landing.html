@@ -30,9 +30,34 @@
         max-width: 800px;
         margin: auto;
     }
+    
+    /* Interactive Feature Cards */
+    .feature-card {
+        background-color: #f8f9fa;
+        border: 1px solid rgba(0,0,0,0.03);
+        border-radius: 16px;
+        transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+        cursor: default;
+    }
+
+    .feature-card:hover {
+        background-color: #ffffff;
+        transform: translateY(-6px);
+        box-shadow: 0 12px 24px rgba(0, 0, 0, 0.08) !important;
+        border-color: rgba(15, 124, 130, 0.15);
+    }
+
+    .feature-card .icon-wrapper {
+        font-size: 2.2rem;
+        transition: transform 0.3s ease;
+    }
+
+    .feature-card:hover .icon-wrapper {
+        transform: scale(1.15) rotate(-5deg);
+    }
 </style>
 
-<section class="hero-section position-relative overflow-hidden">
+<section class="hero-section position-relative overflow-hidden {% if user.is_authenticated %}hero-bg-auth{% else %}hero-bg-guest{% endif %}">
     <div class="hero-content container z-2 position-relative text-center py-5">
         <h1 class="display-3 fw-bold mb-3 fade-in-up">Reunite with Your Best Friend</h1>
         <p class="lead mb-5 fade-in-up delay-1">Every second counts. Report a lost pet, or help someone find theirs
@@ -40,19 +65,21 @@
 
         <div class="d-flex flex-column flex-sm-row justify-content-center gap-3 fade-in-up delay-2">
             {% if user.is_authenticated %}
-            <a href="{% url 'report-pet' %}" class="btn btn-primary btn-lg px-5 py-3 rounded-pill shadow-sm"><i
-                    class="bi bi-megaphone-fill me-2"></i> Report a Pet</a>
+            <a href="{% url 'search-pets' %}?request_type=Adoption" class="btn btn-primary btn-lg px-4 py-3 rounded-pill shadow-sm"><i
+                    class="bi bi-heart-fill me-2"></i> Adopt a Pet</a>
+            <a href="{% url 'report-pet' %}" class="btn btn-outline-light btn-lg px-4 py-3 rounded-pill shadow-sm"><i
+                    class="bi bi-megaphone-fill me-2"></i> Report Pet</a>
             {% else %}
-            <a href="{% url 'login' %}?next={% url 'report-pet' %}"
-                class="btn btn-primary btn-lg px-5 py-3 rounded-pill shadow-sm"><i
-                    class="bi bi-box-arrow-in-right me-2"></i> Login to Report</a>
+            <a href="{% url 'login' %}?next={% url 'search-pets' %}?request_type=Adoption" class="btn btn-primary btn-lg px-4 py-3 rounded-pill shadow-sm"><i
+                    class="bi bi-heart-fill me-2"></i> Adopt a Pet</a>
+            <a href="{% url 'login' %}?next={% url 'report-pet' %}" class="btn btn-outline-light btn-lg px-4 py-3 rounded-pill shadow-sm"><i
+                    class="bi bi-megaphone-fill me-2"></i> Report Pet</a>
             {% endif %}
-            <a href="{% url 'search-pets' %}" class="btn btn-outline-light btn-lg px-5 py-3 rounded-pill"><i
-                    class="bi bi-search me-2"></i> Search Database</a>
         </div>
     </div>
 </section>
 
+{% if user.is_authenticated %}
 <!-- GLOBAL PET LOSS SURVEY / STATISTICS -->
 <section class="py-5 bg-white border-bottom">
     <div class="container">
@@ -103,12 +130,232 @@
         </div>
     </div>
 </section>
+{% else %}
+<!-- WHY ADOPT / REPORT BENEFITS -->
+<section class="py-5 bg-white border-bottom">
+    <div class="container py-4">
+        <div class="row mb-5 text-center">
+            <div class="col-12">
+                <h2 class="fw-bold section-title fade-in-up" style="color: #1f2937;">Why Your Action Matters</h2>
+                <p class="text-muted fade-in-up delay-1">Here is how you make a difference when you adopt or report a pet.</p>
+            </div>
+        </div>
+        <div class="row justify-content-center g-4 fade-in-up delay-2">
+            <!-- Row 1 -->
+            <div class="col-md-6 col-lg-5">
+                <div class="feature-card p-4 h-100 d-flex align-items-center">
+                    <div class="icon-wrapper feature-icon-bg bg-primary bg-opacity-10 text-primary rounded-circle d-flex align-items-center justify-content-center me-4" style="width: 60px; height: 60px;">
+                        <i class="bi bi-globe-americas"></i>
+                    </div>
+                    <div>
+                        <p class="mb-0 fs-5 fw-medium lh-sm" style="color: #374151;">Every year millions of pets go missing worldwide.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6 col-lg-5">
+                <div class="feature-card p-4 h-100 d-flex align-items-center">
+                    <div class="icon-wrapper feature-icon-bg bg-danger bg-opacity-10 text-danger rounded-circle d-flex align-items-center justify-content-center me-4" style="width: 60px; height: 60px;">
+                        <i class="bi bi-suit-heart-fill"></i>
+                    </div>
+                    <div>
+                        <p class="mb-0 fs-5 fw-medium lh-sm" style="color: #374151;">A dog can reduce stress and improve mental health.</p>
+                    </div>
+                </div>
+            </div>
+            <!-- Row 2 -->
+            <div class="col-md-6 col-lg-5">
+                <div class="feature-card p-4 h-100 d-flex align-items-center">
+                    <div class="icon-wrapper feature-icon-bg bg-success bg-opacity-10 text-success rounded-circle d-flex align-items-center justify-content-center me-4" style="width: 60px; height: 60px;">
+                        <i class="bi bi-house-heart-fill"></i>
+                    </div>
+                    <div>
+                        <p class="mb-0 fs-5 fw-medium lh-sm" style="color: #374151;">Adopted pets often live longer and healthier lives.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6 col-lg-5">
+                <div class="feature-card p-4 h-100 d-flex align-items-center">
+                    <div class="icon-wrapper feature-icon-bg bg-info bg-opacity-10 text-info rounded-circle d-flex align-items-center justify-content-center me-4" style="width: 60px; height: 60px;">
+                        <i class="bi bi-soundwave"></i>
+                    </div>
+                    <div>
+                        <p class="mb-0 fs-5 fw-medium lh-sm" style="color: #374151;">Cats can recognize their owner's voice.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endif %}
 
+{% if not user.is_authenticated %}
+<!-- KEY FEATURES & IMPORTANCE -->
+<section class="py-5" style="background-color: #f8f9fa;">
+    <div class="container">
+        <div class="row mb-5 text-center">
+            <div class="col-12">
+                <h2 class="fw-bold section-title fade-in-up">Why Our Community Matters</h2>
+                <p class="text-muted fade-in-up delay-1">See how you can make a difference today.</p>
+            </div>
+        </div>
+        <div class="row g-5 align-items-center mb-5 fade-in-up delay-2">
+            <div class="col-md-6 order-md-2">
+                <img src="{% static 'images/adoption-pet.jpg' %}" alt="Adopt a Pet" class="img-fluid rounded-4 shadow-lg w-100" style="object-fit: cover; max-height: 400px;">
+            </div>
+            <div class="col-md-6 order-md-1">
+                <h3 class="fw-bold mb-3" style="color: #0f7c82;">Adopt, Don't Shop</h3>
+                <p class="lead text-muted mb-4">Give a loving animal a second chance at life. By adopting, you provide a forever home to a pet in need and make room for others to be rescued.</p>
+                <a href="{% if user.is_authenticated %}{% url 'search-pets' %}{% else %}{% url 'login' %}?next={% url 'search-pets' %}{% endif %}" class="btn btn-primary btn-lg px-4 rounded-pill shadow-sm">
+                    <i class="bi bi-heart-fill me-2"></i> Adopt Now
+                </a>
+            </div>
+        </div>
+        
+        <div class="row g-5 align-items-center fade-in-up delay-3">
+            <div class="col-md-6">
+                <img src="{% static 'images/Lost-pets.jpg' %}" alt="Lost and Found Pets" class="img-fluid rounded-4 shadow-lg w-100" style="object-fit: cover; max-height: 400px;">
+            </div>
+            <div class="col-md-6">
+                <h3 class="fw-bold mb-3 text-warning"><i class="bi bi-hourglass-split me-2"></i>The Golden Hour</h3>
+                <p class="lead text-muted mb-4">The first 24 hours are critical. Reporting lost pets immediately drastically increases the chances of a safe reunion. Help us close the loop.</p>
+                <a href="{% if user.is_authenticated %}{% url 'report-pet' %}{% else %}{% url 'login' %}?next={% url 'report-pet' %}{% endif %}" class="btn btn-warning btn-lg px-4 rounded-pill shadow-sm text-dark">
+                    <i class="bi bi-megaphone-fill me-2"></i> Report Now
+                </a>
+            </div>
+        </div>
+    </div>
+</section>
+{% endif %}
+
+{% if not user.is_authenticated %}
+<!-- HOW OUR PORTAL WORKS -->
+<section class="py-5 bg-white border-top">
+    <div class="container py-4">
+        <div class="row mb-5 text-center">
+            <div class="col-12">
+                <h2 class="fw-bold section-title fade-in-up" style="color: #1a202c; letter-spacing: -0.02em;">How Our Portal Works</h2>
+                <div class="mx-auto bg-primary opacity-25 mb-3" style="width: 60px; height: 3px; border-radius: 2px;"></div>
+                <p class="text-muted fade-in-up delay-1 mx-auto" style="max-width: 600px;">A seamless community driven process designed to help you reunite or adopt with confidence.</p>
+            </div>
+        </div>
+        <div class="row g-4 justify-content-center fade-in-up delay-2">
+            <div class="col-md-6 col-lg-3">
+                <div class="feature-card p-4 h-100 text-center border-0 bg-light bg-opacity-50" style="border-radius: 24px;">
+                    <div class="icon-bubble mx-auto mb-4 d-flex align-items-center justify-content-center" style="width:72px; height:72px; background: white; box-shadow: 0 8px 16px rgba(0,0,0,0.04); border-radius: 20px;">
+                        <span style="font-size:2rem;">✍️</span>
+                    </div>
+                    <div class="badge rounded-pill mb-3 px-3 py-1" style="background-color:rgba(15, 124, 130, 0.1); color:#0f7c82; font-size:.75rem; font-weight:700; text-uppercase: uppercase;">Step 01</div>
+                    <h5 class="fw-bold mb-2" style="color:#111827;">Sign Up Free</h5>
+                    <p class="text-muted small mb-0 lh-lg">Join our verified network in seconds. Secure, private, and always free for pet lovers.</p>
+                </div>
+            </div>
+            <div class="col-md-6 col-lg-3">
+                <div class="feature-card p-4 h-100 text-center border-0 bg-light bg-opacity-50" style="border-radius: 24px;">
+                    <div class="icon-bubble mx-auto mb-4 d-flex align-items-center justify-content-center" style="width:72px; height:72px; background: white; box-shadow: 0 8px 16px rgba(0,0,0,0.04); border-radius: 20px;">
+                        <span style="font-size:2rem;">📢</span>
+                    </div>
+                    <div class="badge rounded-pill mb-3 px-3 py-1 bg-warning bg-opacity-10 text-warning" style="font-size:.75rem; font-weight:700; text-uppercase: uppercase;">Step 02</div>
+                    <h5 class="fw-bold mb-2" style="color:#111827;">Report or Search</h5>
+                    <p class="text-muted small mb-0 lh-lg">Instantly alert others with photos and live locations. Search by bread, district or landmark.</p>
+                </div>
+            </div>
+            <div class="col-md-6 col-lg-3">
+                <div class="feature-card p-4 h-100 text-center border-0 bg-light bg-opacity-50" style="border-radius: 24px;">
+                    <div class="icon-bubble mx-auto mb-4 d-flex align-items-center justify-content-center" style="width:72px; height:72px; background: white; box-shadow: 0 8px 16px rgba(0,0,0,0.04); border-radius: 20px;">
+                        <span style="font-size:2rem;">📬</span>
+                    </div>
+                    <div class="badge rounded-pill mb-3 px-3 py-1 bg-danger bg-opacity-10 text-danger" style="font-size:.75rem; font-weight:700; text-uppercase: uppercase;">Step 03</div>
+                    <h5 class="fw-bold mb-2" style="color:#111827;">Request Contact</h5>
+                    <p class="text-muted small mb-0 lh-lg">Matches are verified by our team. Connect securely with owners once your request is approved.</p>
+                </div>
+            </div>
+            <div class="col-md-6 col-lg-3">
+                <div class="feature-card p-4 h-100 text-center border-0 bg-light bg-opacity-50" style="border-radius: 24px;">
+                    <div class="icon-bubble mx-auto mb-4 d-flex align-items-center justify-content-center" style="width:72px; height:72px; background: white; box-shadow: 0 8px 16px rgba(0,0,0,0.04); border-radius: 20px;">
+                        <span style="font-size:2rem;">🐾</span>
+                    </div>
+                    <div class="badge rounded-pill mb-3 px-3 py-1 bg-success bg-opacity-10 text-success" style="font-size:.75rem; font-weight:700; text-uppercase: uppercase;">Step 04</div>
+                    <h5 class="fw-bold mb-2" style="color:#111827;">Reunite!</h5>
+                    <p class="text-muted small mb-0 lh-lg">Coordinate the handover and celebrate! We love seeing happy endings for our furry friends.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- COMMON QUERIES / FAQ -->
+<section class="py-5" style="background-color: #f8f9fa;">
+    <div class="container py-2">
+        <div class="row mb-5 text-center">
+            <div class="col-12">
+                <h2 class="fw-bold section-title fade-in-up" style="color: #1f2937;">Common Queries</h2>
+                <p class="text-muted fade-in-up delay-1">Everything you need to know to get started.</p>
+            </div>
+        </div>
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <div class="accordion accordion-flush" id="faqAccordion">
+                    <div class="accordion-item border rounded-4 mb-3 shadow-sm overflow-hidden">
+                        <h2 class="accordion-header">
+                            <button class="accordion-button collapsed fw-semibold" type="button" data-bs-toggle="collapse" data-bs-target="#faq1">How do I report a lost or found pet?</button>
+                        </h2>
+                        <div id="faq1" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                            <div class="accordion-body text-muted">Sign up or log in, then click <strong>Report Pet</strong> from the navbar. Fill in the pet details, upload a photo, and choose your district and area. Your report will be reviewed and listed on the portal.</div>
+                        </div>
+                    </div>
+                    <div class="accordion-item border rounded-4 mb-3 shadow-sm overflow-hidden">
+                        <h2 class="accordion-header">
+                            <button class="accordion-button collapsed fw-semibold" type="button" data-bs-toggle="collapse" data-bs-target="#faq2">Is this service free to use?</button>
+                        </h2>
+                        <div id="faq2" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                            <div class="accordion-body text-muted">Yes! Pet Portal is completely free for all users. Reporting, searching, and contacting pet owners is free of charge.</div>
+                        </div>
+                    </div>
+                    <div class="accordion-item border rounded-4 mb-3 shadow-sm overflow-hidden">
+                        <h2 class="accordion-header">
+                            <button class="accordion-button collapsed fw-semibold" type="button" data-bs-toggle="collapse" data-bs-target="#faq3">How long does contact access approval take?</button>
+                        </h2>
+                        <div id="faq3" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                            <div class="accordion-body text-muted">Contact requests are reviewed by our moderation team, typically within a few hours. You will receive a notification once a decision is made.</div>
+                        </div>
+                    </div>
+                    <div class="accordion-item border rounded-4 mb-3 shadow-sm overflow-hidden">
+                        <h2 class="accordion-header">
+                            <button class="accordion-button collapsed fw-semibold" type="button" data-bs-toggle="collapse" data-bs-target="#faq4">Can I adopt a pet through this portal?</button>
+                        </h2>
+                        <div id="faq4" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                            <div class="accordion-body text-muted">Yes! Browse the <strong>Adoption</strong> listings in our search. Request contact with the pet's owner, and once approved, you can arrange to adopt directly.</div>
+                        </div>
+                    </div>
+                    <div class="accordion-item border rounded-4 mb-3 shadow-sm overflow-hidden">
+                        <h2 class="accordion-header">
+                            <button class="accordion-button collapsed fw-semibold" type="button" data-bs-toggle="collapse" data-bs-target="#faq5">What is The Golden Hour?</button>
+                        </h2>
+                        <div id="faq5" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                            <div class="accordion-body text-muted">The <strong>Golden Hour</strong> highlights pets reported in the last 24 hours. The first 24 hours are critical — pets are most likely to be found quickly if reported and searched during this window.</div>
+                        </div>
+                    </div>
+                    <div class="accordion-item border rounded-4 shadow-sm overflow-hidden">
+                        <h2 class="accordion-header">
+                            <button class="accordion-button collapsed fw-semibold" type="button" data-bs-toggle="collapse" data-bs-target="#faq6">How do I become a staff member / moderator?</button>
+                        </h2>
+                        <div id="faq6" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                            <div class="accordion-body text-muted">Scroll to the footer and click <strong>Request to Admin</strong>. Submit your application and our admin team will review your request.</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endif %}
+
+{% if user.is_authenticated %}
 <!-- GOLDEN HOUR SECTION -->
-<section class="py-5 bg-warning bg-opacity-10 border-bottom border-warning">
+<section class="py-5 border-bottom" style="background: linear-gradient(135deg, #fff8e1 0%, #fff3cd 50%, #ffeaa0 100%); border-color: #f59e0b !important;">
     <div class="container">
         <div class="text-center mb-4">
-            <h2 class="section-title text-warning"><i class="bi bi-hourglass-split me-2"></i>The Golden Hour</h2>
+            <h2 class="section-title" style="color: #92400e;"><i class="bi bi-hourglass-split me-2" style="color: #f59e0b;"></i>The Golden Hour</h2>
             <p class="text-muted">Pets reported within the last 24 hours. They need immediate attention.</p>
         </div>
 
@@ -127,21 +374,22 @@
                             </div>
                             {% endif %}
                             <span
-                                class="position-absolute top-0 start-0 m-3 badge bg-warning text-dark p-2 px-3 shadow-sm"><i
+                                class="position-absolute top-0 start-0 m-3 badge p-2 px-3 shadow-sm fw-bold"
+                                style="background: linear-gradient(135deg, #f59e0b, #d97706); color: #fff;"><i
                                     class="bi bi-clock-history me-1"></i>Golden Hour</span>
                             {% if pet.request_type == 'Lost' %}
                             <span
                                 class="position-absolute top-0 end-0 m-3 badge bg-danger p-2 px-3 shadow-sm">Lost</span>
                             {% else %}
                             <span
-                                class="position-absolute top-0 end-0 m-3 badge bg-success p-2 px-3 shadow-sm">Found</span>
+                                class="position-absolute top-0 end-0 m-3 badge p-2 px-3 shadow-sm" style="background-color:#0f7c82;">Found</span>
                             {% endif %}
                         </div>
-                        <div class="card-body text-center bg-warning bg-opacity-10"
-                            style="border-bottom-left-radius: 12px; border-bottom-right-radius: 12px;">
-                            <h6 class="fw-bold mb-1">{{ pet.pet_type }} - {{ pet.breed }}</h6>
+                        <div class="card-body text-center"
+                            style="border-bottom-left-radius: 12px; border-bottom-right-radius: 12px; background: linear-gradient(135deg, #fffbeb, #fef3c7);">
+                            <h6 class="fw-bold mb-1" style="color: #78350f;">{{ pet.pet_type }} - {{ pet.breed }}</h6>
                             <p class="text-muted small mb-2"><i class="bi bi-geo-alt-fill"></i> {{ pet.location }}</p>
-                            <small class="text-warning fw-bold">Reported: {{ pet.created_at|timesince }} ago</small>
+                            <small class="fw-bold" style="color: #d97706;">Reported: {{ pet.created_at|timesince }} ago</small>
                         </div>
                     </div>
                 </a>
@@ -290,5 +538,6 @@
         </div>
     </div>
 </section>
+{% endif %}
 
 {% endblock %}

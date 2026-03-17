@@ -1,0 +1,89 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-6">
+            <div class="card shadow-sm border-0 rounded-4">
+                <div class="card-body p-4 p-md-5">
+                    
+                    <div class="text-center mb-4">
+                        <div class="bg-primary bg-opacity-10 d-inline-block p-3 rounded-circle mb-3">
+                            <i class="bi bi-shield-lock-fill text-primary fs-1"></i>
+                        </div>
+                        <h2 class="fw-bold">Request to Admin</h2>
+                        <p class="text-muted">Apply to become a staff member and help moderate the Pet Portal community.</p>
+                    </div>
+
+                    {% if has_pending %}
+                        <div class="alert alert-info rounded-3">
+                            <i class="bi bi-info-circle-fill me-2"></i>
+                            You currently have a pending request. Please wait for an administrator to review it.
+                        </div>
+                        <div class="text-center mt-4">
+                            <a href="{% url 'dashboard' %}" class="btn btn-primary rounded-pill px-4">Return to Dashboard</a>
+                        </div>
+                    {% elif last_rejected_request %}
+                        <div class="alert alert-danger rounded-3">
+                            <i class="bi bi-x-circle-fill me-2"></i>
+                            <strong>Your previous request was rejected.</strong>
+                            {% if last_rejected_request.rejection_reason %}
+                                <div class="mt-2 small">Reason: {{ last_rejected_request.rejection_reason }}</div>
+                            {% endif %}
+                        </div>
+                        <hr class="my-4">
+                        <div class="text-center mb-4">
+                            <h5 class="fw-bold">Apply Again</h5>
+                        </div>
+                        <form method="POST" action="{% url 'request-to-admin' %}">
+                            {% csrf_token %}
+                            <div class="mb-4">
+                                <label for="{{ form.message.id_for_label }}" class="form-label fw-bold">Why do you want to join the staff?</label>
+                                {{ form.message }}
+                                {% if form.message.errors %}
+                                    <div class="invalid-feedback d-block">
+                                        {{ form.message.errors }}
+                                    </div>
+                                {% endif %}
+                                <div class="form-text text-muted small mt-2">
+                                    <i class="bi bi-lightbulb"></i> Tell us about your experience with pets and why you'd be a good moderator.
+                                </div>
+                            </div>
+                            <div class="d-grid gap-2">
+                                <button type="submit" class="btn btn-primary btn-lg rounded-pill fw-bold">
+                                    <i class="bi bi-send me-2"></i> Submit Request
+                                </button>
+                                <a href="{% url 'dashboard' %}" class="btn btn-light rounded-pill">Cancel</a>
+                            </div>
+                        </form>
+                    {% else %}
+                        <form method="POST" action="{% url 'request-to-admin' %}">
+                            {% csrf_token %}
+                            <div class="mb-4">
+                                <label for="{{ form.message.id_for_label }}" class="form-label fw-bold">Why do you want to join the staff?</label>
+                                {{ form.message }}
+                                {% if form.message.errors %}
+                                    <div class="invalid-feedback d-block">
+                                        {{ form.message.errors }}
+                                    </div>
+                                {% endif %}
+                                <div class="form-text text-muted small mt-2">
+                                    <i class="bi bi-lightbulb"></i> Tell us about your experience with pets and why you'd be a good moderator.
+                                </div>
+                            </div>
+                            <div class="d-grid gap-2">
+                                <button type="submit" class="btn btn-primary btn-lg rounded-pill fw-bold">
+                                    <i class="bi bi-send me-2"></i> Submit Request
+                                </button>
+                                <a href="{% url 'dashboard' %}" class="btn btn-light rounded-pill">Cancel</a>
+                            </div>
+                        </form>
+                    {% endif %}
+                    
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

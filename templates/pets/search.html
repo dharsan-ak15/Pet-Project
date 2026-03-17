@@ -34,10 +34,19 @@
                     <input type="text" name="{{ form.breed.html_name }}" class="form-control"
                         placeholder="e.g. Golden Retriever" value="{{ form.breed.value|default_if_none:'' }}">
                 </div>
-                <div class="col-md-3">
-                    <label class="form-label text-muted fw-bold small text-uppercase">Location</label>
-                    <input type="text" name="{{ form.location.html_name }}" class="form-control"
-                        placeholder="City or ZIP" value="{{ form.location.value|default_if_none:'' }}">
+                <div class="col-md-2">
+                    <label class="form-label text-muted fw-bold small text-uppercase">District</label>
+                    <select name="{{ form.district.html_name }}" class="form-select">
+                        {% for value, text_label in form.district.field.choices %}
+                        <option value="{{ value }}" {% if form.district.value == value %}selected{% endif %}>
+                            {{ text_label }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label text-muted fw-bold small text-uppercase">Area / Landmark</label>
+                    <input type="text" name="{{ form.area.html_name }}" class="form-control"
+                        placeholder="e.g. Near Bus Stand" value="{{ form.area.value|default_if_none:'' }}">
                 </div>
 
                 <!-- Advanced Filters row (collapsed or expanded based on preference... keeping simple for now) -->
@@ -80,21 +89,23 @@
         <div class="col">
             <div class="card h-100 shadow-sm border-0 pet-card">
                 <div class="position-relative">
-                    {% if pet.image %}
-                    <img src="{{ pet.image.url }}" class="card-img-top pct-img-cover" alt="Pet image"
-                        style="height: 250px; object-fit: cover;">
-                    {% else %}
-                    <div class="bg-secondary d-flex align-items-center justify-content-center" style="height: 250px;">
-                        <span class="text-white">No Image Provided</span>
-                    </div>
-                    {% endif %}
-                    <span
-                        class="position-absolute top-0 start-0 m-3 badge {% if pet.request_type|is_equal:'Lost' %}bg-danger{% else %}bg-success{% endif %} p-2 px-3 fade-in">
+                    <a href="{% url 'pet-detail' pet.id %}" class="d-block overflow-hidden">
+                        {% if pet.image %}
+                        <img src="{{ pet.image.url }}" class="card-img-top pct-img-cover" alt="Pet image"
+                            style="height: 250px; object-fit: cover; transition: transform 0.5s;">
+                        {% else %}
+                        <div class="bg-secondary d-flex align-items-center justify-content-center" style="height: 250px;">
+                            <span class="text-white">No Image Provided</span>
+                        </div>
+                        {% endif %}
+                    </a>
+                    <span class="position-absolute top-0 start-0 m-3 badge p-2 px-3 fade-in"
+                        style="{% if pet.request_type|is_equal:'Lost' %}background-color:#dc3545;{% elif pet.request_type|is_equal:'Found' %}background-color:#0f7c82;{% else %}background-color:#6f42c1;{% endif %}">
                         {{ pet.request_type }}
                     </span>
                 </div>
                 <div class="card-body">
-                    <h5 class="card-title fw-bold mb-1">{{ pet.pet_type }} - {{ pet.breed }}
+                    <h5 class="card-title fw-bold mb-1"><a href="{% url 'pet-detail' pet.id %}" class="text-decoration-none text-dark">{{ pet.pet_type }} - {{ pet.breed }}</a>
                         {% if pet.gender|is_equal:'Male' %}<i class="bi bi-gender-male text-primary"></i>
                         {% elif pet.gender|is_equal:'Female' %}<i class="bi bi-gender-female text-danger"></i>
                         {% endif %}
@@ -111,56 +122,12 @@
                 </div>
                 <div class="card-footer bg-body border-top-0 pt-0 d-flex justify-content-between align-items-center">
                     <small class="text-muted">Reported {{ pet.created_at|timesince }} ago</small>
-                    <a href="{% url 'pet-detail' pet.id %}" class="btn btn-sm btn-outline-primary">View Details</a>
+                    <a href="{% url 'pet-detail' pet.id %}" class="btn btn-sm btn-outline-primary rounded-pill px-3">View Details</a>
                 </div>
             </div>
         </div>
         {% endfor %}
     </div>
-
-    <!-- Pagination -->
-    {% if results.has_other_pages %}
-    <nav class="mt-5" aria-label="Search results pagination">
-        <ul class="pagination justify-content-center">
-            {% if results.has_previous %}
-            <li class="page-item">
-                <a class="page-link" href="?page={{ results.previous_page_number }}" aria-label="Previous">
-                    <span aria-hidden="true">&laquo;</span>
-                </a>
-            </li>
-            {% else %}
-            <li class="page-item disabled">
-                <a class="page-link" href="#" aria-label="Previous">
-                    <span aria-hidden="true">&laquo;</span>
-                </a>
-            </li>
-            {% endif %}
-
-            {% for num in results.paginator.page_range %}
-            {% if num == results.number %}
-            <li class="page-item active" aria-current="page"><span class="page-link">{{ num }}</span></li>
-            {% elif num > results.number|add:"-4" and num < results.number|add:"4" %} <li class="page-item"><a
-                    class="page-link" href="?page={{ num }}">{{
-                    num }}</a></li>
-                {% endif %}
-                {% endfor %}
-
-                {% if results.has_next %}
-                <li class="page-item">
-                    <a class="page-link" href="?page={{ results.next_page_number }}" aria-label="Next">
-                        <span aria-hidden="true">&raquo;</span>
-                    </a>
-                </li>
-                {% else %}
-                <li class="page-item disabled">
-                    <a class="page-link" href="#" aria-label="Next">
-                        <span aria-hidden="true">&raquo;</span>
-                    </a>
-                </li>
-                {% endif %}
-        </ul>
-    </nav>
-    {% endif %}
 
     {% else %}
     <div class="alert alert-info py-4 text-center">

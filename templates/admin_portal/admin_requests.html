@@ -1,0 +1,183 @@
+{% extends 'staff/base_staff.html' %}
+{% load static %}
+{% block staff_content %}
+
+<div class="d-flex justify-content-between align-items-center border-bottom pb-3 mb-4">
+    <h2 class="fw-bold mb-0"><i class="bi bi-person-lines-fill text-primary me-2"></i>Admin Requests</h2>
+
+    <div class="d-flex gap-2">
+        <a href="?status="
+            class="btn {% if not status_filter %}btn-primary{% else %}btn-outline-primary{% endif %} rounded-pill px-4 shadow-sm">All</a>
+        <a href="?status=Pending"
+            class="btn {% if status_filter == 'Pending' %}btn-warning{% else %}btn-outline-warning{% endif %} rounded-pill px-4 shadow-sm">Pending</a>
+        <a href="?status=Approved"
+            class="btn {% if status_filter == 'Approved' %}btn-success{% else %}btn-outline-success{% endif %} rounded-pill px-4 shadow-sm">Approved</a>
+        <a href="?status=Rejected"
+            class="btn {% if status_filter == 'Rejected' %}btn-danger{% else %}btn-outline-danger{% endif %} rounded-pill px-4 shadow-sm">Rejected</a>
+    </div>
+</div>
+
+<div class="card border-0 shadow-sm rounded-4 overflow-hidden">
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th class="px-4 py-3 border-bottom-0 text-muted small text-uppercase fw-bold">User</th>
+                        <th class="py-3 border-bottom-0 text-muted small text-uppercase fw-bold">Email</th>
+                        <th class="py-3 border-bottom-0 text-muted small text-uppercase fw-bold">Message</th>
+                        <th class="py-3 border-bottom-0 text-muted small text-uppercase fw-bold">Submitted At</th>
+                        <th class="py-3 border-bottom-0 text-muted small text-uppercase fw-bold text-center">Status</th>
+                        <th class="px-4 py-3 border-bottom-0 text-muted small text-uppercase fw-bold text-end">Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for request_obj in admin_requests %}
+                    <tr>
+                        <td class="px-4 py-3">
+                            <span class="fw-bold">{{ request_obj.user.first_name|default:request_obj.user.username }}</span>
+                        </td>
+                        <td class="py-3">
+                            <span class="text-muted">{{ request_obj.user.email }}</span>
+                        </td>
+                        <td class="py-3 text-muted small" style="max-width: 250px;">
+                            {{ request_obj.message|truncatechars:100 }}
+                        </td>
+                        <td class="py-3 text-muted small">
+                            {{ request_obj.created_at|date:"M d, Y" }}
+                        </td>
+                        <td class="py-3 text-center">
+                            {% if request_obj.status == 'Pending' %}
+                            <span class="badge bg-warning text-dark px-3 py-2 rounded-pill shadow-sm"><i class="bi bi-hourglass-split me-1"></i> Pending</span>
+                            {% elif request_obj.status == 'Approved' %}
+                            <span class="badge bg-success px-3 py-2 rounded-pill shadow-sm"><i class="bi bi-check-circle-fill me-1"></i> Approved</span>
+                            {% elif request_obj.status == 'Rejected' %}
+                            <span class="badge bg-danger px-3 py-2 rounded-pill shadow-sm"><i class="bi bi-x-circle-fill me-1"></i> Rejected</span>
+                            {% endif %}
+                        </td>
+                        <td class="px-4 py-3 text-end">
+                            <button class="btn btn-sm btn-outline-primary rounded-circle shadow-sm" data-bs-toggle="modal" data-bs-target="#reviewModal{{ request_obj.id }}" title="Review Details">
+                                <i class="bi bi-eye-fill"></i>
+                            </button>
+                        </td>
+                    </tr>
+
+                    <!-- Review Modal -->
+                    <div class="modal fade" id="reviewModal{{ request_obj.id }}" tabindex="-1"
+                        aria-labelledby="reviewModalLabel{{ request_obj.id }}" aria-hidden="true">
+                        <div class="modal-dialog modal-dialog-centered">
+                            <div class="modal-content border-0 rounded-4 shadow">
+                                <div class="modal-header bg-light border-bottom-0 pb-3 rounded-top-4">
+                                    <h5 class="modal-title fw-bold" id="reviewModalLabel{{ request_obj.id }}"><span class="animate-pet">🐾</span>Review Admin Request</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                        aria-label="Close"></button>
+                                </div>
+                                <div class="modal-body p-4 text-start">
+                                    <div class="mb-4">
+                                        <h6 class="text-muted text-uppercase small fw-bold mb-2">Applicant</h6>
+                                        <div class="bg-primary bg-opacity-10 rounded-3 p-3">
+                                            <p class="mb-1 fw-bold text-primary">{{ request_obj.user.username }}</p>
+                                            <p class="mb-0 text-muted small"><i class="bi bi-envelope-fill me-1"></i>{{ request_obj.user.email }}</p>
+                                            {% if request_obj.user.profile.phone %}
+                                            <p class="mb-0 text-muted small mt-1"><i class="bi bi-telephone-fill me-1"></i>{{ request_obj.user.profile.phone }}</p>
+                                            {% endif %}
+                                            {% if request_obj.user.profile.city %}
+                                            <p class="mb-0 text-muted small mt-1"><i class="bi bi-geo-alt-fill me-1"></i>{{ request_obj.user.profile.city }}</p>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+
+                                    <div class="mb-4">
+                                        <h6 class="text-muted text-uppercase small fw-bold mb-2">Application Message</h6>
+                                        <p class="text-dark bg-light p-3 rounded-3 mb-0" style="white-space: pre-wrap;">{{ request_obj.message }}</p>
+                                    </div>
+                                    
+                                </div>
+                                <div class="modal-footer bg-light border-top-0 pt-3 pb-4 pe-4 rounded-bottom-4 d-flex justify-content-between align-items-center">
+                                    <button type="button" class="btn btn-outline-secondary rounded-pill px-4 shadow-sm"
+                                        data-bs-dismiss="modal">Close</button>
+
+                                    {% if request_obj.status == 'Pending' %}
+                                    <div class="d-flex gap-2 flex-column">
+                                        <div id="rejectSection{{ request_obj.id }}" class="d-none w-100">
+                                            <form method="post" action="{% url 'update-admin-request-status' request_obj.id %}" class="m-0">
+                                                {% csrf_token %}
+                                                <input type="hidden" name="status" value="Rejected">
+                                                <div class="mb-2">
+                                                    <label class="form-label small fw-bold text-danger">Rejection Reason <span class="text-danger">*</span></label>
+                                                    <textarea name="rejection_reason" class="form-control form-control-sm rounded-3" rows="3" required placeholder="Explain why this request is being rejected..."></textarea>
+                                                </div>
+                                                <div class="d-flex gap-2 justify-content-end">
+                                                    <button type="button" class="btn btn-sm btn-outline-secondary rounded-pill" onclick="document.getElementById('rejectSection{{ request_obj.id }}').classList.add('d-none'); document.getElementById('actionBtns{{ request_obj.id }}').classList.remove('d-none');">Cancel</button>
+                                                    <button type="submit" class="btn btn-sm btn-danger rounded-pill fw-bold px-3"><i class="bi bi-x-lg me-1"></i>Confirm Reject</button>
+                                                </div>
+                                            </form>
+                                        </div>
+                                        <div id="actionBtns{{ request_obj.id }}" class="d-flex gap-2">
+                                            <button type="button" class="btn btn-outline-danger shadow-sm rounded-pill px-4 fw-bold" onclick="document.getElementById('rejectSection{{ request_obj.id }}').classList.remove('d-none'); document.getElementById('actionBtns{{ request_obj.id }}').classList.add('d-none');">
+                                                <i class="bi bi-x-lg me-1"></i>Reject
+                                            </button>
+                                            <form method="post" action="{% url 'update-admin-request-status' request_obj.id %}" class="m-0">
+                                                {% csrf_token %}
+                                                <input type="hidden" name="status" value="Approved">
+                                                <button type="submit" class="btn btn-success shadow-sm rounded-pill px-4 fw-bold">
+                                                    <i class="bi bi-check-lg me-1"></i>Approve User
+                                                </button>
+                                            </form>
+                                        </div>
+                                    </div>
+                                    {% else %}
+                                    <span class="text-muted small"><i
+                                            class="bi bi-check-circle-fill text-success me-1"></i> Already
+                                        processed.</span>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% empty %}
+                    <tr>
+                        <td colspan="6" class="text-center py-5">
+                            <div class="text-muted py-5">
+                                <i class="bi bi-person-bounding-box fs-1 d-block mb-3"></i>
+                                <h5 class="fw-bold">No Admin Requests found.</h5>
+                                <p class="mb-0">{% if status_filter %}There are no requests matching the "{{
+                                    status_filter }}" status.{% else %}No users have applied for staff roles yet.{% endif %}</p>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+{% if admin_requests.has_other_pages %}
+<div class="d-flex justify-content-center mt-4">
+    <nav>
+        <ul class="pagination pagination-sm shadow-sm rounded-pill overflow-hidden">
+            {% if admin_requests.has_previous %}
+            <li class="page-item"><a class="page-link px-3"
+                    href="?page={{ admin_requests.previous_page_number }}{% if status_filter %}&status={{ status_filter }}{% endif %}">Prev</a>
+            </li>
+            {% endif %}
+
+            {% for num in admin_requests.paginator.page_range %}
+            <li class="page-item {% if admin_requests.number == num %}active{% endif %}">
+                <a class="page-link px-3"
+                    href="?page={{ num }}{% if status_filter %}&status={{ status_filter }}{% endif %}">{{ num }}</a>
+            </li>
+            {% endfor %}
+
+            {% if admin_requests.has_next %}
+            <li class="page-item"><a class="page-link px-3"
+                    href="?page={{ admin_requests.next_page_number }}{% if status_filter %}&status={{ status_filter }}{% endif %}">Next</a>
+            </li>
+            {% endif %}
+        </ul>
+    </nav>
+</div>
+{% endif %}
+
+{% endblock staff_content %}

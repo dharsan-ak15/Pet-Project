@@ -81,7 +81,40 @@
                     <div class="card-body p-4">
                         <form method="post" novalidate>
                             {% csrf_token %}
-                            {{ form.as_p }}
+                            {% for field in form %}
+                            <div class="mb-3">
+                                <label for="{{ field.id_for_label }}" class="form-label fw-bold text-dark mb-1">
+                                    {{ field.label }}
+                                    {% if field.field.required %}
+                                    <span class="text-danger fw-bold">*</span>
+                                    {% endif %}
+                                    {% if field.help_text %}
+                                    <i class="bi bi-info-circle text-primary ms-1" data-bs-toggle="tooltip"
+                                        data-bs-placement="top" title="{{ field.help_text|striptags }}"
+                                        style="cursor: pointer;"></i>
+                                    {% endif %}
+                                </label>
+                                {% if 'password' in field.name.lower %}
+                                <div class="password-toggle-group">
+                                    {{ field }}
+                                    <button type="button" class="password-toggle-btn"
+                                        onclick="togglePasswordVisibility('{{ field.id_for_label }}', 'toggle-btn-{{ forloop.counter }}')"
+                                        id="toggle-btn-{{ forloop.counter }}">
+                                        <i class="bi bi-eye"></i>
+                                    </button>
+                                </div>
+                                {% else %}
+                                {{ field }}
+                                {% endif %}
+                                {% if field.errors %}
+                                <div class="text-danger small mt-1">
+                                    {% for error in field.errors %}
+                                    <i class="bi bi-exclamation-circle me-1"></i>{{ error }}
+                                    {% endfor %}
+                                </div>
+                                {% endif %}
+                            </div>
+                            {% endfor %}
                             <button class="btn btn-primary btn-lg w-100 mt-4 rounded-pill fw-bold shadow-sm"
                                 type="submit">
                                 Create Account <i class="bi bi-person-check ms-1"></i>
@@ -98,5 +131,25 @@
         </div>
     </div>
 </div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const staffCheckbox = document.querySelector('input[name="is_staff_registration"]');
+        const inviteCodeContainer = document.querySelector('input[name="invite_code"]').closest(".mb-3");
+
+        if (staffCheckbox && inviteCodeContainer) {
+            function toggleInviteCode() {
+                if (staffCheckbox.checked) {
+                    inviteCodeContainer.style.display = "block";
+                } else {
+                    inviteCodeContainer.style.display = "none";
+                }
+            }
+
+            toggleInviteCode(); // Initial state
+            staffCheckbox.addEventListener("change", toggleInviteCode);
+        }
+    });
+</script>
 
 {% endblock %}

@@ -28,36 +28,23 @@
 
             <div class="card border border-light-subtle rounded-4" style="box-shadow: 0 4px 15px rgba(0,0,0,0.03);">
                 <div class="card-body p-5">
-                    <form method="POST" action="{% url 'submit-abuse-report' %}">
+                    <form method="POST" action="{% url 'submit-abuse-report' %}" enctype="multipart/form-data">
                         {% csrf_token %}
                         <div class="mb-4">
-                            <label class="form-label fw-bold small text-dark mb-1">Link to the Pet Profile or Pet ID
-                                numbers</label>
-                            <input type="text" name="pet_reference" class="form-control"
-                                placeholder="e.g., https://petportal.com/pet/123 or ID #123" required>
-                            <div class="form-text small mt-1">Paste the full URL or the ID number of the specific pet
-                                report.</div>
+                            <label class="form-label fw-bold small text-dark mb-1">Reason for Reporting *</label>
+                            {{ form.reason }}
+                            <div class="form-text text-danger small mt-1">Do not include your personal information. Be as specific as possible.</div>
                         </div>
 
                         <div class="mb-4">
                             <label class="form-label fw-bold small text-dark mb-1">Location (If Applicable)</label>
-                            <input type="text" name="location" class="form-control"
-                                placeholder="City or area where the incident occurred">
+                            {{ form.location }}
                         </div>
 
                         <div class="mb-4">
-                            <label class="form-label fw-bold small text-dark mb-1">Supporting Image URL</label>
-                            <input type="url" name="image_url" class="form-control"
-                                placeholder="Link to a screenshot or image proof">
-                        </div>
-
-                        <div class="mb-4">
-                            <label class="form-label fw-bold small text-dark mb-1">Reason for Reporting</label>
-                            <textarea name="reason" rows="6" class="form-control"
-                                placeholder="Please describe exactly why this profile is fraudulent, abusive, or fake..."
-                                required></textarea>
-                            <div class="form-text text-danger small mt-1">Do not include your personal information. Be
-                                as specific as possible.</div>
+                            <label class="form-label fw-bold small text-dark mb-1">Supporting Image</label>
+                            {{ form.image }}
+                            <div class="form-text small mt-1">Upload a screenshot or image proof.</div>
                         </div>
 
                         <div class="d-grid mt-5">
