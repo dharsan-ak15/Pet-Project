@@ -1,348 +1,265 @@
 {% extends 'base.html' %}
-
 {% load static %}
 {% block content %}
 
-<!-- HERO -->
-<style>
-    .fade-in-up {
-        animation: fadeInUp 0.8s ease-out forwards;
-        opacity: 0;
-        transform: translateY(20px);
-    }
-
-    .delay-1 {
-        animation-delay: 0.2s;
-    }
-
-    .delay-2 {
-        animation-delay: 0.4s;
-    }
-
-    @keyframes fadeInUp {
-        to {
-            opacity: 1;
-            transform: translateY(0);
-        }
-    }
-
-    .hero-content {
-        max-width: 800px;
-        margin: auto;
-    }
+<!-- HERO SECTION -->
+<section class="hero-section text-white d-flex align-items-center position-relative overflow-hidden" style="min-height: 90vh;">
+    <!-- Background Elements -->
+    <div class="hero-bg-media position-absolute top-0 start-0 w-100 h-100 object-fit-cover opacity-40 z-neg-1" style="background-image: url('{% static 'images/hero-bg.jpg' %}'); background-size: cover; background-position: center;"></div>
+    <div class="mesh-gradient position-absolute inset-0 opacity-50 z-neg-1"></div>
     
-    /* Interactive Feature Cards */
-    .feature-card {
-        background-color: #f8f9fa;
-        border: 1px solid rgba(0,0,0,0.03);
-        border-radius: 16px;
-        transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
-        cursor: default;
-    }
+    <div class="container py-5">
+        <div class="row align-items-center justify-content-between">
+            <div class="col-lg-7 scroll-reveal">
+                <div class="text-primary fw-bold mb-2 ls-wide text-uppercase small scroll-reveal">
+                </div>
+                {% if user.is_authenticated %}
+                <h1 class="hero-title display-2 fw-bold mb-4" style="line-height: 1.1; -webkit-text-fill-color: white;">Reunite with Your <br><span class="text-primary">Best Friend</span></h1>
+                <p class="lead mb-5 opacity-75" style="max-width: 600px;">Every second counts. Report a lost pet, or help someone find theirs within our global community of animal lovers.</p>
+                {% else %}
+                <h1 class="hero-title display-2 fw-bold mb-4" style="line-height: 1.1; -webkit-text-fill-color: white;">Join the Global <br><span class="text-primary">Pet Rescue Network</span></h1>
+                <p class="lead mb-5 opacity-75" style="max-width: 600px;">Experience a safer community for your pets. Login or Sign Up to access our real-time pet tracker and reunion database.</p>
+                {% endif %}
+                
+                <div class="d-flex flex-column flex-sm-row gap-4 mb-5">
+                    {% if user.is_authenticated %}
+                    <a href="{% url 'report-pet' %}" class="btn-premium btn-premium-primary btn-lg px-5 magnetic">
+                        <i class="bi bi-megaphone-fill me-2"></i> Report Lost Pet
+                    </a>
+                    <a href="{% url 'search-pets' %}" class="btn-premium btn-premium-outline btn-lg px-5 text-white border-white magnetic">
+                        Browse Database
+                    </a>
+                    {% else %}
+                    <a href="{% url 'register' %}" class="btn-premium btn-premium-primary btn-lg px-5 magnetic">
+                        <i class="bi bi-person-plus-fill me-2"></i> Get Started
+                    </a>
+                    <a href="{% url 'login' %}" class="btn-premium btn-premium-outline btn-lg px-5 text-white border-white magnetic">
+                        Sign In
+                    </a>
+                    {% endif %}
+                </div>
 
-    .feature-card:hover {
-        background-color: #ffffff;
-        transform: translateY(-6px);
-        box-shadow: 0 12px 24px rgba(0, 0, 0, 0.08) !important;
-        border-color: rgba(15, 124, 130, 0.15);
-    }
+                <div class="d-flex align-items-center gap-4 py-4 border-top border-white border-opacity-10 w-fit">
+                    <div class="d-flex -space-x-2">
+                        <div class="bg-primary bg-opacity-20 rounded-circle border border-2 border-white d-flex align-items-center justify-content-center" width="40" height="40" style="width: 40px; height: 40px; z-index: 3;">
+                            <i class="bi bi-person-fill text-white"></i>
+                        </div>
+                        <div class="bg-success bg-opacity-20 rounded-circle border border-2 border-white d-flex align-items-center justify-content-center" width="40" height="40" style="width: 40px; height: 40px; margin-left: -15px; z-index: 2;">
+                            <i class="bi bi-shield-fill text-white"></i>
+                        </div>
+                        <div class="bg-info bg-opacity-20 rounded-circle border border-2 border-white d-flex align-items-center justify-content-center" width="40" height="40" style="width: 40px; height: 40px; margin-left: -15px; z-index: 1;">
+                            <i class="bi bi-people-fill text-white"></i>
+                        </div>
+                    </div>
+                    <div>
+                        {% if user.is_staff %}
+                        <div class="fw-bold">{{ total_users|default:"0" }}+ Community Members</div>
+                        <small class="opacity-50">{{ total_staff|default:"0" }}+ Active Staff Personnel</small>
+                        {% else %}
+                        <div class="fw-bold">Global Pet Advocacy</div>
+                        <small class="opacity-50">Empowering 10k+ families to stay connected</small>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
 
-    .feature-card .icon-wrapper {
-        font-size: 2.2rem;
-        transition: transform 0.3s ease;
-    }
+            <div class="col-lg-5 ps-lg-5 d-none d-lg-block scroll-reveal" style="transition-delay: 0.2s;">
+                <div class="tilt-wrapper">
+                    <div class="glass-card p-4 tilt-content shadow-2xl border-white border-opacity-10 bg-white bg-opacity-5">
+                        {% if user.is_authenticated %}
+                        <img src="{% static 'images/landing-pets.jpg.png' %}" class="img-fluid rounded-4 shadow-xl mb-3" alt="Pet Rescue" style="filter: brightness(0.95); min-height: 300px; object-fit: cover;">
+                        {% else %}
+                        <img src="{% static 'images/pet_landing_hero.png' %}" class="img-fluid rounded-4 shadow-xl mb-3" alt="Pet Rescue" style="filter: brightness(0.95); min-height: 300px; object-fit: cover;">
+                        {% endif %}
+                        <div class="mt-4 p-3 rounded-4 bg-white bg-opacity-10 backdrop-blur-md border border-white border-opacity-10">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <h6 class="mb-1 fw-bold">{% if user.is_authenticated %}Live Community Feed{% else %}Global Rescue Network{% endif %}</h6>
+                                    <small class="opacity-60">{% if user.is_authenticated %}Real-time alerts active{% else %}Connecting 10k+ families{% endif %}</small>
+                                </div>
+                                <div class="d-flex align-items-center gap-2">
+                                    <span class="badge bg-success bg-opacity-10 text-success border border-success border-opacity-20 small">Online</span>
+                                    <div class="pulse-icon bg-success rounded-circle" style="width: 8px; height: 8px; box-shadow: 0 0 10px var(--success);"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Animated Blobs -->
+    <div class="blob" style="top: -10%; left: -10%;"></div>
+    <div class="blob" style="bottom: 10%; right: -5%; background: radial-gradient(circle, rgba(25, 135, 84, 0.08) 0%, rgba(255, 255, 255, 0) 70%);"></div>
+</section>
 
-    .feature-card:hover .icon-wrapper {
-        transform: scale(1.15) rotate(-5deg);
-    }
-</style>
-
-<section class="hero-section position-relative overflow-hidden {% if user.is_authenticated %}hero-bg-auth{% else %}hero-bg-guest{% endif %}">
-    <div class="hero-content container z-2 position-relative text-center py-5">
-        <h1 class="display-3 fw-bold mb-3 fade-in-up">Reunite with Your Best Friend</h1>
-        <p class="lead mb-5 fade-in-up delay-1">Every second counts. Report a lost pet, or help someone find theirs
-            within our community.</p>
-
-        <div class="d-flex flex-column flex-sm-row justify-content-center gap-3 fade-in-up delay-2">
-            {% if user.is_authenticated %}
-            <a href="{% url 'search-pets' %}?request_type=Adoption" class="btn btn-primary btn-lg px-4 py-3 rounded-pill shadow-sm"><i
-                    class="bi bi-heart-fill me-2"></i> Adopt a Pet</a>
-            <a href="{% url 'report-pet' %}" class="btn btn-outline-light btn-lg px-4 py-3 rounded-pill shadow-sm"><i
-                    class="bi bi-megaphone-fill me-2"></i> Report Pet</a>
+<!-- STATISTICS SECTION -->
+<section class="py-5 bg-soft-blue position-relative">
+    <div class="container py-5">
+        <div class="text-center mb-5 scroll-reveal">
+            <h2 class="display-5 fw-bold text-main mb-3">The Global Reality of Lost Pets</h2>
+            <p class="text-muted lead mx-auto" style="max-width: 800px;">Understanding the scale of the issue helps us realize why every report matters.</p>
+        </div>
+        <div class="row g-4 justify-content-center">
+            {% if not user.is_staff %}
+            <div class="col-md-3 mt-4 scroll-reveal">
+                <div class="glass-card p-5 h-100 border-0 shadow-sm text-center bg-white rounded-4 hover-lift transition-base">
+                    <div class="fs-1 mb-3" style="color: #0d6efd;"><i class="bi bi-globe"></i></div>
+                    <div class="display-5 fw-bold text-main">10M+</div>
+                    <p class="text-uppercase small fw-bold text-muted ls-wide mb-2">Pets Lost Annually</p>
+                    <small class="text-muted d-block mt-2">Over 10 million dogs and cats are lost or stolen each year.</small>
+                </div>
+            </div>
+            <div class="col-md-3 mt-4 scroll-reveal">
+                <div class="glass-card p-5 h-100 border-0 shadow-sm text-center bg-white rounded-4 hover-lift transition-base">
+                    <div class="fs-1 mb-3" style="color: #198754;"><i class="bi bi-house-heart"></i></div>
+                    <div class="display-5 fw-bold text-main">1 in 3</div>
+                    <p class="text-uppercase small fw-bold text-muted ls-wide mb-2">Pets Will Get Lost</p>
+                    <small class="text-muted d-block mt-2">One in three pets will become lost at some point during their life.</small>
+                </div>
+            </div>
+            <div class="col-md-3 mt-4 scroll-reveal">
+                <div class="glass-card p-5 h-100 border-0 shadow-sm text-center bg-white rounded-4 hover-lift transition-base">
+                    <div class="fs-1 mb-3" style="color: #0dcaf0;"><i class="bi bi-tag"></i></div>
+                    <div class="display-5 fw-bold text-main">90%</div>
+                    <p class="text-uppercase small fw-bold text-muted ls-wide mb-2">Return Rate w/ Tags</p>
+                    <small class="text-muted d-block mt-2">Pets with ID tags or microchips have a high chance of returning home.</small>
+                </div>
+            </div>
+            <div class="col-md-3 mt-4 scroll-reveal">
+                <div class="glass-card p-5 h-100 border-0 shadow-sm text-center bg-white rounded-4 hover-lift transition-base">
+                    <div class="fs-1 mb-3" style="color: #dc3545;"><i class="bi bi-heart-pulse-fill"></i></div>
+                    <div class="display-5 fw-bold text-main">24/7</div>
+                    <p class="text-uppercase small fw-bold text-muted ls-wide mb-2">Rescue Support</p>
+                    <small class="text-muted d-block mt-2">Verified help is always a click away, day or night.</small>
+                </div>
+            </div>
             {% else %}
-            <a href="{% url 'login' %}?next={% url 'search-pets' %}?request_type=Adoption" class="btn btn-primary btn-lg px-4 py-3 rounded-pill shadow-sm"><i
-                    class="bi bi-heart-fill me-2"></i> Adopt a Pet</a>
-            <a href="{% url 'login' %}?next={% url 'report-pet' %}" class="btn btn-outline-light btn-lg px-4 py-3 rounded-pill shadow-sm"><i
-                    class="bi bi-megaphone-fill me-2"></i> Report Pet</a>
+            <div class="col-md-3 mt-4 scroll-reveal">
+                <div class="glass-card p-5 h-100 border-0 shadow-sm text-center bg-white rounded-4 hover-lift transition-base">
+                    <div class="fs-1 mb-3" style="color: #0d6efd;"><i class="bi bi-bar-chart-fill"></i></div>
+                    <div class="display-5 fw-bold text-main">{{ total_pets|default:"35" }}</div>
+                    <p class="text-uppercase small fw-bold text-muted ls-wide">Total Reports</p>
+                </div>
+            </div>
+            <div class="col-md-3 mt-4 scroll-reveal">
+                <div class="glass-card p-5 h-100 border-0 shadow-sm text-center bg-white rounded-4 hover-lift transition-base">
+                    <div class="fs-1 mb-3" style="color: #198754;"><i class="bi bi-shield-check"></i></div>
+                    <div class="display-5 fw-bold text-main">{{ total_staff|default:"6" }}</div>
+                    <p class="text-uppercase small fw-bold text-muted ls-wide">Active Staff</p>
+                </div>
+            </div>
+            <div class="col-md-3 mt-4 scroll-reveal">
+                <div class="glass-card p-5 h-100 border-0 shadow-sm text-center bg-white rounded-4 hover-lift transition-base">
+                    <div class="fs-1 mb-3" style="color: #0dcaf0;"><i class="bi bi-person-fill"></i></div>
+                    <div class="display-5 fw-bold text-main">{{ total_users|default:"29" }}</div>
+                    <p class="text-uppercase small fw-bold text-muted ls-wide">Users Active</p>
+                </div>
+            </div>
+            <div class="col-md-3 mt-4 scroll-reveal">
+                <div class="glass-card p-5 h-100 border-0 shadow-0 text-center bg-primary text-white rounded-4 hover-lift shadow-lg transition-base">
+                    <div class="fs-1 mb-3 text-white"><i class="bi bi-heart-fill"></i></div>
+                    <div class="display-5 fw-bold text-white">{{ total_reunited|default:"1" }}</div>
+                    <p class="text-uppercase small fw-bold opacity-75 ls-wide">Our Reunions</p>
+                </div>
+            </div>
+            {% endif %}
+    </div>
+</section>
+
+<!-- RECENT SECTION -->
+<section class="py-5 bg-soft-blue position-relative">
+    <div class="container py-5">
+        <div class="section-header d-flex justify-content-between align-items-end mb-5 scroll-reveal">
+            <div>
+                {% if user.is_authenticated %}
+                <h2 class="hero-title h2 mb-0" style="-webkit-text-fill-color: var(--text-main);">Recently Spotted</h2>
+                <p class="text-muted mt-2">Live alerts from the community</p>
+                {% else %}
+                <h2 class="hero-title h2 mb-0" style="-webkit-text-fill-color: var(--text-main);">Our Rescue Ecosystem</h2>
+                <p class="text-muted mt-2">How we help pets find their way home</p>
+                {% endif %}
+            </div>
+            {% if user.is_authenticated %}
+            <a href="{% url 'search-pets' %}" class="btn-premium btn-premium-outline magnetic">View Database <i class="bi bi-arrow-right ms-2"></i></a>
+            {% endif %}
+        </div>
+
+        <div class="row g-4">
+            {% if user.is_authenticated %}
+                {% for pet in lost_pets|slice:":4" %}
+                <div class="col-md-3 scroll-reveal">
+                    <a href="{% url 'pet-detail' pet.id %}" class="text-decoration-none text-dark">
+                        <div class="glass-card h-100 tilt-wrapper bg-white hover-lift transition-base">
+                            <div class="tilt-content">
+                                <div class="position-relative overflow-hidden" style="height: 250px;">
+                                    {% if pet.image %}
+                                    <img src="{{ pet.image.url }}" class="w-100 h-100 object-fit-cover transition-base hover-scale" alt="Pet">
+                                    {% else %}
+                                    <div class="bg-light d-flex align-items-center justify-content-center h-100">🐾</div>
+                                    {% endif %}
+                                    <span class="position-absolute top-0 start-0 m-3 badge rounded-pill px-3 py-2 fw-bold shadow-sm {% if pet.request_type == 'Lost' %}bg-danger{% elif pet.request_type == 'Found' %}bg-success{% else %}bg-primary{% endif %}" style="z-index: 2; border: 2px solid rgba(255,255,255,0.2);">
+                                        {{ pet.request_type|upper }}
+                                    </span>
+                                </div>
+                                <div class="p-4">
+                                    <h6 class="fw-bold mb-2">{{ pet.pet_type }} - {{ pet.breed }}</h6>
+                                    <div class="d-flex align-items-center text-muted small">
+                                        <i class="bi bi-geo-alt-fill me-2 text-primary"></i> {{ pet.location }}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+                {% empty %}
+                <div class="col-12 text-center py-5">
+                    <p class="text-muted">No pets recently spotted.</p>
+                </div>
+                {% endfor %}
+            {% else %}
+                <div class="col-12">
+                    <div class="row g-4 justify-content-center">
+                        <div class="col-md-4 scroll-reveal">
+                            <div class="glass-card p-4 text-center h-100 bg-white">
+                                <div class="fs-2 mb-3 text-primary"><i class="bi bi-megaphone"></i></div>
+                                <h5 class="fw-bold">1. Report</h5>
+                                <p class="text-muted small">Spot a lost or found pet? Quickly upload details and images to our global database.</p>
+                            </div>
+                        </div>
+                        <div class="col-md-4 scroll-reveal">
+                            <div class="glass-card p-4 text-center h-100 bg-white">
+                                <div class="fs-2 mb-3 text-success"><i class="bi bi-check-circle"></i></div>
+                                <h5 class="fw-bold">2. Verify</h5>
+                                <p class="text-muted small">Our active staff and community verify information to ensure accuracy and safety.</p>
+                            </div>
+                        </div>
+                        <div class="col-md-4 scroll-reveal">
+                            <div class="glass-card p-4 text-center h-100 bg-white">
+                                <div class="fs-2 mb-3 text-info"><i class="bi bi-heart-pulse"></i></div>
+                                <h5 class="fw-bold">3. Reunite</h5>
+                                <p class="text-muted small">Real-time alerts and matching algorithms help bring pets back to their loving homes.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             {% endif %}
         </div>
     </div>
 </section>
 
-{% if user.is_authenticated %}
-<!-- GLOBAL PET LOSS SURVEY / STATISTICS -->
-<section class="py-5 bg-white border-bottom">
-    <div class="container">
-        <div class="row mb-4 text-center">
-            <div class="col-12">
-                <h2 class="fw-bold section-title fade-in-up">The Global Reality of Lost Pets</h2>
-                <p class="text-muted fade-in-up delay-1">Understanding the scale of the issue helps us realize why every
-                    report matters.</p>
-            </div>
-        </div>
-        <div class="row text-center g-4 fade-in-up delay-2">
-            <div class="col-md-3">
-                <div class="p-4 rounded-4 bg-light shadow-sm h-100">
-                    <i class="bi bi-globe-americas text-primary" style="font-size: 2.5rem;"></i>
-                    <h2 class="display-6 fw-bold mt-3 text-dark">10M+</h2>
-                    <p class="text-muted fs-6 mb-0 text-uppercase fw-semibold">Pets Lost Annually</p>
-                    <small class="text-secondary mt-2 d-block">Over 10 million dogs and cats are lost or stolen each
-                        year.</small>
-                </div>
-            </div>
-            <div class="col-md-3">
-                <div class="p-4 rounded-4 bg-light shadow-sm h-100">
-                    <i class="bi bi-house-heart-fill text-success" style="font-size: 2.5rem;"></i>
-                    <h2 class="display-6 fw-bold mt-3 text-dark">1 in 3</h2>
-                    <p class="text-muted fs-6 mb-0 text-uppercase fw-semibold">Pets Will Get Lost</p>
-                    <small class="text-secondary mt-2 d-block">One in three pets will become lost at some point during
-                        their life.</small>
-                </div>
-            </div>
-            <div class="col-md-3">
-                <div class="p-4 rounded-4 bg-light shadow-sm h-100">
-                    <i class="bi bi-tags-fill text-info" style="font-size: 2.5rem;"></i>
-                    <h2 class="display-6 fw-bold mt-3 text-dark">90%</h2>
-                    <p class="text-muted fs-6 mb-0 text-uppercase fw-semibold">Return Rate with Tags</p>
-                    <small class="text-secondary mt-2 d-block">Pets with ID tags or microchips have a high chance of
-                        returning home.</small>
-                </div>
-            </div>
-            <div class="col-md-3">
-                <div class="p-4 rounded-4 bg-light shadow-sm h-100">
-                    <i class="bi bi-heart-fill text-danger" style="font-size: 2.5rem;"></i>
-                    <h2 class="display-6 fw-bold mt-3 text-dark">{{ total_reunited }} / {{ total_pets }}</h2>
-                    <p class="text-muted fs-6 mb-0 text-uppercase fw-semibold">Our Community Reunions</p>
-                    <small class="text-secondary mt-2 d-block">We are slowly making an impact thanks to our
-                        members.</small>
-                </div>
-            </div>
-        </div>
-    </div>
-</section>
-{% else %}
-<!-- WHY ADOPT / REPORT BENEFITS -->
-<section class="py-5 bg-white border-bottom">
-    <div class="container py-4">
-        <div class="row mb-5 text-center">
-            <div class="col-12">
-                <h2 class="fw-bold section-title fade-in-up" style="color: #1f2937;">Why Your Action Matters</h2>
-                <p class="text-muted fade-in-up delay-1">Here is how you make a difference when you adopt or report a pet.</p>
-            </div>
-        </div>
-        <div class="row justify-content-center g-4 fade-in-up delay-2">
-            <!-- Row 1 -->
-            <div class="col-md-6 col-lg-5">
-                <div class="feature-card p-4 h-100 d-flex align-items-center">
-                    <div class="icon-wrapper feature-icon-bg bg-primary bg-opacity-10 text-primary rounded-circle d-flex align-items-center justify-content-center me-4" style="width: 60px; height: 60px;">
-                        <i class="bi bi-globe-americas"></i>
-                    </div>
-                    <div>
-                        <p class="mb-0 fs-5 fw-medium lh-sm" style="color: #374151;">Every year millions of pets go missing worldwide.</p>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-6 col-lg-5">
-                <div class="feature-card p-4 h-100 d-flex align-items-center">
-                    <div class="icon-wrapper feature-icon-bg bg-danger bg-opacity-10 text-danger rounded-circle d-flex align-items-center justify-content-center me-4" style="width: 60px; height: 60px;">
-                        <i class="bi bi-suit-heart-fill"></i>
-                    </div>
-                    <div>
-                        <p class="mb-0 fs-5 fw-medium lh-sm" style="color: #374151;">A dog can reduce stress and improve mental health.</p>
-                    </div>
-                </div>
-            </div>
-            <!-- Row 2 -->
-            <div class="col-md-6 col-lg-5">
-                <div class="feature-card p-4 h-100 d-flex align-items-center">
-                    <div class="icon-wrapper feature-icon-bg bg-success bg-opacity-10 text-success rounded-circle d-flex align-items-center justify-content-center me-4" style="width: 60px; height: 60px;">
-                        <i class="bi bi-house-heart-fill"></i>
-                    </div>
-                    <div>
-                        <p class="mb-0 fs-5 fw-medium lh-sm" style="color: #374151;">Adopted pets often live longer and healthier lives.</p>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-6 col-lg-5">
-                <div class="feature-card p-4 h-100 d-flex align-items-center">
-                    <div class="icon-wrapper feature-icon-bg bg-info bg-opacity-10 text-info rounded-circle d-flex align-items-center justify-content-center me-4" style="width: 60px; height: 60px;">
-                        <i class="bi bi-soundwave"></i>
-                    </div>
-                    <div>
-                        <p class="mb-0 fs-5 fw-medium lh-sm" style="color: #374151;">Cats can recognize their owner's voice.</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</section>
-{% endif %}
-
 {% if not user.is_authenticated %}
-<!-- KEY FEATURES & IMPORTANCE -->
-<section class="py-5" style="background-color: #f8f9fa;">
+<!-- CALL TO ACTION -->
+<section class="py-5 mb-5">
     <div class="container">
-        <div class="row mb-5 text-center">
-            <div class="col-12">
-                <h2 class="fw-bold section-title fade-in-up">Why Our Community Matters</h2>
-                <p class="text-muted fade-in-up delay-1">See how you can make a difference today.</p>
-            </div>
-        </div>
-        <div class="row g-5 align-items-center mb-5 fade-in-up delay-2">
-            <div class="col-md-6 order-md-2">
-                <img src="{% static 'images/adoption-pet.jpg' %}" alt="Adopt a Pet" class="img-fluid rounded-4 shadow-lg w-100" style="object-fit: cover; max-height: 400px;">
-            </div>
-            <div class="col-md-6 order-md-1">
-                <h3 class="fw-bold mb-3" style="color: #0f7c82;">Adopt, Don't Shop</h3>
-                <p class="lead text-muted mb-4">Give a loving animal a second chance at life. By adopting, you provide a forever home to a pet in need and make room for others to be rescued.</p>
-                <a href="{% if user.is_authenticated %}{% url 'search-pets' %}{% else %}{% url 'login' %}?next={% url 'search-pets' %}{% endif %}" class="btn btn-primary btn-lg px-4 rounded-pill shadow-sm">
-                    <i class="bi bi-heart-fill me-2"></i> Adopt Now
-                </a>
-            </div>
-        </div>
-        
-        <div class="row g-5 align-items-center fade-in-up delay-3">
-            <div class="col-md-6">
-                <img src="{% static 'images/Lost-pets.jpg' %}" alt="Lost and Found Pets" class="img-fluid rounded-4 shadow-lg w-100" style="object-fit: cover; max-height: 400px;">
-            </div>
-            <div class="col-md-6">
-                <h3 class="fw-bold mb-3 text-warning"><i class="bi bi-hourglass-split me-2"></i>The Golden Hour</h3>
-                <p class="lead text-muted mb-4">The first 24 hours are critical. Reporting lost pets immediately drastically increases the chances of a safe reunion. Help us close the loop.</p>
-                <a href="{% if user.is_authenticated %}{% url 'report-pet' %}{% else %}{% url 'login' %}?next={% url 'report-pet' %}{% endif %}" class="btn btn-warning btn-lg px-4 rounded-pill shadow-sm text-dark">
-                    <i class="bi bi-megaphone-fill me-2"></i> Report Now
-                </a>
-            </div>
-        </div>
-    </div>
-</section>
-{% endif %}
-
-{% if not user.is_authenticated %}
-<!-- HOW OUR PORTAL WORKS -->
-<section class="py-5 bg-white border-top">
-    <div class="container py-4">
-        <div class="row mb-5 text-center">
-            <div class="col-12">
-                <h2 class="fw-bold section-title fade-in-up" style="color: #1a202c; letter-spacing: -0.02em;">How Our Portal Works</h2>
-                <div class="mx-auto bg-primary opacity-25 mb-3" style="width: 60px; height: 3px; border-radius: 2px;"></div>
-                <p class="text-muted fade-in-up delay-1 mx-auto" style="max-width: 600px;">A seamless community driven process designed to help you reunite or adopt with confidence.</p>
-            </div>
-        </div>
-        <div class="row g-4 justify-content-center fade-in-up delay-2">
-            <div class="col-md-6 col-lg-3">
-                <div class="feature-card p-4 h-100 text-center border-0 bg-light bg-opacity-50" style="border-radius: 24px;">
-                    <div class="icon-bubble mx-auto mb-4 d-flex align-items-center justify-content-center" style="width:72px; height:72px; background: white; box-shadow: 0 8px 16px rgba(0,0,0,0.04); border-radius: 20px;">
-                        <span style="font-size:2rem;">✍️</span>
-                    </div>
-                    <div class="badge rounded-pill mb-3 px-3 py-1" style="background-color:rgba(15, 124, 130, 0.1); color:#0f7c82; font-size:.75rem; font-weight:700; text-uppercase: uppercase;">Step 01</div>
-                    <h5 class="fw-bold mb-2" style="color:#111827;">Sign Up Free</h5>
-                    <p class="text-muted small mb-0 lh-lg">Join our verified network in seconds. Secure, private, and always free for pet lovers.</p>
-                </div>
-            </div>
-            <div class="col-md-6 col-lg-3">
-                <div class="feature-card p-4 h-100 text-center border-0 bg-light bg-opacity-50" style="border-radius: 24px;">
-                    <div class="icon-bubble mx-auto mb-4 d-flex align-items-center justify-content-center" style="width:72px; height:72px; background: white; box-shadow: 0 8px 16px rgba(0,0,0,0.04); border-radius: 20px;">
-                        <span style="font-size:2rem;">📢</span>
-                    </div>
-                    <div class="badge rounded-pill mb-3 px-3 py-1 bg-warning bg-opacity-10 text-warning" style="font-size:.75rem; font-weight:700; text-uppercase: uppercase;">Step 02</div>
-                    <h5 class="fw-bold mb-2" style="color:#111827;">Report or Search</h5>
-                    <p class="text-muted small mb-0 lh-lg">Instantly alert others with photos and live locations. Search by bread, district or landmark.</p>
-                </div>
-            </div>
-            <div class="col-md-6 col-lg-3">
-                <div class="feature-card p-4 h-100 text-center border-0 bg-light bg-opacity-50" style="border-radius: 24px;">
-                    <div class="icon-bubble mx-auto mb-4 d-flex align-items-center justify-content-center" style="width:72px; height:72px; background: white; box-shadow: 0 8px 16px rgba(0,0,0,0.04); border-radius: 20px;">
-                        <span style="font-size:2rem;">📬</span>
-                    </div>
-                    <div class="badge rounded-pill mb-3 px-3 py-1 bg-danger bg-opacity-10 text-danger" style="font-size:.75rem; font-weight:700; text-uppercase: uppercase;">Step 03</div>
-                    <h5 class="fw-bold mb-2" style="color:#111827;">Request Contact</h5>
-                    <p class="text-muted small mb-0 lh-lg">Matches are verified by our team. Connect securely with owners once your request is approved.</p>
-                </div>
-            </div>
-            <div class="col-md-6 col-lg-3">
-                <div class="feature-card p-4 h-100 text-center border-0 bg-light bg-opacity-50" style="border-radius: 24px;">
-                    <div class="icon-bubble mx-auto mb-4 d-flex align-items-center justify-content-center" style="width:72px; height:72px; background: white; box-shadow: 0 8px 16px rgba(0,0,0,0.04); border-radius: 20px;">
-                        <span style="font-size:2rem;">🐾</span>
-                    </div>
-                    <div class="badge rounded-pill mb-3 px-3 py-1 bg-success bg-opacity-10 text-success" style="font-size:.75rem; font-weight:700; text-uppercase: uppercase;">Step 04</div>
-                    <h5 class="fw-bold mb-2" style="color:#111827;">Reunite!</h5>
-                    <p class="text-muted small mb-0 lh-lg">Coordinate the handover and celebrate! We love seeing happy endings for our furry friends.</p>
-                </div>
-            </div>
-        </div>
-    </div>
-</section>
-
-<!-- COMMON QUERIES / FAQ -->
-<section class="py-5" style="background-color: #f8f9fa;">
-    <div class="container py-2">
-        <div class="row mb-5 text-center">
-            <div class="col-12">
-                <h2 class="fw-bold section-title fade-in-up" style="color: #1f2937;">Common Queries</h2>
-                <p class="text-muted fade-in-up delay-1">Everything you need to know to get started.</p>
-            </div>
-        </div>
-        <div class="row justify-content-center">
-            <div class="col-lg-8">
-                <div class="accordion accordion-flush" id="faqAccordion">
-                    <div class="accordion-item border rounded-4 mb-3 shadow-sm overflow-hidden">
-                        <h2 class="accordion-header">
-                            <button class="accordion-button collapsed fw-semibold" type="button" data-bs-toggle="collapse" data-bs-target="#faq1">How do I report a lost or found pet?</button>
-                        </h2>
-                        <div id="faq1" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
-                            <div class="accordion-body text-muted">Sign up or log in, then click <strong>Report Pet</strong> from the navbar. Fill in the pet details, upload a photo, and choose your district and area. Your report will be reviewed and listed on the portal.</div>
-                        </div>
-                    </div>
-                    <div class="accordion-item border rounded-4 mb-3 shadow-sm overflow-hidden">
-                        <h2 class="accordion-header">
-                            <button class="accordion-button collapsed fw-semibold" type="button" data-bs-toggle="collapse" data-bs-target="#faq2">Is this service free to use?</button>
-                        </h2>
-                        <div id="faq2" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
-                            <div class="accordion-body text-muted">Yes! Pet Portal is completely free for all users. Reporting, searching, and contacting pet owners is free of charge.</div>
-                        </div>
-                    </div>
-                    <div class="accordion-item border rounded-4 mb-3 shadow-sm overflow-hidden">
-                        <h2 class="accordion-header">
-                            <button class="accordion-button collapsed fw-semibold" type="button" data-bs-toggle="collapse" data-bs-target="#faq3">How long does contact access approval take?</button>
-                        </h2>
-                        <div id="faq3" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
-                            <div class="accordion-body text-muted">Contact requests are reviewed by our moderation team, typically within a few hours. You will receive a notification once a decision is made.</div>
-                        </div>
-                    </div>
-                    <div class="accordion-item border rounded-4 mb-3 shadow-sm overflow-hidden">
-                        <h2 class="accordion-header">
-                            <button class="accordion-button collapsed fw-semibold" type="button" data-bs-toggle="collapse" data-bs-target="#faq4">Can I adopt a pet through this portal?</button>
-                        </h2>
-                        <div id="faq4" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
-                            <div class="accordion-body text-muted">Yes! Browse the <strong>Adoption</strong> listings in our search. Request contact with the pet's owner, and once approved, you can arrange to adopt directly.</div>
-                        </div>
-                    </div>
-                    <div class="accordion-item border rounded-4 mb-3 shadow-sm overflow-hidden">
-                        <h2 class="accordion-header">
-                            <button class="accordion-button collapsed fw-semibold" type="button" data-bs-toggle="collapse" data-bs-target="#faq5">What is The Golden Hour?</button>
-                        </h2>
-                        <div id="faq5" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
-                            <div class="accordion-body text-muted">The <strong>Golden Hour</strong> highlights pets reported in the last 24 hours. The first 24 hours are critical — pets are most likely to be found quickly if reported and searched during this window.</div>
-                        </div>
-                    </div>
-                    <div class="accordion-item border rounded-4 shadow-sm overflow-hidden">
-                        <h2 class="accordion-header">
-                            <button class="accordion-button collapsed fw-semibold" type="button" data-bs-toggle="collapse" data-bs-target="#faq6">How do I become a staff member / moderator?</button>
-                        </h2>
-                        <div id="faq6" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
-                            <div class="accordion-body text-muted">Scroll to the footer and click <strong>Request to Admin</strong>. Submit your application and our admin team will review your request.</div>
-                        </div>
-                    </div>
+        <div class="glass-card p-5 bg-primary text-white text-center rounded-5 overflow-hidden position-relative scroll-reveal">
+            <div class="mesh-gradient position-absolute inset-0 opacity-30"></div>
+            <div class="position-relative z-2">
+                <h2 class="display-4 fw-bold mb-4">Ready to save a life?</h2>
+                <p class="lead mb-5 opacity-75 mx-auto" style="max-width: 700px;">Join our community today. Whether you've found a pet or lost your own, we are here to help you every step of the way.</p>
+                <div class="d-flex justify-content-center gap-3">
+                    <a href="{% url 'register' %}" class="btn-premium btn-lg px-5 bg-white text-primary border-0 magnetic">Get Started Free</a>
                 </div>
             </div>
         </div>
@@ -350,194 +267,53 @@
 </section>
 {% endif %}
 
-{% if user.is_authenticated %}
-<!-- GOLDEN HOUR SECTION -->
-<section class="py-5 border-bottom" style="background: linear-gradient(135deg, #fff8e1 0%, #fff3cd 50%, #ffeaa0 100%); border-color: #f59e0b !important;">
-    <div class="container">
-        <div class="text-center mb-4">
-            <h2 class="section-title" style="color: #92400e;"><i class="bi bi-hourglass-split me-2" style="color: #f59e0b;"></i>The Golden Hour</h2>
-            <p class="text-muted">Pets reported within the last 24 hours. They need immediate attention.</p>
-        </div>
+<style>
+    .blob {
+        position: absolute;
+        width: 500px;
+        height: 500px;
+        background: radial-gradient(circle, rgba(13, 110, 253, 0.1) 0%, rgba(255, 255, 255, 0) 70%);
+        border-radius: 50%;
+        z-index: -1;
+        filter: blur(80px);
+        animation: float 20s infinite alternate linear;
+    }
+    @keyframes float {
+        0% { transform: translate(0, 0) scale(1); }
+        33% { transform: translate(100px, 50px) scale(1.1); }
+        66% { transform: translate(-50px, 100px) scale(0.9); }
+        100% { transform: translate(0, 0) scale(1); }
+    }
+    .bg-soft-blue {
+        background-color: #f4f8ff;
+    }
+    .hover-lift {
+        transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.3s ease;
+    }
+    .hover-lift:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 20px 40px rgba(0,0,0,0.1) !important;
+    }
+</style>
 
-        <div class="row g-4">
-            {% for pet in golden_hour_pets %}
-            <div class="col-md-3">
-                <a href="{% url 'pet-detail' pet.id %}" class="text-decoration-none text-dark d-block h-100">
-                    <div class="card h-100 border-warning shadow-sm">
-                        <div class="position-relative">
-                            {% if pet.image %}
-                            <img src="{{ pet.image.url }}" class="card-img-top w-100">
-                            {% else %}
-                            <div class="bg-secondary d-flex align-items-center justify-content-center w-100"
-                                style="height: 220px; border-top-left-radius: 12px; border-top-right-radius: 12px;">
-                                <span class="text-white small">No Image</span>
-                            </div>
-                            {% endif %}
-                            <span
-                                class="position-absolute top-0 start-0 m-3 badge p-2 px-3 shadow-sm fw-bold"
-                                style="background: linear-gradient(135deg, #f59e0b, #d97706); color: #fff;"><i
-                                    class="bi bi-clock-history me-1"></i>Golden Hour</span>
-                            {% if pet.request_type == 'Lost' %}
-                            <span
-                                class="position-absolute top-0 end-0 m-3 badge bg-danger p-2 px-3 shadow-sm">Lost</span>
-                            {% else %}
-                            <span
-                                class="position-absolute top-0 end-0 m-3 badge p-2 px-3 shadow-sm" style="background-color:#0f7c82;">Found</span>
-                            {% endif %}
-                        </div>
-                        <div class="card-body text-center"
-                            style="border-bottom-left-radius: 12px; border-bottom-right-radius: 12px; background: linear-gradient(135deg, #fffbeb, #fef3c7);">
-                            <h6 class="fw-bold mb-1" style="color: #78350f;">{{ pet.pet_type }} - {{ pet.breed }}</h6>
-                            <p class="text-muted small mb-2"><i class="bi bi-geo-alt-fill"></i> {{ pet.location }}</p>
-                            <small class="fw-bold" style="color: #d97706;">Reported: {{ pet.created_at|timesince }} ago</small>
-                        </div>
-                    </div>
-                </a>
-            </div>
-            {% empty %}
-            <div class="col-12 py-5 text-center">
-                <p class="text-muted mb-0">No pets currently in the Golden Hour. That's a good thing!</p>
-            </div>
-            {% endfor %}
-        </div>
+<script>
+    gsap.from(".blob", {
+        duration: 2,
+        opacity: 0,
+        stagger: 0.5,
+        ease: "power2.out"
+    });
+</script>
+{% endblock %}
 
-        <div class="text-center mt-5">
-            <a href="{% url 'golden-hour' %}"
-                class="btn btn-outline-warning text-dark border-warning px-4 rounded-pill fw-medium">View All Golden
-                Hour Alerts <i class="bi bi-arrow-right ms-1"></i></a>
-        </div>
-    </div>
-</section>
-
-<!-- LOST PETS -->
-<section class="py-5 bg-light">
-    <div class="container">
-        <h2 class="text-center section-title mb-4">Recently Lost Pets</h2>
-
-        <div class="row g-4">
-            {% for pet in lost_pets|slice:":4" %}
-            <div class="col-md-3">
-                <a href="{% url 'pet-detail' pet.id %}" class="text-decoration-none text-dark d-block h-100">
-                    <div class="card h-100">
-                        <div class="position-relative">
-                            {% if pet.image %}
-                            <img src="{{ pet.image.url }}" class="card-img-top w-100">
-                            {% else %}
-                            <div class="bg-secondary d-flex align-items-center justify-content-center w-100"
-                                style="height: 220px; border-top-left-radius: 12px; border-top-right-radius: 12px;">
-                                <span class="text-white small">No Image</span>
-                            </div>
-                            {% endif %}
-                            <span
-                                class="position-absolute top-0 start-0 m-3 badge bg-danger p-2 px-3 shadow-sm">Lost</span>
-                        </div>
-                        <div class="card-body text-center">
-                            <h6 class="fw-bold mb-1">{{ pet.pet_type }} - {{ pet.breed }}</h6>
-                            <p class="text-muted small mb-0"><i class="bi bi-geo-alt-fill"></i> {{ pet.location }}</p>
-                        </div>
-                    </div>
-                </a>
-            </div>
-            {% empty %}
-            <div class="col-12 py-5 text-center">
-                <p class="text-muted mb-0">No lost pets listed recently.</p>
-            </div>
-            {% endfor %}
-        </div>
-
-        <div class="text-center mt-5">
-            <a href="{% url 'search-pets' %}?request_type=Lost" class="btn btn-outline-primary px-4 rounded-pill">View
-                All Lost Pets <i class="bi bi-arrow-right ms-1"></i></a>
-        </div>
-    </div>
-</section>
-
-<!-- FOUND PETS -->
-<section class="py-5 teal-section">
-    <div class="container">
-        <h2 class="text-center text-white section-title mb-4">Recently Found Pets</h2>
-
-        <div class="row g-4">
-            {% for pet in found_pets|slice:":4" %}
-            <div class="col-md-3">
-                <a href="{% url 'pet-detail' pet.id %}" class="text-decoration-none text-dark d-block h-100">
-                    <div class="card h-100 border-0">
-                        <div class="position-relative">
-                            {% if pet.image %}
-                            <img src="{{ pet.image.url }}" class="card-img-top w-100">
-                            {% else %}
-                            <div class="bg-secondary d-flex align-items-center justify-content-center w-100"
-                                style="height: 220px; border-top-left-radius: 12px; border-top-right-radius: 12px;">
-                                <span class="text-white small">No Image</span>
-                            </div>
-                            {% endif %}
-                            <span
-                                class="position-absolute top-0 start-0 m-3 badge bg-success p-2 px-3 shadow-sm">Found</span>
-                        </div>
-                        <div class="card-body text-center">
-                            <h6 class="fw-bold mb-1">{{ pet.pet_type }} - {{ pet.breed }}</h6>
-                            <p class="text-muted small mb-0"><i class="bi bi-geo-alt-fill"></i> {{ pet.location }}</p>
-                        </div>
-                    </div>
-                </a>
-            </div>
-            {% empty %}
-            <div class="col-12 py-5 text-center text-white">
-                <p class="mb-0">No found pets listed recently.</p>
-            </div>
-            {% endfor %}
-        </div>
-
-        <div class="text-center mt-5">
-            <a href="{% url 'search-pets' %}?request_type=Found" class="btn btn-outline-light px-4 rounded-pill">View
-                All Found Pets <i class="bi bi-arrow-right ms-1"></i></a>
-        </div>
-    </div>
-</section>
-
-<!-- ADOPTION PETS -->
-<section class="py-5 bg-light border-top">
-    <div class="container">
-        <h2 class="text-center section-title mb-4" style="color: #6f42c1;">Pets for Adoption</h2>
-
-        <div class="row g-4">
-            {% for pet in adoption_pets|slice:":4" %}
-            <div class="col-md-3">
-                <a href="{% url 'pet-detail' pet.id %}" class="text-decoration-none text-dark d-block h-100">
-                    <div class="card h-100 border-0 shadow-sm" style="border: 1px solid #e2d9f3 !important;">
-                        <div class="position-relative">
-                            {% if pet.image %}
-                            <img src="{{ pet.image.url }}" class="card-img-top w-100">
-                            {% else %}
-                            <div class="bg-secondary d-flex align-items-center justify-content-center w-100"
-                                style="height: 220px; border-top-left-radius: 12px; border-top-right-radius: 12px; background-color: #f1eef6 !important;">
-                                <span class="text-muted small">No Image</span>
-                            </div>
-                            {% endif %}
-                            <span class="position-absolute top-0 start-0 m-3 badge text-white p-2 px-3 shadow-sm"
-                                style="background-color: #6f42c1;">Adoption</span>
-                        </div>
-                        <div class="card-body text-center">
-                            <h6 class="fw-bold mb-1" style="color: #6f42c1;">{{ pet.pet_type }} - {{ pet.breed }}</h6>
-                            <p class="text-muted small mb-0"><i class="bi bi-geo-alt-fill"></i> {{ pet.location }}</p>
-                        </div>
-                    </div>
-                </a>
-            </div>
-            {% empty %}
-            <div class="col-12 py-5 text-center">
-                <p class="text-muted mb-0">No pets listed for adoption right now.</p>
-            </div>
-            {% endfor %}
-        </div>
-
-        <div class="text-center mt-5">
-            <a href="{% url 'search-pets' %}?request_type=Adoption" class="btn btn-outline-primary px-4 rounded-pill"
-                style="color: #6f42c1; border-color: #6f42c1;">View
-                All Adoption Pets <i class="bi bi-arrow-right ms-1"></i></a>
-        </div>
-    </div>
-</section>
-{% endif %}
-
+{% block scripts %}
+<script>
+    // Specific Hero animations for landing page entrance
+    document.addEventListener('DOMContentLoaded', () => {
+        const tl = gsap.timeline();
+        tl.from(".hero-title", { opacity: 0, y: 50, duration: 1, ease: "power4.out" })
+          .from(".hero-section .lead", { opacity: 0, y: 30, duration: 0.8, ease: "power3.out" }, "-=0.6")
+          .from(".hero-section .btn-premium", { opacity: 0, scale: 0.8, duration: 0.5, stagger: 0.2, ease: "back.out(1.7)" }, "-=0.4");
+    });
+</script>
 {% endblock %}

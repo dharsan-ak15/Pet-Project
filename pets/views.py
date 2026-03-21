@@ -10,6 +10,7 @@ from django.utils import timezone
 
 from .forms import PetRequestForm, PetSearchForm, CommentForm
 from .models import Notification, PetRequest
+from .location_data import INDIAN_LOCATIONS
 
 
 def create_pet_request(request):
@@ -28,10 +29,11 @@ def create_pet_request(request):
             pet_request = form.save(commit=False)
             pet_request.user = request.user
             
-            # Combine district and area into location
-            district = form.cleaned_data.get('district')
+            # Save location details
+            pet_request.state = form.cleaned_data.get('state')
+            pet_request.district = form.cleaned_data.get('district')
             area = form.cleaned_data.get('area')
-            pet_request.location = f"{area}, {district}"
+            pet_request.location = f"{area}, {pet_request.district}, {pet_request.state}"
             
             # Staff reports are auto-approved (direct listing)
             if request.user.is_staff:
@@ -51,9 +53,12 @@ def create_pet_request(request):
             print("ERRORS:", form.errors)
 
     else:
-        form = PetRequestForm()
+        form = PetRequestForm(user=request.user)
 
-    return render(request, 'pets/pet_request_form.html', {'form': form})
+    return render(request, 'pets/pet_request_form.html', {
+        'form': form,
+        'indian_locations': INDIAN_LOCATIONS
+    })
 
 
 def edit_pet_request(request, request_id):
@@ -63,12 +68,17 @@ def edit_pet_request(request, request_id):
     pet_request = get_object_or_404(PetRequest, id=request_id, user=request.user)
 
     if request.method == 'POST':
-        form = PetRequestForm(request.POST, request.FILES, instance=pet_request)
+        form = PetRequestForm(request.POST, request.FILES, instance=pet_request, user=request.user)
         if form.is_valid():
             updated_pet = form.save(commit=False)
-            district = form.cleaned_data.get('district')
+            
+            # Use verified phone if contact info is blank
+            if not updated_pet.contact_information and request.user.profile.is_phone_verified:
+                updated_pet.contact_information = request.user.profile.phone
+            updated_pet.state = form.cleaned_data.get('state')
+            updated_pet.district = form.cleaned_data.get('district')
             area = form.cleaned_data.get('area')
-            updated_pet.location = f"{area}, {district}"
+            updated_pet.location = f"{area}, {updated_pet.district}, {updated_pet.state}"
             # Maintain staff auto-approval on edit
             if request.user.is_staff and updated_pet.status == 'Pending':
                 updated_pet.status = 'Accepted'
@@ -79,16 +89,25 @@ def edit_pet_request(request, request_id):
         # Pre-fill custom form fields from the generated location string
         initial_data = {}
         if pet_request.location:
-            parts = pet_request.location.rsplit(", ", 1)
-            if len(parts) == 2:
+            parts = [p.strip() for p in pet_request.location.split(",")]
+            if len(parts) >= 3:
+                initial_data['area'] = ", ".join(parts[:-2])
+                initial_data['district'] = parts[-2]
+                initial_data['state'] = parts[-1]
+            elif len(parts) == 2:
                 initial_data['area'] = parts[0]
                 initial_data['district'] = parts[1]
+                # Default state if not found (optional)
             else:
                 initial_data['area'] = pet_request.location
                 
-        form = PetRequestForm(instance=pet_request, initial=initial_data)
+        form = PetRequestForm(instance=pet_request, initial=initial_data, user=request.user)
 
-    return render(request, 'pets/pet_request_form.html', {'form': form, 'is_edit': True})
+    return render(request, 'pets/pet_request_form.html', {
+        'form': form, 
+        'is_edit': True,
+        'indian_locations': INDIAN_LOCATIONS
+    })
 
 
 def delete_pet_request(request, request_id):
@@ -113,6 +132,7 @@ def search_pets(request):
     if form.is_valid():
         pet_type = form.cleaned_data.get('pet_type')
         breed = form.cleaned_data.get('breed')
+        state = form.cleaned_data.get('state')
         district = form.cleaned_data.get('district')
         area = form.cleaned_data.get('area')
         request_type = form.cleaned_data.get('request_type') 
@@ -130,10 +150,10 @@ def search_pets(request):
             query &= Q(pet_type=pet_type)
         if breed:
             query &= Q(breed__icontains=breed)
-        if breed:
-            query &= Q(breed__icontains=breed)
+        if state:
+            query &= Q(state=state)
         if district:
-            query &= Q(location__icontains=district)
+            query &= Q(district=district)
         if area:
             query &= Q(location__icontains=area)
 
@@ -149,7 +169,11 @@ def search_pets(request):
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
 
-    return render(request, 'pets/search.html', {'form': form, 'results': page_obj})
+    return render(request, 'pets/search.html', {
+        'form': form, 
+        'results': page_obj,
+        'indian_locations': INDIAN_LOCATIONS
+    })
 
 
 @staff_member_required
@@ -220,41 +244,50 @@ def delete_request(request, request_id):
 def landing_page(request):
     print("LANDING PAGE VIEW IS CALLED!")
 
-    time_threshold = timezone.now() - timedelta(hours=24)
-    golden_hour_pets = PetRequest.objects.filter(
-        status__in=['Pending', 'Accepted'],
-        created_at__gte=time_threshold
-    ).exclude(request_type='Adoption').order_by('-created_at')[:4]
+    context = {}
 
-    lost_pets = PetRequest.objects.filter(
-        request_type='Lost',
-        status='Accepted'
-    ).order_by('-created_at')[:4]
+    if request.user.is_authenticated:
+        time_threshold = timezone.now() - timedelta(hours=24)
+        golden_hour_pets = PetRequest.objects.filter(
+            status__in=['Pending', 'Accepted'],
+            created_at__gte=time_threshold
+        ).exclude(request_type='Adoption').order_by('-created_at')[:4]
 
-    found_pets = PetRequest.objects.filter(
-        request_type='Found',
-        status='Accepted'
-    ).order_by('-created_at')[:4]
+        lost_pets = PetRequest.objects.filter(
+            request_type='Lost',
+            status='Accepted'
+        ).order_by('-created_at')[:4]
 
-    adoption_pets = PetRequest.objects.filter(
-        request_type='Adoption',
-        status='Accepted'
-    ).order_by('-created_at')[:4]
+        found_pets = PetRequest.objects.filter(
+            request_type='Found',
+            status='Accepted'
+        ).order_by('-created_at')[:4]
 
+        adoption_pets = PetRequest.objects.filter(
+            request_type='Adoption',
+            status='Accepted'
+        ).order_by('-created_at')[:4]
+
+        context.update({
+            'golden_hour_pets': golden_hour_pets,
+            'lost_pets': lost_pets,
+            'found_pets': found_pets,
+            'adoption_pets': adoption_pets,
+        })
+
+    # Stats are always visible but we can customize if needed
     total_pets = PetRequest.objects.count()
     total_reunited = PetRequest.objects.filter(status='Reunited').count()
     from django.contrib.auth.models import User
     total_users = User.objects.count()
+    total_staff = User.objects.filter(is_staff=True).count()
 
-    context = {
-        'golden_hour_pets': golden_hour_pets,
-        'lost_pets': lost_pets,
-        'found_pets': found_pets,
-        'adoption_pets': adoption_pets,
+    context.update({
         'total_pets': total_pets,
         'total_reunited': total_reunited,
         'total_users': total_users,
-    }
+        'total_staff': total_staff,
+    })
 
     return render(request, 'landing.html', context)
 
@@ -286,6 +319,7 @@ def adoption_pets(request):
     pets = PetRequest.objects.filter(request_type='Adoption', status='Accepted')
     return render(request, 'adoption_pets.html', {'pets': pets})
 
+@login_required
 def golden_hour_list(request):
     time_threshold = timezone.now() - timedelta(hours=24)
     pets = PetRequest.objects.filter(

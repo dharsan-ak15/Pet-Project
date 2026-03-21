@@ -2,27 +2,14 @@ from django import forms
 
 from .models import PetRequest, Comment, ReportAbuse
 from accounts.models import SystemComplaint
+from .location_data import INDIAN_LOCATIONS
 
 
 class PetRequestForm(forms.ModelForm):
-    DISTRICTS_TN = [
-        ('', 'Select District'),
-        ('Ariyalur', 'Ariyalur'), ('Chengalpattu', 'Chengalpattu'), ('Chennai', 'Chennai'),
-        ('Coimbatore', 'Coimbatore'), ('Cuddalore', 'Cuddalore'), ('Dharmapuri', 'Dharmapuri'),
-        ('Dindigul', 'Dindigul'), ('Erode', 'Erode'), ('Kallakurichi', 'Kallakurichi'),
-        ('Kanchipuram', 'Kanchipuram'), ('Kanyakumari', 'Kanyakumari'), ('Karur', 'Karur'),
-        ('Krishnagiri', 'Krishnagiri'), ('Madurai', 'Madurai'), ('Mayiladuthurai', 'Mayiladuthurai'),
-        ('Nagapattinam', 'Nagapattinam'), ('Namakkal', 'Namakkal'), ('Nilgiris', 'Nilgiris'),
-        ('Perambalur', 'Perambalur'), ('Pudukkottai', 'Pudukkottai'), ('Ramanathapuram', 'Ramanathapuram'),
-        ('Ranipet', 'Ranipet'), ('Salem', 'Salem'), ('Sivaganga', 'Sivaganga'),
-        ('Tenkasi', 'Tenkasi'), ('Thanjavur', 'Thanjavur'), ('Theni', 'Theni'),
-        ('Thoothukudi', 'Thoothukudi'), ('Tiruchirappalli', 'Tiruchirappalli'),
-        ('Tirunelveli', 'Tirunelveli'), ('Tirupattur', 'Tirupattur'), ('Tiruppur', 'Tiruppur'),
-        ('Tiruvallur', 'Tiruvallur'), ('Tiruvannamalai', 'Tiruvannamalai'), ('Tiruvarur', 'Tiruvarur'),
-        ('Vellore', 'Vellore'), ('Viluppuram', 'Viluppuram'), ('Virudhunagar', 'Virudhunagar')
-    ]
+    state_choices = [('', 'Select State')] + [(state, state) for state in INDIAN_LOCATIONS.keys()]
     
-    district = forms.ChoiceField(choices=DISTRICTS_TN, required=True, label="District")
+    state = forms.ChoiceField(choices=state_choices, required=True, label="State")
+    district = forms.ChoiceField(choices=[('', 'Select District')], required=True, label="District")
     area = forms.CharField(max_length=150, required=True, label="Area / Landmark", widget=forms.TextInput(attrs={'placeholder': 'e.g., Near Gandhipuram Bus Stand'}))
 
     class Meta:
@@ -36,6 +23,9 @@ class PetRequestForm(forms.ModelForm):
             'age_unit',
             'size',
             'color',
+            'state',
+            'district',
+            'area',
             'vaccination_status',
             'medical_conditions',
             'description',
@@ -48,7 +38,14 @@ class PetRequestForm(forms.ModelForm):
         }
 
     def __init__(self, *args, **kwargs):
+        self.user = kwargs.pop('user', None)
         super().__init__(*args, **kwargs)
+        
+        if self.user and hasattr(self.user, 'profile') and self.user.profile.is_phone_verified:
+            self.fields['contact_information'].required = False
+            self.fields['contact_information'].widget = forms.HiddenInput()
+            self.fields['contact_information'].initial = self.user.profile.phone
+
         for name, field in self.fields.items():
             if isinstance(field.widget, forms.CheckboxInput):
                 field.widget.attrs.update({'class': 'form-check-input'})
@@ -59,11 +56,12 @@ class PetRequestForm(forms.ModelForm):
 
 
 class PetSearchForm(forms.Form):
-    DISTRICTS_TN = PetRequestForm.DISTRICTS_TN
+    state_choices = [('', 'Any State')] + [(state, state) for state in sorted(INDIAN_LOCATIONS.keys())]
     
     pet_type = forms.ChoiceField(choices=[('', 'Any')] + PetRequest.PET_TYPES, required=False)
     breed = forms.CharField(max_length=100, required=False)
-    district = forms.ChoiceField(choices=[('', 'Any District')] + DISTRICTS_TN[1:], required=False)
+    state = forms.ChoiceField(choices=state_choices, required=False)
+    district = forms.ChoiceField(choices=[('', 'Any District')], required=False)
     area = forms.CharField(max_length=150, required=False, label="Area/Landmark")
     gender = forms.ChoiceField(
     choices=[('', 'Any')] + PetRequest.GENDER_CHOICES,

@@ -2,39 +2,60 @@
 {% load static %}
 {% block content %}
 
-<div class="row justify-content-center">
-    <div class="col-md-5">
-        <div class="card shadow-sm">
-            <div class="card-body">
-                <h3 class="mb-3 text-center">Login</h3>
+<div class="container py-5">
+    <div class="row justify-content-center py-5">
+        <div class="col-md-5 fade-in-up">
+            <div class="glass-card border-0 shadow-lg p-5" style="background: white;">
+                <div class="text-center mb-5">
+                    <div class="d-inline-block p-3 rounded-circle bg-primary bg-opacity-10 mb-4">
+                        <i class="bi bi-person-lock display-4 text-primary"></i>
+                    </div>
+                    <h2 class="fw-bold" style="letter-spacing: -1px;">Welcome Back</h2>
+                    <p class="text-muted">Login to your account to continue</p>
+                </div>
 
                 <form method="post">
                     {% csrf_token %}
 
-                    <div class="mb-3">
-                        <label>Username</label>
+                    <div class="mb-4">
+                        <label class="form-label text-muted fw-bold small text-uppercase" style="letter-spacing: 0.5px;">Username</label>
                         {{ form.username }}
                     </div>
 
-                    <div class="mb-3">
-                        <label>Password</label>
+                    <div class="mb-5">
+                        <label class="form-label text-muted fw-bold small text-uppercase" style="letter-spacing: 0.5px;">Password</label>
                         {{ form.password }}
                     </div>
 
-                    <button type="submit" class="btn btn-primary w-100">
-                        Login
+                    <button type="submit" class="btn-premium btn-premium-primary w-100 mb-4 py-3 shadow-sm">
+                        Login Now <i class="bi bi-arrow-right-short ms-2"></i>
                     </button>
+                    
+                    <div class="text-center">
+                        <p class="text-muted small">Don't have an account? 
+                            <a href="{% url 'register' %}" class="text-primary fw-bold text-decoration-none">Create a free account</a>
+                        </p>
+                    </div>
                 </form>
-
-                <div class="text-center mt-3">
-                    <a href="{% url 'register' %}">
-                        Don’t have an account? Sign Up
-                    </a>
-                </div>
-
             </div>
         </div>
     </div>
 </div>
+
+<style>
+    input[type="text"], input[type="password"] {
+        border-radius: 12px !important;
+        border: 1px solid #e2e8f0 !important;
+        padding: 12px 15px !important;
+        background-color: #f8fafc !important;
+        width: 100% !important;
+        display: block;
+    }
+    input[type="text"]:focus, input[type="password"]:focus {
+        border-color: var(--primary) !important;
+        box-shadow: 0 0 0 4px hsla(var(--primary-h), var(--primary-s), var(--primary-l), 0.1) !important;
+        outline: none;
+    }
+</style>
 
 {% endblock %}

@@ -1,45 +1,72 @@
 {% extends 'base.html' %}
 {% block content %}
 <div class="container py-5 mt-5">
-    <div class="row mb-5 text-center">
-        <div class="col-md-8 mx-auto">
-            <h1 class="display-5 fw-bold text-info mb-3"><i class="bi bi-search me-2"></i>Found Pet Protocol</h1>
-            <p class="lead text-secondary">Thank you for helping! Follow these steps to safely reunite the pet with its
-                owner.</p>
+    <div class="row mb-5 text-center fade-in-up">
+        <div class="col-md-10 col-lg-8 mx-auto">
+            <span class="badge bg-info bg-opacity-10 text-info px-3 py-2 rounded-pill fw-bold mb-3">Community Hero Guide</span>
+            <h1 class="display-4 fw-bold text-dark mb-3" style="letter-spacing: -2px;"><i class="bi bi-search text-info me-3"></i>Found Pet Protocol</h1>
+            <p class="lead text-secondary fs-4">Thank you for helping! Follow these steps to safely reunite the pet with its owner.</p>
         </div>
     </div>
 
     <div class="row">
-        <div class="col-md-8 mx-auto">
-            <div class="card border-0 shadow-sm rounded-4 mb-4 border-start border-info border-5">
-                <div class="card-body p-4">
-                    <h4 class="fw-bold text-info"><i class="bi bi-shield-check me-2"></i>Secure the Pet Safely</h4>
-                    <p class="text-muted mb-0">Approach cautiously. If safe, secure the pet in a fenced area, leash
-                        them, or use a carrier. Provide fresh water but avoid large amounts of food initially.</p>
+        <div class="col-md-10 col-lg-8 mx-auto">
+            <div class="glass-card border-0 shadow-lg p-0 mb-4 overflow-hidden fade-in-up delay-1" style="background: white;">
+                <div class="p-4 p-md-5 d-flex align-items-start gap-4 transition-base hover-lift border-start border-5 border-info">
+                    <div class="flex-shrink-0">
+                        <div class="bg-info bg-opacity-10 text-info rounded-4 p-3 d-flex align-items-center justify-content-center" style="width: 70px; height: 70px;">
+                            <i class="bi bi-shield-check fs-2"></i>
+                        </div>
+                    </div>
+                    <div>
+                        <h4 class="fw-bold fs-3 mb-2 text-info">Secure the Pet Safely</h4>
+                        <p class="text-muted fs-5 mb-0 lh-lg">Approach cautiously. If safe, secure the pet in a fenced area, leash them, or use a carrier. Provide fresh water but avoid large amounts of food initially.</p>
+                    </div>
                 </div>
             </div>
-            <div class="card border-0 shadow-sm rounded-4 mb-4 border-start border-info border-5">
-                <div class="card-body p-4">
-                    <h4 class="fw-bold text-info"><i class="bi bi-tag-fill me-2"></i>Check for ID Tags</h4>
-                    <p class="text-muted mb-0">Look for a collar with an ID tag or a rabies tag. If you find a phone
-                        number, attempt to call the owner immediately.</p>
+
+            <div class="glass-card border-0 shadow-lg p-0 mb-4 overflow-hidden fade-in-up delay-1" style="background: white;">
+                <div class="p-4 p-md-5 d-flex align-items-start gap-4 transition-base hover-lift border-start border-5 border-info">
+                    <div class="flex-shrink-0">
+                        <div class="bg-info bg-opacity-10 text-info rounded-4 p-3 d-flex align-items-center justify-content-center" style="width: 70px; height: 70px;">
+                            <i class="bi bi-tag-fill fs-2"></i>
+                        </div>
+                    </div>
+                    <div>
+                        <h4 class="fw-bold fs-3 mb-2 text-info">Check for ID Tags</h4>
+                        <p class="text-muted fs-5 mb-0 lh-lg">Look for a collar with an ID tag or a rabies tag. If you find a phone number, attempt to call the owner immediately.</p>
+                    </div>
                 </div>
             </div>
-            <div class="card border-0 shadow-sm rounded-4 mb-4 border-start border-info border-5">
-                <div class="card-body p-4">
-                    <h4 class="fw-bold text-info"><i class="bi bi-hospital me-2"></i>Scan for a Microchip</h4>
-                    <p class="text-muted mb-0">Take the pet to the nearest veterinary clinic or animal shelter to be
-                        scanned for a microchip for free.</p>
+
+            <div class="glass-card border-0 shadow-lg p-0 mb-4 overflow-hidden fade-in-up delay-2" style="background: white;">
+                <div class="p-4 p-md-5 d-flex align-items-start gap-4 transition-base hover-lift border-start border-5 border-info">
+                    <div class="flex-shrink-0">
+                        <div class="bg-info bg-opacity-10 text-info rounded-4 p-3 d-flex align-items-center justify-content-center" style="width: 70px; height: 70px;">
+                            <i class="bi bi-hospital fs-2"></i>
+                        </div>
+                    </div>
+                    <div>
+                        <h4 class="fw-bold fs-3 mb-2 text-info">Scan for a Microchip</h4>
+                        <p class="text-muted fs-5 mb-0 lh-lg">Take the pet to the nearest veterinary clinic or animal shelter to be scanned for a microchip for free. This is the fastest way to find owner info.</p>
+                    </div>
                 </div>
             </div>
-            <div class="card border-0 shadow-sm rounded-4 mb-4 border-start border-info border-5">
-                <div class="card-body p-4">
-                    <h4 class="fw-bold text-info"><i class="bi bi-megaphone-fill me-2"></i>Create a "Found" Listing</h4>
-                    <p class="text-muted mb-0">Report the found pet on Pet Portal. Withhold one identifying feature
-                        (like a specific marking) so the true owner can verify it when they claim the pet.</p>
+
+            <div class="glass-card border-0 shadow-lg p-0 mb-4 overflow-hidden fade-in-up delay-2" style="background: white;">
+                <div class="p-4 p-md-5 d-flex align-items-start gap-4 transition-base hover-lift border-start border-5 border-info">
+                    <div class="flex-shrink-0">
+                        <div class="bg-info bg-opacity-10 text-info rounded-4 p-3 d-flex align-items-center justify-content-center" style="width: 70px; height: 70px;">
+                            <i class="bi bi-megaphone-fill fs-2"></i>
+                        </div>
+                    </div>
+                    <div>
+                        <h4 class="fw-bold fs-3 mb-2 text-info">Create a "Found" Listing</h4>
+                        <p class="text-muted fs-5 mb-0 lh-lg">Report the found pet on Pet Portal. Withhold one identifying feature (like a specific marking) so the true owner can verify it when they claim the pet.</p>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 </div>
-{% endblock %}
+{% endblock %}

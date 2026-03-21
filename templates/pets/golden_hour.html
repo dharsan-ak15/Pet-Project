@@ -2,85 +2,123 @@
 {% load static %}
 {% block content %}
 
-<div class="bg-warning bg-opacity-10 py-5 border-bottom border-warning">
-    <div class="container text-center">
-        <h1 class="display-5 fw-bold text-warning mb-3"><i class="bi bi-hourglass-split me-2"></i>Golden Hour Alerts
-        </h1>
-        <p class="lead text-muted mx-auto" style="max-width: 700px;">
-            These pets have been reported within the last 24 hours and require immediate community attention. Help us
-            reunite them quickly!
+<div class="py-5" style="background: hsla(45, 100%, 51%, 0.05); border-bottom: 1px solid hsla(45, 100%, 51%, 0.1);">
+    <div class="container text-center fade-in-up">
+        <div class="d-inline-block p-3 rounded-circle mb-4" style="background: hsla(45, 100%, 51%, 0.1);">
+            <i class="bi bi-hourglass-split display-4 text-warning"></i>
+        </div>
+        <h1 class="fw-bold mb-3" style="letter-spacing: -1px;">Golden Hour Alerts</h1>
+        <p class="text-muted mx-auto fs-5" style="max-width: 650px;">
+            These pets have been reported within the last 24 hours. They require immediate community attention for the best chance of a reunion.
         </p>
     </div>
 </div>
 
-<div class="container py-5 border-top-0">
-    <div class="row g-4">
+<div class="container py-5">
+    <div class="row g-4 fade-in-up delay-1">
         {% for pet in page_obj %}
         <div class="col-md-3">
-            <a href="{% url 'pet-detail' pet.id %}" class="text-decoration-none text-dark d-block h-100">
-                <div class="card h-100 border-warning shadow-sm">
+            <div class="glass-card h-100 border-0 shadow-sm overflow-hidden pet-card-hover" style="background: white;">
+                <a href="{% url 'pet-detail' pet.id %}" class="text-decoration-none text-dark d-block h-100">
                     <div class="position-relative">
                         {% if pet.image %}
-                        <img src="{{ pet.image.url }}" class="card-img-top w-100">
+                        <img src="{{ pet.image.url }}" class="w-100 object-fit-cover" style="height: 220px; transition: transform 0.5s;">
                         {% else %}
-                        <div class="bg-secondary d-flex align-items-center justify-content-center w-100"
-                            style="height: 220px; border-top-left-radius: 12px; border-top-right-radius: 12px;">
-                            <span class="text-white small">No Image</span>
+                        <div class="bg-light d-flex align-items-center justify-content-center w-100" style="height: 220px;">
+                            <i class="bi bi-camera text-muted opacity-25" style="font-size: 2.5rem;"></i>
                         </div>
                         {% endif %}
-                        <span
-                            class="position-absolute top-0 start-0 m-3 badge bg-warning text-dark p-2 px-3 shadow-sm"><i
-                                class="bi bi-clock-history me-1"></i>Golden Hour</span>
-                        {% if pet.request_type == 'Lost' %}
-                        <span class="position-absolute top-0 end-0 m-3 badge bg-danger p-2 px-3 shadow-sm">Lost</span>
-                        {% else %}
-                        <span class="position-absolute top-0 end-0 m-3 badge bg-success p-2 px-3 shadow-sm">Found</span>
-                        {% endif %}
+                        
+                        <div class="position-absolute top-0 start-0 m-2 d-flex flex-column gap-2">
+                           <span class="badge bg-warning text-dark p-2 px-3 shadow-sm rounded-pill fw-bold" style="font-size: 0.7rem;">
+                               <i class="bi bi-clock-history me-1"></i> Golden Hour
+                           </span>
+                        </div>
+                        
+                        <span class="position-absolute top-0 end-0 m-2 badge p-2 px-3 shadow-sm rounded-pill fw-bold" 
+                              style="font-size: 0.7rem; {% if pet.request_type == 'Lost' %}background: var(--danger);{% else %}background: var(--primary);{% endif %} color: white;">
+                            {{ pet.request_type }}
+                        </span>
                     </div>
-                    <div class="card-body text-center bg-warning bg-opacity-10"
-                        style="border-bottom-left-radius: 12px; border-bottom-right-radius: 12px;">
-                        <h6 class="fw-bold mb-1">{{ pet.pet_type }} - {{ pet.breed }}</h6>
-                        <p class="text-muted small mb-2"><i class="bi bi-geo-alt-fill"></i> {{ pet.location }}</p>
-                        <small class="text-warning fw-bold">Reported: {{ pet.created_at|timesince }} ago</small>
+                    
+                    <div class="p-3 text-center" style="background: hsla(45, 100%, 51%, 0.03);">
+                        <h6 class="fw-bold mb-1 text-truncate">{{ pet.pet_type }} - {{ pet.breed }}</h6>
+                        <p class="text-muted small mb-3"><i class="bi bi-geo-alt-fill text-danger me-1"></i> {{ pet.location|truncatechars:20 }}</p>
+                        <div class="pt-2 border-top border-warning border-opacity-10">
+                            <span class="text-warning fw-bold small">Reported {{ pet.created_at|timesince }} ago</span>
+                        </div>
                     </div>
-                </div>
-            </a>
+                </a>
+            </div>
         </div>
         {% empty %}
         <div class="col-12 py-5 text-center">
-            <h4 class="text-muted">No pets currently in the Golden Hour.</h4>
-            <p class="text-muted">That's a great thing for our community!</p>
-            <a href="{% url 'landing' %}" class="btn btn-outline-secondary mt-3">Return Home</a>
+            <div class="glass-card p-5 border-0" style="background: hsla(45, 100%, 51%, 0.05);">
+                <i class="bi bi-check2-circle display-1 text-success opacity-25 mb-4 d-block"></i>
+                <h3 class="fw-bold">All clear in the Golden Hour!</h3>
+                <p class="text-muted mb-4">No new reports in the last 24 hours. You can browse all reports in the search portal.</p>
+                <a href="{% url 'landing' %}" class="btn-premium btn-premium-outline">
+                    <i class="bi bi-house me-2"></i> Return Home
+                </a>
+            </div>
         </div>
         {% endfor %}
     </div>
 
     {% if page_obj.has_other_pages %}
-    <nav aria-label="Page navigation" class="mt-5">
-        <ul class="pagination justify-content-center">
+    <nav aria-label="Page navigation" class="mt-5 fade-in-up delay-2">
+        <ul class="pagination justify-content-center border-0">
             {% if page_obj.has_previous %}
-            <li class="page-item">
-                <a class="page-link text-warning" href="?page={{ page_obj.previous_page_number }}">Previous</a>
+            <li class="page-item mx-1">
+                <a class="page-link rounded-circle d-flex align-items-center justify-content-center text-warning border-0 glass-card" 
+                   href="?page={{ page_obj.previous_page_number }}" style="width: 40px; height: 40px;">
+                    <i class="bi bi-chevron-left"></i>
+                </a>
             </li>
             {% endif %}
 
             {% for num in page_obj.paginator.page_range %}
-            {% if page_obj.number == num %}
-            <li class="page-item active"><span class="page-link bg-warning border-warning text-dark">{{ num }}</span>
+            <li class="page-item mx-1">
+                {% if page_obj.number == num %}
+                <span class="page-link rounded-circle d-flex align-items-center justify-content-center bg-warning text-dark border-0 shadow-sm fw-bold" 
+                      style="width: 40px; height: 40px;">{{ num }}</span>
+                {% else %}
+                <a class="page-link rounded-circle d-flex align-items-center justify-content-center text-muted border-0 glass-card" 
+                   href="?page={{ num }}" style="width: 40px; height: 40px;">{{ num }}</a>
+                {% endif %}
             </li>
-            {% else %}
-            <li class="page-item"><a class="page-link text-warning" href="?page={{ num }}">{{ num }}</a></li>
-            {% endif %}
             {% endfor %}
 
             {% if page_obj.has_next %}
-            <li class="page-item">
-                <a class="page-link text-warning" href="?page={{ page_obj.next_page_number }}">Next</a>
+            <li class="page-item mx-1">
+                <a class="page-link rounded-circle d-flex align-items-center justify-content-center text-warning border-0 glass-card" 
+                   href="?page={{ page_obj.next_page_number }}" style="width: 40px; height: 40px;">
+                    <i class="bi bi-chevron-right"></i>
+                </a>
             </li>
             {% endif %}
         </ul>
     </nav>
     {% endif %}
 </div>
+
+<style>
+    .pet-card-hover {
+        transition: var(--transition-base);
+    }
+    .pet-card-hover:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 15px 30px rgba(0,0,0,0.1) !important;
+    }
+    .pet-card-hover:hover img {
+        transform: scale(1.05);
+    }
+    .page-link:hover {
+        background: hsla(45, 100%, 51%, 0.1) !important;
+        color: var(--warning) !important;
+    }
+</style>
+
+{% endblock %}
 
 {% endblock %}

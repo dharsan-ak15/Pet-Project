@@ -92,6 +92,11 @@
                         </div>
 
                         <div class="col-md-6 mb-3">
+                            <label class="form-label fw-semibold text-secondary small text-uppercase">State *</label>
+                            {{ form.state }}
+                        </div>
+
+                        <div class="col-md-6 mb-3">
                             <label class="form-label fw-semibold text-secondary small text-uppercase">District *</label>
                             {{ form.district }}
                         </div>
@@ -226,6 +231,39 @@
         if (requestTypeSelect) {
             toggleAdoptionFields(); // run on load
             requestTypeSelect.addEventListener("change", toggleAdoptionFields);
+        }
+
+        // --- State/District Dynamic Selection ---
+        const stateSelect = document.querySelector('select[name="state"]');
+        const districtSelect = document.querySelector('select[name="district"]');
+        const locations = {{ indian_locations|safe|default:"{}" }};
+        
+        // Save the currently selected district to restore it on load (e.g., during edit)
+        const initialDistrict = "{{ form.district.value|default:'' }}";
+
+        function updateDistricts() {
+            const selectedState = stateSelect.value;
+            const districts = locations[selectedState] || [];
+            
+            // Clear current options (except the default "Select District")
+            districtSelect.innerHTML = '<option value="">Select District</option>';
+            
+            districts.forEach(district => {
+                const option = document.createElement('option');
+                option.value = district;
+                option.textContent = district;
+                if (district === initialDistrict) {
+                    option.selected = true;
+                }
+                districtSelect.appendChild(option);
+            });
+        }
+
+        if (stateSelect && districtSelect) {
+            stateSelect.addEventListener('change', updateDistricts);
+            if (stateSelect.value) {
+                updateDistricts();
+            }
         }
     });
 </script>

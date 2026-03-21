@@ -1,60 +1,61 @@
 {% extends 'base.html' %}
 {% block content %}
 <div class="container py-5 mt-5">
-    <div class="text-center mb-5">
-        <h1 class="display-4 fw-bold text-success mb-3"><i class="bi bi-journal-medical me-2"></i>Pet Care Guides</h1>
-        <p class="lead text-secondary">Expert tips and resources to keep your furry friends happy and healthy.</p>
+    <div class="text-center mb-5 fade-in-up">
+        <span class="badge bg-primary bg-opacity-10 text-primary px-3 py-2 rounded-pill fw-bold mb-3">Resources & Education</span>
+        <h1 class="display-4 fw-bold text-dark mb-3" style="letter-spacing: -2px;"><i class="bi bi-journal-medical text-primary me-3"></i>Pet Care Guides</h1>
+        <p class="lead text-secondary fs-4">Expert tips and resources to keep your furry friends happy and healthy.</p>
     </div>
 
-    <div class="row g-4">
+    <div class="row g-4 fade-in-up delay-1">
         <div class="col-md-6">
-            <div class="card border-0 shadow-sm h-100 rounded-4 overflow-hidden">
-                <div class="card-body p-5">
-                    <span class="badge bg-success mb-3 p-2 px-3 rounded-pill">Nutrition</span>
-                    <h3 class="fw-bold mb-3">A Balanced Diet for Dogs</h3>
-                    <p class="text-muted mb-4">Discover the best ingredients and feeding schedules for dogs of all sizes
-                        and ages. Nutrition is the foundation of a long life.</p>
-                    <a href="#" class="fw-bold text-success text-decoration-none">Read Guide <i
-                            class="bi bi-arrow-right"></i></a>
+            <div class="glass-card border-0 shadow-lg h-100 transition-base hover-lift overflow-hidden d-flex flex-column" style="background: white;">
+                <div class="p-4 p-lg-5">
+                    <span class="badge bg-success bg-opacity-10 text-success mb-4 p-2 px-3 rounded-pill fw-bold">Nutrition</span>
+                    <h3 class="fw-bold mb-3 fs-2">A Balanced Diet for Dogs</h3>
+                    <p class="text-muted mb-5 fs-5 lh-lg">Discover the best ingredients and feeding schedules for dogs of all sizes and ages. Nutrition is the foundation of a long life.</p>
+                    <a href="#" class="btn-premium btn-premium-primary px-4 py-2 mt-auto d-inline-flex align-items-center">
+                        Read Guide <i class="bi bi-arrow-right ms-2 fs-5"></i>
+                    </a>
                 </div>
             </div>
         </div>
         <div class="col-md-6">
-            <div class="card border-0 shadow-sm h-100 rounded-4 overflow-hidden">
-                <div class="card-body p-5">
-                    <span class="badge bg-info mb-3 p-2 px-3 rounded-pill">Behavior</span>
-                    <h3 class="fw-bold mb-3">Understanding Cat Language</h3>
-                    <p class="text-muted mb-4">From slow blinks to tail twitches, learn what your feline friend is
-                        trying to tell you to strengthen your bond.</p>
-                    <a href="#" class="fw-bold text-info text-decoration-none">Read Guide <i
-                            class="bi bi-arrow-right"></i></a>
+            <div class="glass-card border-0 shadow-lg h-100 transition-base hover-lift overflow-hidden d-flex flex-column" style="background: white;">
+                <div class="p-4 p-lg-5">
+                    <span class="badge bg-info bg-opacity-10 text-info mb-4 p-2 px-3 rounded-pill fw-bold">Behavior</span>
+                    <h3 class="fw-bold mb-3 fs-2">Understanding Cat Language</h3>
+                    <p class="text-muted mb-5 fs-5 lh-lg">From slow blinks to tail twitches, learn what your feline friend is trying to tell you to strengthen your bond.</p>
+                    <a href="#" class="btn-premium btn-premium-primary px-4 py-2 mt-auto d-inline-flex align-items-center" style="--primary: #0dcaf0; --primary-h: 190; --primary-s: 90%; --primary-l: 48%;">
+                        Read Guide <i class="bi bi-arrow-right ms-2 fs-5"></i>
+                    </a>
                 </div>
             </div>
         </div>
         <div class="col-md-6">
-            <div class="card border-0 shadow-sm h-100 rounded-4 overflow-hidden">
-                <div class="card-body p-5">
-                    <span class="badge bg-danger mb-3 p-2 px-3 rounded-pill">Safety</span>
-                    <h3 class="fw-bold mb-3">Microchipping Explained</h3>
-                    <p class="text-muted mb-4">Why microchipping is critical, how it works, and how to make sure your
-                        registry information is always up to date.</p>
-                    <a href="#" class="fw-bold text-danger text-decoration-none">Read Guide <i
-                            class="bi bi-arrow-right"></i></a>
+            <div class="glass-card border-0 shadow-lg h-100 transition-base hover-lift overflow-hidden d-flex flex-column" style="background: white;">
+                <div class="p-4 p-lg-5">
+                    <span class="badge bg-danger bg-opacity-10 text-danger mb-4 p-2 px-3 rounded-pill fw-bold">Safety</span>
+                    <h3 class="fw-bold mb-3 fs-2">Microchipping Explained</h3>
+                    <p class="text-muted mb-5 fs-5 lh-lg">Why microchipping is critical, how it works, and how to make sure your registry information is always up to date.</p>
+                    <a href="#" class="btn-premium btn-premium-primary px-4 py-2 mt-auto d-inline-flex align-items-center" style="--primary: #dc3545; --primary-h: 354; --primary-s: 70%; --primary-l: 54%;">
+                        Read Guide <i class="bi bi-arrow-right ms-2 fs-5"></i>
+                    </a>
                 </div>
             </div>
         </div>
         <div class="col-md-6">
-            <div class="card border-0 shadow-sm h-100 rounded-4 overflow-hidden">
-                <div class="card-body p-5">
-                    <span class="badge bg-warning text-dark mb-3 p-2 px-3 rounded-pill">Health</span>
-                    <h3 class="fw-bold mb-3">Annual Vet Checkups</h3>
-                    <p class="text-muted mb-4">What to expect at your pet's annual exam and preventative measures to
-                        look out for.</p>
-                    <a href="#" class="fw-bold text-warning-emphasis text-decoration-none">Read Guide <i
-                            class="bi bi-arrow-right"></i></a>
+            <div class="glass-card border-0 shadow-lg h-100 transition-base hover-lift overflow-hidden d-flex flex-column" style="background: white;">
+                <div class="p-4 p-lg-5">
+                    <span class="badge bg-warning bg-opacity-10 text-warning-emphasis mb-4 p-2 px-3 rounded-pill fw-bold">Health</span>
+                    <h3 class="fw-bold mb-3 fs-2">Annual Vet Checkups</h3>
+                    <p class="text-muted mb-5 fs-5 lh-lg">What to expect at your pet's annual exam and preventative measures to look out for.</p>
+                    <a href="#" class="btn-premium btn-premium-primary px-4 py-2 mt-auto d-inline-flex align-items-center" style="--primary: #ffc107; --primary-h: 45; --primary-s: 100%; --primary-l: 51%;">
+                        Read Guide <i class="bi bi-arrow-right ms-2 fs-5"></i>
+                    </a>
                 </div>
             </div>
         </div>
     </div>
 </div>
-{% endblock %}
+{% endblock %}

@@ -3,72 +3,75 @@
 
 {% block content %}
 <div class="container py-5">
-    <div class="row mb-4 align-items-center">
+    <div class="section-header d-flex justify-content-between align-items-center mb-5 fade-in-up">
         <div class="col-md-8">
-            <h1 class="display-4 fw-bold" style="color: #6f42c1;">Pets for Adoption</h1>
-            <p class="lead text-muted">Browse pets that are looking for a loving home.</p>
+            <h1 class="fw-bold mb-2" style="letter-spacing: -1px;">Pets for Adoption</h1>
+            <p class="text-muted fs-5 mb-0">Browse pets that are looking for a loving home.</p>
         </div>
         <div class="col-md-4 text-md-end">
-            <a href="{% url 'search-pets' %}?request_type=Adoption" class="btn btn-outline-primary rounded-pill px-4"
-                style="color: #6f42c1; border-color: #6f42c1;">Filter & Search <i class="bi bi-funnel ms-1"></i></a>
+            <a href="{% url 'search-pets' %}?request_type=Adoption" class="btn-premium btn-premium-outline">
+                <i class="bi bi-funnel me-2"></i> Filter & Search
+            </a>
         </div>
     </div>
 
-    <div class="row g-4">
+    <div class="row g-4 fade-in-up delay-1">
         {% for pet in pets %}
         <div class="col-md-4 col-lg-3">
-            <a href="{% url 'pet-detail' pet.id %}" class="text-decoration-none text-dark d-block h-100">
-                <div class="card h-100 shadow-sm border-0"
-                    style="border: 1px solid #e2d9f3 !important; transition: transform 0.2s; cursor: pointer;"
-                    onmouseover="this.style.transform='translateY(-5px)'"
-                    onmouseout="this.style.transform='translateY(0)'">
+            <div class="glass-card h-100 border-0 shadow-sm overflow-hidden pet-card-hover" style="background: white;">
+                <a href="{% url 'pet-detail' pet.id %}" class="text-decoration-none text-dark d-block h-100">
                     <div class="position-relative">
                         {% if pet.image %}
-                        <img src="{{ pet.image.url }}" class="card-img-top w-100 object-fit-cover"
-                            style="height: 250px;">
+                        <img src="{{ pet.image.url }}" class="w-100 object-fit-cover" style="height: 250px; transition: transform 0.5s;">
                         {% else %}
-                        <div class="bg-light d-flex align-items-center justify-content-center w-100"
-                            style="height: 250px; background-color: #f1eef6 !important;">
-                            <i class="bi bi-camera shadow-sm" style="font-size: 3rem; color: #d1c4e9;"></i>
+                        <div class="bg-light d-flex align-items-center justify-content-center w-100" style="height: 250px;">
+                            <i class="bi bi-camera text-muted opacity-25" style="font-size: 3rem;"></i>
                         </div>
                         {% endif %}
-                        <span
-                            class="position-absolute top-0 start-0 m-3 badge text-white px-3 py-2 shadow-sm rounded-pill"
-                            style="background-color: #6f42c1; font-size: 0.85rem;">Adoption</span>
-                        <span
-                            class="position-absolute bottom-0 end-0 m-3 badge bg-white text-dark px-3 py-2 shadow-sm rounded-pill border">{{
-                            pet.get_gender_display }}</span>
+                        <span class="position-absolute top-0 start-0 m-3 badge bg-primary text-white px-3 py-2 shadow-sm rounded-pill fw-bold" style="font-size: 0.75rem;">Adoption</span>
+                        <span class="position-absolute bottom-0 end-0 m-3 badge bg-white text-dark px-3 py-1 shadow-sm rounded-pill border small fw-bold">{{ pet.get_gender_display }}</span>
                     </div>
-                    <div class="card-body">
+                    <div class="p-4">
                         <div class="d-flex justify-content-between align-items-start mb-2">
-                            <h5 class="fw-bold mb-0 text-truncate" style="max-width: 80%; color: #6f42c1;">{{
-                                pet.pet_type }}</h5>
-                            <span class="badge bg-light text-dark border">{{ pet.age }} {{ pet.age_unit }}</span>
+                            <h5 class="fw-bold mb-0 text-truncate" style="max-width: 70%;">{{ pet.pet_type }}</h5>
+                            <span class="badge bg-light text-muted border fw-normal">{{ pet.age }} {{ pet.age_unit }}</span>
                         </div>
-                        <p class="text-muted fw-medium mb-2">{{ pet.breed }}</p>
-                        <hr class="my-2" style="border-color: #e2d9f3;">
-                        <p class="small text-muted mb-0 d-flex align-items-center">
-                            <i class="bi bi-geo-alt-fill me-2" style="color: #6f42c1;"></i> {{
-                            pet.location|truncatechars:25 }}
-                        </p>
+                        <p class="text-muted small mb-3">{{ pet.breed }}</p>
+                        
+                        <div class="pt-3 border-top">
+                            <p class="small text-muted mb-0 d-flex align-items-center">
+                                <i class="bi bi-geo-alt-fill text-danger me-2"></i> {{ pet.location|truncatechars:20 }}
+                            </p>
+                        </div>
                     </div>
-                    <div class="card-footer bg-white border-top-0 pt-0 pb-3" style="border-color: #e2d9f3 !important;">
-                        <small class="text-muted">Listed {{ pet.created_at|timesince }} ago</small>
-                    </div>
-                </div>
-            </a>
+                </a>
+            </div>
         </div>
         {% empty %}
-        <div class="col-12 py-5 text-center">
-            <div class="p-5 bg-light rounded-4" style="background-color: #f1eef6 !important;">
-                <i class="bi bi-house-heart" style="font-size: 4rem; color: #6f42c1;"></i>
-                <h3 class="mt-3 text-dark fw-bold">No Pets Available Yet</h3>
-                <p class="text-muted lead mb-4">Check back later or help out by reporting a pet in need.</p>
-                <a href="{% url 'report-pet' %}" class="btn btn-primary btn-lg rounded-pill px-5"
-                    style="background-color: #6f42c1; border-color: #6f42c1;">Submit a Listing</a>
+        <div class="col-12 py-5 text-center fade-in-up">
+            <div class="glass-card p-5 border-0" style="background: hsla(184, 79%, 28%, 0.05); border: 1px dashed var(--primary-soft) !important;">
+                <i class="bi bi-house-heart display-1 text-primary opacity-25 mb-4 d-block"></i>
+                <h3 class="fw-bold">No Pets Available Yet</h3>
+                <p class="text-muted mb-4">Check back later or help out by reporting a pet in need.</p>
+                <a href="{% url 'report-pet' %}" class="btn-premium btn-premium-primary px-5">
+                    <i class="bi bi-megaphone-fill me-2"></i> Submit a Listing
+                </a>
             </div>
         </div>
         {% endfor %}
     </div>
 </div>
-{% endblock %}
+
+<style>
+    .pet-card-hover {
+        transition: var(--transition-base);
+    }
+    .pet-card-hover:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 15px 30px rgba(0,0,0,0.1) !important;
+    }
+    .pet-card-hover:hover img {
+        transform: scale(1.05);
+    }
+</style>
+{% endblock %}

@@ -10,7 +10,10 @@ from django.db.models import Q
 
 from django.contrib.auth.forms import UserCreationForm
 from django.shortcuts import render, redirect
-
+import random
+from django.utils import timezone
+from datetime import timedelta
+from .models import OTPVerification, Profile
 from .forms import CustomUserRegisterForm
 
 def register_view(request):
@@ -23,9 +26,18 @@ def register_view(request):
         form = CustomUserRegisterForm(request.POST, request.FILES)
         if form.is_valid():
             user = form.save()
-            messages.success(request, 'Registration successful. Please log in.')
-            request.session['registration_success'] = True
-            return redirect('login')
+            login(request, user) # Auto-login
+            
+            # Trigger both OTPs
+            for otp_type in ['Email', 'Phone']:
+                otp_code = str(random.randint(100000, 999999))
+                OTPVerification.objects.create(user=user, otp_code=otp_code, otp_type=otp_type)
+                # Simulated Sending
+                target = user.email if otp_type == 'Email' else user.profile.phone
+                print(f"[REGISTRATION OTP] To: {target} ({otp_type}) | Code: {otp_code}")
+
+            messages.success(request, 'Account created! Please verify your email and phone number to continue.')
+            return redirect('verification-required')
     else:
         form = CustomUserRegisterForm()
 
@@ -176,4 +188,81 @@ def request_to_admin(request):
         'form': form,
         'has_pending': existing_request is not None,
         'last_rejected_request': last_rejected_request
+    })
+
+
+@login_required
+def send_otp(request, otp_type):
+    if otp_type not in ['Email', 'Phone']:
+        messages.error(request, "Invalid OTP type.")
+        return redirect('profile')
+
+    # Delete any existing unused OTPs for this user and type
+    OTPVerification.objects.filter(user=request.user, otp_type=otp_type, is_used=False).delete()
+
+    # Generate a 6-digit OTP
+    otp_code = str(random.randint(100000, 999999))
+    OTPVerification.objects.create(
+        user=request.user,
+        otp_code=otp_code,
+        otp_type=otp_type
+    )
+
+    # Simulated Sending
+    target = request.user.email if otp_type == 'Email' else request.user.profile.phone
+    print(f"\n[SIMULATED {otp_type.upper()} OTP] To: {target} | Code: {otp_code}\n")
+    
+    messages.success(request, f"A 6-digit OTP has been sent to your {otp_type.lower()}.")
+    return redirect('verify-otp', otp_type=otp_type)
+
+
+@login_required
+def verify_otp(request, otp_type):
+    if request.method == 'POST':
+        otp_code = request.POST.get('otp_code')
+        # Find the latest unused OTP of this type
+        otp_obj = OTPVerification.objects.filter(
+            user=request.user, 
+            otp_type=otp_type, 
+            is_used=False
+        ).order_by('-created_at').first()
+
+        if not otp_obj:
+            messages.error(request, "No active OTP found. Please request a new one.")
+            return redirect('profile')
+
+        # Check for expiry (15 minutes)
+        if timezone.now() > otp_obj.created_at + timedelta(minutes=15):
+            otp_obj.is_used = True # Mark as "expired" effectively
+            otp_obj.save()
+            messages.error(request, "OTP has expired. Please request a new one.")
+            return redirect('profile')
+
+        if otp_obj.otp_code == otp_code:
+            otp_obj.is_used = True
+            otp_obj.save()
+            
+            profile = request.user.profile
+            if otp_type == 'Email':
+                profile.is_email_verified = True
+            else:
+                profile.is_phone_verified = True
+            profile.save()
+            
+            messages.success(request, f"Your {otp_type.lower()} has been verified successfully!")
+            return redirect('profile')
+        else:
+            messages.error(request, "Invalid OTP. Please try again.")
+
+    return render(request, 'accounts/verify_otp.html', {'otp_type': otp_type})
+
+
+@login_required
+def verification_required(request):
+    profile = request.user.profile
+    if profile.is_phone_verified and profile.is_email_verified:
+        return redirect('dashboard')
+        
+    return render(request, 'accounts/verification_required.html', {
+        'profile': profile
     })

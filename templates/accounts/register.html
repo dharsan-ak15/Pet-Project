@@ -2,154 +2,152 @@
 {% load static %}
 {% block content %}
 
-<style>
-    .auth-bg {
-        background: url("{% static 'images/auth-bg.png' %}") center center/cover no-repeat;
-        min-height: calc(100vh - 76px);
-        border-top-right-radius: 20px;
-        border-bottom-right-radius: 20px;
-        box-shadow: inset 10px 0 20px rgba(0, 0, 0, 0.1);
-        transform: scaleX(-1);
-        /* Flips the image so the dog is on the right, for variety! */
-    }
-
-    .auth-form-container {
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        padding: 4rem;
-        min-height: calc(100vh - 76px);
-    }
-
-    .auth-card {
-        border: none;
-        border-radius: 15px;
-        background: white;
-    }
-
-    @media (max-width: 768px) {
-        .auth-bg {
-            min-height: 250px;
-            border-radius: 0;
-            transform: none;
-        }
-
-        .auth-form-container {
-            padding: 2rem;
-            min-height: auto;
-        }
-    }
-
-    /* Style Django's default help texts */
-    .helptext {
-        font-size: 0.8rem !important;
-        color: #6c757d !important;
-        /* Bootstrap text-muted */
-        display: block;
-        margin-top: 0.25rem;
-        margin-bottom: 0.5rem;
-        line-height: 1.2;
-    }
-
-    .helptext ul {
-        padding-left: 1.2rem;
-        margin-top: 0.25rem;
-        margin-bottom: 0;
-    }
-
-    .helptext li {
-        list-style-type: disc;
-    }
-</style>
-
-<div class="container-fluid p-0">
-    <div class="row g-0 flex-row-reverse">
-        <!-- Image Side -->
-        <div class="col-md-6 d-none d-md-block auth-bg">
+<div class="container-fluid p-0 overflow-hidden">
+    <div class="row g-0 min-vh-100 flex-row-reverse">
+        <!-- Visual Side -->
+        <div class="col-md-6 d-none d-md-block position-relative">
+            <div class="h-100 w-100" style="background: url('{% static 'images/auth-bg.png' %}') center center/cover no-repeat; transform: scaleX(-1);">
+                <div class="position-absolute bottom-0 start-0 w-100 p-5" style="background: linear-gradient(0deg, rgba(15, 124, 130, 0.8) 0%, transparent 100%); transform: scaleX(-1);">
+                    <h2 class="text-white fw-bold mb-2">Be the hero they need.</h2>
+                    <p class="text-white opacity-75 fs-5">Your contribution makes a world of difference in a pet's life.</p>
+                </div>
+            </div>
         </div>
 
         <!-- Form Side -->
-        <div class="col-md-6 auth-form-container bg-white">
-            <div class="mx-auto w-100" style="max-width: 480px;">
-                <div class="text-center mb-4">
-                    <h2 class="fw-bold text-dark"><i class="bi bi-person-plus text-primary me-2"></i>Join the Community
-                    </h2>
-                    <p class="text-muted">Create an account to report pets and help reunite families.</p>
-                </div>
-
-                <div class="card auth-card shadow-lg">
-                    <div class="card-body p-4">
-                        <form method="post" novalidate>
-                            {% csrf_token %}
-                            {% for field in form %}
-                            <div class="mb-3">
-                                <label for="{{ field.id_for_label }}" class="form-label fw-bold text-dark mb-1">
-                                    {{ field.label }}
-                                    {% if field.field.required %}
-                                    <span class="text-danger fw-bold">*</span>
-                                    {% endif %}
-                                    {% if field.help_text %}
-                                    <i class="bi bi-info-circle text-primary ms-1" data-bs-toggle="tooltip"
-                                        data-bs-placement="top" title="{{ field.help_text|striptags }}"
-                                        style="cursor: pointer;"></i>
-                                    {% endif %}
-                                </label>
-                                {% if 'password' in field.name.lower %}
-                                <div class="password-toggle-group">
-                                    {{ field }}
-                                    <button type="button" class="password-toggle-btn"
-                                        onclick="togglePasswordVisibility('{{ field.id_for_label }}', 'toggle-btn-{{ forloop.counter }}')"
-                                        id="toggle-btn-{{ forloop.counter }}">
-                                        <i class="bi bi-eye"></i>
-                                    </button>
-                                </div>
-                                {% else %}
-                                {{ field }}
-                                {% endif %}
-                                {% if field.errors %}
-                                <div class="text-danger small mt-1">
-                                    {% for error in field.errors %}
-                                    <i class="bi bi-exclamation-circle me-1"></i>{{ error }}
-                                    {% endfor %}
-                                </div>
-                                {% endif %}
-                            </div>
-                            {% endfor %}
-                            <button class="btn btn-primary btn-lg w-100 mt-4 rounded-pill fw-bold shadow-sm"
-                                type="submit">
-                                Create Account <i class="bi bi-person-check ms-1"></i>
-                            </button>
-                        </form>
+        <div class="col-md-6 d-flex align-items-center justify-content-center bg-light bg-opacity-50 py-5">
+            <div class="w-100 px-4 px-lg-5" style="max-width: 520px;">
+                <div class="text-start mb-5 fade-in-up">
+                    <div class="mb-4 d-inline-block">
+                        <div class="bg-primary bg-opacity-10 p-3 rounded-4 shadow-sm">
+                            <i class="bi bi-person-plus-fill fs-1 text-primary"></i>
+                        </div>
                     </div>
+                    <h1 class="fw-bold mb-2" style="letter-spacing: -1.5px;">Join the Community</h1>
+                    <p class="text-muted fs-5">Create an account to report pets and help reunite families.</p>
                 </div>
 
-                <p class="text-center mt-4 mb-0 text-muted">
-                    Already have an account? <a href="{% url 'login' %}" class="fw-bold text-decoration-none">Login
-                        here</a>
-                </p>
+                <div class="glass-card border-0 shadow-lg p-4 p-lg-5 fade-in-up delay-1" style="background: white;">
+                    <form method="post" class="modern-form" novalidate>
+                        {% csrf_token %}
+                        {% for field in form %}
+                        <div class="mb-4">
+                            <label for="{{ field.id_for_label }}" class="form-label text-muted fw-bold small text-uppercase d-flex align-items-center" style="letter-spacing: 0.5px;">
+                                {{ field.label }}
+                                {% if field.field.required %}<span class="text-danger ms-1">*</span>{% endif %}
+                                {% if field.help_text %}
+                                <i class="bi bi-info-circle text-primary ms-2" data-bs-toggle="tooltip" data-bs-placement="top" title="{{ field.help_text|striptags }}" style="cursor: pointer; font-size: 0.8rem;"></i>
+                                {% endif %}
+                            </label>
+                            
+                            {% if 'password' in field.name.lower %}
+                            <div class="position-relative">
+                                {{ field }}
+                                <button type="button" class="position-absolute end-0 top-50 translate-middle-y border-0 bg-transparent px-3 text-muted"
+                                    onclick="togglePasswordVisibility('{{ field.id_for_label }}', 'toggle-btn-{{ forloop.counter }}')"
+                                    id="toggle-btn-{{ forloop.counter }}">
+                                    <i class="bi bi-eye"></i>
+                                </button>
+                            </div>
+                            {% else %}
+                            {{ field }}
+                            {% endif %}
+                            
+                            {% if field.errors %}
+                            <div class="text-danger small fw-bold mt-2">
+                                {% for error in field.errors %}
+                                <i class="bi bi-exclamation-circle me-1"></i>{{ error }}
+                                {% endfor %}
+                            </div>
+                            {% endif %}
+                        </div>
+                        {% endfor %}
+
+                        <button class="btn-premium btn-premium-primary w-100 py-3 mt-4 fw-bold shadow" type="submit">
+                            Create Account <i class="bi bi-person-check ms-1"></i>
+                        </button>
+                    </form>
+                </div>
+
+                <div class="text-center mt-5 fade-in-up delay-2">
+                    <p class="text-muted">
+                        Already have an account? <a href="{% url 'login' %}" class="text-primary fw-bold text-decoration-none border-bottom border-primary border-2 pb-1 transition-base">Login here</a>
+                    </p>
+                </div>
             </div>
         </div>
     </div>
 </div>
 
+<style>
+    .modern-form input, .modern-form select {
+        border-radius: 12px !important;
+        border: 1px solid #e2e8f0 !important;
+        padding: 12px 15px !important;
+        background-color: #f8fafc !important;
+        width: 100% !important;
+        display: block;
+        transition: var(--transition-base);
+    }
+    .modern-form input:focus, .modern-form select:focus {
+        border-color: var(--primary) !important;
+        box-shadow: 0 0 0 4px hsla(var(--primary-h), var(--primary-s), var(--primary-l), 0.1) !important;
+        outline: none;
+        background-color: white !important;
+    }
+    .modern-form .form-check-input {
+        width: 1.25em !important;
+        height: 1.25em !important;
+        margin-top: 0.25em;
+        vertical-align: top;
+        background-color: #fff;
+        background-repeat: no-repeat;
+        background-position: center;
+        background-size: contain;
+        border: 1px solid rgba(0,0,0,.25);
+        appearance: none;
+        color-adjust: exact;
+        display: inline-block;
+    }
+    .modern-form .form-check-input:checked {
+        background-color: var(--primary);
+        border-color: var(--primary);
+    }
+</style>
+
 <script>
+    function togglePasswordVisibility(inputId, btnId) {
+        const input = document.getElementById(inputId);
+        const btn = document.getElementById(btnId);
+        const icon = btn.querySelector('i');
+
+        if (input.type === "password") {
+            input.type = "text";
+            icon.classList.replace('bi-eye', 'bi-eye-slash');
+        } else {
+            input.type = "password";
+            icon.classList.replace('bi-eye-slash', 'bi-eye');
+        }
+    }
+
     document.addEventListener("DOMContentLoaded", function () {
+        // Staff registration logic
         const staffCheckbox = document.querySelector('input[name="is_staff_registration"]');
-        const inviteCodeContainer = document.querySelector('input[name="invite_code"]').closest(".mb-3");
+        const inviteCodeContainer = document.querySelector('input[name="invite_code"]')?.closest(".mb-4");
 
         if (staffCheckbox && inviteCodeContainer) {
             function toggleInviteCode() {
-                if (staffCheckbox.checked) {
-                    inviteCodeContainer.style.display = "block";
-                } else {
-                    inviteCodeContainer.style.display = "none";
-                }
+                inviteCodeContainer.style.display = staffCheckbox.checked ? "block" : "none";
             }
-
-            toggleInviteCode(); // Initial state
+            toggleInviteCode();
             staffCheckbox.addEventListener("change", toggleInviteCode);
         }
+
+        // Initialize tooltips
+        var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+        var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+            return new bootstrap.Tooltip(tooltipTriggerEl)
+        })
     });
 </script>
-
-{% endblock %}
+{% endblock %}

@@ -1,28 +1,38 @@
 {% extends 'base.html' %}
 {% block content %}
 <div class="container py-5 mt-5">
-    <div class="row align-items-center mb-5">
-        <div class="col-md-6 pe-md-5">
-            <h1 class="display-4 fw-bold text-primary mb-4">About Pet Portal</h1>
-            <p class="lead text-secondary mb-4">
+    <div class="row align-items-center mb-5 g-5">
+        <div class="col-md-6 fade-in-up">
+            <div class="section-header text-start mb-4">
+                <span class="badge bg-primary bg-opacity-10 text-primary px-3 py-2 rounded-pill fw-bold mb-3">Our Mission</span>
+                <h1 class="display-4 fw-bold text-dark mb-4" style="letter-spacing: -2px;">About <span class="text-primary">Pet Portal</span></h1>
+            </div>
+            <p class="lead text-secondary mb-4 fs-4">
                 Pet Portal is a community-driven initiative dedicated to reuniting lost pets with their families and
-                finding loving homes for abandoned animals. Our mission is to create a centralized, easy-to-use platform
-                where every second counts.
+                finding loving homes for abandoned animals.
             </p>
-            <p class="text-muted">
-                Founded in 2026, we have partnered with local shelters, veterinary clinics, and a network of passionate
-                volunteers. Over the years, we have helped thousands of pets find their way back home. Thank you for
-                being part of our journey to make the world a safer place for all animals.
+            <div class="glass-card border-0 shadow-sm p-4 mb-4" style="background: white;">
+                <p class="text-muted mb-0 fs-5 lh-lg">
+                    Founded in 2026, we have partnered with local shelters, veterinary clinics, and a network of passionate
+                    volunteers. Our mission is to create a centralized, easy-to-use platform where every second counts.
+                </p>
+            </div>
+            <p class="text-muted fs-6">
+                Thank you for being part of our journey to make the world a safer place for all animals.
             </p>
         </div>
-        <div class="col-md-6">
-            <div class="bg-light p-5 rounded-4 border-0 shadow-sm text-center">
-                <i class="bi bi-heart-fill text-danger display-1 mb-3"></i>
-                <h3 class="fw-bold">Our Vision</h3>
-                <p class="text-muted">A world where no pet is left behind, and every animal has a safe, loving
-                    environment.</p>
+        <div class="col-md-6 fade-in-up delay-1">
+            <div class="glass-card border-0 shadow-lg p-5 text-center position-relative overflow-hidden" style="background: white;">
+                <div class="position-absolute top-0 end-0 p-4 opacity-10">
+                    <i class="bi bi-heart-fill display-1 text-primary"></i>
+                </div>
+                <div class="bg-primary bg-opacity-10 d-inline-block p-4 rounded-circle mb-4">
+                    <i class="bi bi-eye-fill text-primary display-3"></i>
+                </div>
+                <h3 class="fw-bold fs-2 mb-3">Our Vision</h3>
+                <p class="text-muted fs-5 mb-0">A world where no pet is left behind, and every animal has a safe, loving environment.</p>
             </div>
         </div>
     </div>
 </div>
-{% endblock %}
+{% endblock %}

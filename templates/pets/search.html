@@ -2,127 +2,148 @@
 {% load static %}
 {% load pet_extras %}
 {% block content %}
-<div class="container mt-4">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h2>Search Pet Reports</h2>
-        <a href="{% url 'report-pet' %}" class="btn btn-primary">Report a Pet</a>
-    </div>
 
-    <div class="card shadow-sm mb-5 border-0 bg-body-tertiary">
-        <div class="card-body p-4">
-            <form method="get" class="row g-3 align-items-end">
-                <div class="col-md-3">
-                    <label class="form-label text-muted fw-bold small text-uppercase">Status</label>
-                    <select name="{{ form.request_type.html_name }}" class="form-select">
-                        {% for value, text in form.request_type.field.choices %}
-                        <option value="{{ value }}" {% if form.request_type.value|is_equal:value %}selected{% endif %}>
-                            {{text}}</option>
-                        {% endfor %}
-                    </select>
-                </div>
-                <div class="col-md-2">
-                    <label class="form-label text-muted fw-bold small text-uppercase">Pet Type</label>
-                    <select name="{{ form.pet_type.html_name }}" class="form-select">
-                        {% for value, text_label in form.pet_type.field.choices %}
-                        <option value="{{ value }}" {% if form.pet_type.value|is_equal:value %}selected{% endif %}>
-                            {{text_label}}</option>
-                        {% endfor %}
-                    </select>
-                </div>
-                <div class="col-md-3">
-                    <label class="form-label text-muted fw-bold small text-uppercase">Breed</label>
-                    <input type="text" name="{{ form.breed.html_name }}" class="form-control"
-                        placeholder="e.g. Golden Retriever" value="{{ form.breed.value|default_if_none:'' }}">
-                </div>
-                <div class="col-md-2">
-                    <label class="form-label text-muted fw-bold small text-uppercase">District</label>
-                    <select name="{{ form.district.html_name }}" class="form-select">
-                        {% for value, text_label in form.district.field.choices %}
-                        <option value="{{ value }}" {% if form.district.value == value %}selected{% endif %}>
-                            {{ text_label }}</option>
-                        {% endfor %}
-                    </select>
-                </div>
-                <div class="col-md-2">
-                    <label class="form-label text-muted fw-bold small text-uppercase">Area / Landmark</label>
-                    <input type="text" name="{{ form.area.html_name }}" class="form-control"
-                        placeholder="e.g. Near Bus Stand" value="{{ form.area.value|default_if_none:'' }}">
-                </div>
-
-                <!-- Advanced Filters row (collapsed or expanded based on preference... keeping simple for now) -->
-                <div class="col-md-2">
-                    <label class="form-label text-muted fw-bold small text-uppercase">Gender</label>
-                    <select name="{{ form.gender.html_name }}" class="form-select">
-                        {% for value, text_label in form.gender.field.choices %}
-                        <option value="{{ value }}" {% if form.gender.value|is_equal:value %}selected{% endif %}>
-                            {{text_label}}</option>
-                        {% endfor %}
-                    </select>
-                </div>
-                <div class="col-md-2">
-                    <label class="form-label text-muted fw-bold small text-uppercase">Size</label>
-                    <select name="{{ form.size.html_name }}" class="form-select">
-                        {% for value, text_label in form.size.field.choices %}
-                        <option value="{{ value }}" {% if form.size.value|is_equal:value %}selected{% endif %}>
-                            {{text_label}}</option>
-                        {% endfor %}
-                    </select>
-                </div>
-
-                <div class="col-md-2 d-grid">
-                    <button type="submit" class="btn btn-primary btn-block">Search</button>
-                </div>
-                <div class="col-md-2 d-grid">
-                    <a href="{% url 'search-pets' %}" class="btn btn-outline-secondary">Reset</a>
-                </div>
-            </form>
+<div class="container py-5 mt-5">
+    <!-- Header -->
+    <div class="section-header d-flex justify-content-between align-items-end mb-5 scroll-reveal">
+        <div>
+            <h1 class="hero-title h2 mb-0" style="-webkit-text-fill-color: var(--text-main);">Search Pet Reports</h1>
+            <p class="text-muted mt-2 mb-0">Find lost friends or browse pets looking for a home.</p>
         </div>
+        <a href="{% url 'report-pet' %}" class="btn-premium btn-premium-primary shadow-lg magnetic">
+            <i class="bi bi-megaphone-fill me-2"></i> Report a Pet
+        </a>
     </div>
 
-    <div class="mb-4">
-        <h4>Recent Reports</h4>
+    <!-- Search Filters -->
+    <div class="glass-card mb-5 p-5 scroll-reveal">
+        <form method="get" class="row g-4">
+            <div class="col-md-3">
+                <div class="form-group-modern">
+                    <select name="{{ form.request_type.html_name }}" id="id_request_type" class="form-control-modern">
+                        {% for value, text in form.request_type.field.choices %}
+                        <option value="{{ value }}" {% if form.request_type.value|is_equal:value %}selected{% endif %}>{{text}}</option>
+                        {% endfor %}
+                    </select>
+                    <label for="id_request_type" class="form-label-modern">Request Status</label>
+                </div>
+            </div>
+            
+            <div class="col-md-3">
+                <div class="form-group-modern">
+                    <select name="{{ form.pet_type.html_name }}" id="id_pet_type" class="form-select form-control-modern">
+                        {% for value, text_label in form.pet_type.field.choices %}
+                        <option value="{{ value }}" {% if form.pet_type.value|is_equal:value %}selected{% endif %}>{{text_label}}</option>
+                        {% endfor %}
+                    </select>
+                    <label for="id_pet_type" class="form-label-modern">Pet Type</label>
+                </div>
+            </div>
+
+            <div class="col-md-3">
+                <div class="form-group-modern">
+                    <select name="{{ form.state.html_name }}" id="id_state" class="form-select form-control-modern">
+                        {% for value, text_label in form.state.field.choices %}
+                        <option value="{{ value }}" {% if form.state.value == value %}selected{% endif %}>{{ text_label }}</option>
+                        {% endfor %}
+                    </select>
+                    <label for="id_state" class="form-label-modern">State</label>
+                </div>
+            </div>
+
+            <div class="col-md-3">
+                <div class="form-group-modern">
+                    <select name="{{ form.district.html_name }}" id="id_district" class="form-select form-control-modern">
+                        {% for value, text_label in form.district.field.choices %}
+                        <option value="{{ value }}" {% if form.district.value == value %}selected{% endif %}>{{ text_label }}</option>
+                        {% endfor %}
+                    </select>
+                    <label for="id_district" class="form-label-modern">District</label>
+                </div>
+            </div>
+
+            <div class="col-md-3">
+                <div class="form-group-modern">
+                    <input type="text" name="{{ form.breed.html_name }}" id="id_breed" class="form-control-modern"
+                        placeholder=" " value="{{ form.breed.value|default_if_none:'' }}">
+                    <label for="id_breed" class="form-label-modern">Breed</label>
+                </div>
+            </div>
+
+            <div class="col-md-7 d-flex align-items-center gap-3">
+                <div class="form-group-modern flex-grow-1 mb-0">
+                    <input type="text" name="{{ form.area.html_name }}" id="id_area" class="form-control-modern"
+                        placeholder=" " value="{{ form.area.value|default_if_none:'' }}">
+                    <label for="id_area" class="form-label-modern">Area / Landmark</label>
+                </div>
+            </div>
+
+            <div class="col-md-5 d-flex align-items-center gap-3 justify-content-end">
+                <a href="{% url 'search-pets' %}" class="btn-premium btn-premium-outline magnetic">
+                    <i class="bi bi-arrow-counterclockwise"></i> Reset
+                </a>
+                <button type="submit" class="btn-premium btn-premium-primary px-5 magnetic">
+                    <i class="bi bi-search me-2"></i> Find Pets
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Results -->
+    <div class="mb-4 d-flex justify-content-between align-items-center scroll-reveal">
+        <h4 class="fw-bold mb-0">Search Results</h4>
+        {% if results %}
+        <span class="badge bg-primary bg-opacity-10 text-primary border-primary border-opacity-25 px-4 py-2 rounded-pill">{{ results.count }} pet{{ results.count|pluralize }} found</span>
+        {% endif %}
     </div>
 
     {% if results %}
     <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
         {% for pet in results %}
-        <div class="col">
-            <div class="card h-100 shadow-sm border-0 pet-card">
-                <div class="position-relative">
-                    <a href="{% url 'pet-detail' pet.id %}" class="d-block overflow-hidden">
-                        {% if pet.image %}
-                        <img src="{{ pet.image.url }}" class="card-img-top pct-img-cover" alt="Pet image"
-                            style="height: 250px; object-fit: cover; transition: transform 0.5s;">
-                        {% else %}
-                        <div class="bg-secondary d-flex align-items-center justify-content-center" style="height: 250px;">
-                            <span class="text-white">No Image Provided</span>
-                        </div>
-                        {% endif %}
-                    </a>
-                    <span class="position-absolute top-0 start-0 m-3 badge p-2 px-3 fade-in"
-                        style="{% if pet.request_type|is_equal:'Lost' %}background-color:#dc3545;{% elif pet.request_type|is_equal:'Found' %}background-color:#0f7c82;{% else %}background-color:#6f42c1;{% endif %}">
-                        {{ pet.request_type }}
-                    </span>
-                </div>
-                <div class="card-body">
-                    <h5 class="card-title fw-bold mb-1"><a href="{% url 'pet-detail' pet.id %}" class="text-decoration-none text-dark">{{ pet.pet_type }} - {{ pet.breed }}</a>
-                        {% if pet.gender|is_equal:'Male' %}<i class="bi bi-gender-male text-primary"></i>
-                        {% elif pet.gender|is_equal:'Female' %}<i class="bi bi-gender-female text-danger"></i>
-                        {% endif %}
-                    </h5>
-                    <p class="text-muted small mb-3"><i class="bi bi-geo-alt-fill"></i> {{ pet.location }}</p>
-
-                    <div class="row text-sm mb-3 g-2">
-                        <div class="col-6"><strong>Color:</strong> <span class="text-muted">{{ pet.color }}</span></div>
-                        <div class="col-6"><strong>Size:</strong> <span class="text-muted">{{ pet.size }}</span></div>
-                        <div class="col-6"><strong>Age:</strong> <span class="text-muted">{{ pet.age }}</span></div>
+        <div class="col scroll-reveal">
+            <div class="glass-card h-100 tilt-wrapper">
+                <div class="tilt-content">
+                    <div class="position-relative overflow-hidden" style="height: 280px;">
+                        <a href="{% url 'pet-detail' pet.id %}" class="d-block h-100">
+                            {% if pet.image %}
+                            <img src="{{ pet.image.url }}" class="w-100 h-100 object-fit-cover transition-base hover-scale" alt="Pet image">
+                            {% else %}
+                            <div class="bg-light d-flex align-items-center justify-content-center h-100">
+                                <span class="text-muted">No Image</span>
+                            </div>
+                            {% endif %}
+                        </a>
+                        <span class="position-absolute top-0 start-0 m-3 pet-badge shadow-lg text-white"
+                            style="{% if pet.request_type|is_equal:'Lost' %}background-color: var(--danger);{% elif pet.request_type|is_equal:'Found' %}background-color: var(--primary);{% else %}background-color: #8b5cf6;{% endif %}"
+                        >
+                            {{ pet.request_type }}
+                        </span>
                     </div>
+                    
+                    <div class="p-4">
+                        <div class="d-flex justify-content-between align-items-start mb-3">
+                            <h5 class="fw-bold mb-0">
+                                <a href="{% url 'pet-detail' pet.id %}" class="text-decoration-none text-main">{{ pet.pet_type }} - {{ pet.breed }}</a>
+                            </h5>
+                            <div class="fs-5">
+                                {% if pet.gender|is_equal:'Male' %}<i class="bi bi-gender-male text-primary"></i>
+                                {% elif pet.gender|is_equal:'Female' %}<i class="bi bi-gender-female text-danger"></i>
+                                {% endif %}
+                            </div>
+                        </div>
+                        
+                        <p class="text-muted small mb-4"><i class="bi bi-geo-alt-fill text-primary me-1"></i> {{ pet.location }}</p>
 
-                    <p class="card-text text-truncate-2">{{ pet.description|truncatewords:20 }}</p>
-                </div>
-                <div class="card-footer bg-body border-top-0 pt-0 d-flex justify-content-between align-items-center">
-                    <small class="text-muted">Reported {{ pet.created_at|timesince }} ago</small>
-                    <a href="{% url 'pet-detail' pet.id %}" class="btn btn-sm btn-outline-primary rounded-pill px-3">View Details</a>
+                        <div class="d-flex gap-2 mb-4">
+                            <span class="badge bg-light text-muted border-0 py-2 px-3 rounded-3 small">Color: {{ pet.color }}</span>
+                            <span class="badge bg-light text-muted border-0 py-2 px-3 rounded-3 small">Size: {{ pet.size }}</span>
+                        </div>
+
+                        <div class="d-flex justify-content-between align-items-center pt-3 border-top border-light">
+                            <small class="text-muted"><i class="bi bi-clock me-1"></i> {{ pet.created_at|timesince }} ago</small>
+                            <a href="{% url 'pet-detail' pet.id %}" class="btn-premium btn-premium-primary btn-sm px-4 py-2">Details</a>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -130,27 +151,50 @@
     </div>
 
     {% else %}
-    <div class="alert alert-info py-4 text-center">
-        No pet reports match your search criteria. Try adjusting your filters or <a href="{% url 'search-pets' %}"
-            class="alert-link">clear the search</a>.
+    <div class="glass-card py-5 text-center scroll-reveal" style="border-style: dashed !important;">
+        <div class="p-5">
+            <i class="bi bi-search-heart display-1 text-primary opacity-25 mb-4 d-block"></i>
+            <h4 class="fw-bold">No pet reports found</h4>
+            <p class="text-muted mb-4">Try adjusting your filters to find more pets in our network.</p>
+            <a href="{% url 'search-pets' %}" class="btn-premium btn-premium-primary magnetic">
+                <i class="bi bi-arrow-counterclockwise"></i> Clear All Filters
+            </a>
+        </div>
     </div>
     {% endif %}
 </div>
 
-<style>
-    .pet-card {
-        transition: transform 0.2s;
-    }
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const stateSelect = document.getElementById('id_state');
+        const districtSelect = document.getElementById('id_district');
+        const locations = {{ indian_locations|safe|default:"{}" }};
+        
+        const initialDistrict = "{{ form.district.value|default:'' }}";
 
-    .pet-card:hover {
-        transform: translateY(-5px);
-    }
+        function updateDistricts() {
+            const selectedState = stateSelect.value;
+            const districts = locations[selectedState] || [];
+            
+            districtSelect.innerHTML = '<option value="">Any District</option>';
+            
+            districts.forEach(district => {
+                const option = document.createElement('option');
+                option.value = district;
+                option.textContent = district;
+                if (district === initialDistrict) {
+                    option.selected = true;
+                }
+                districtSelect.appendChild(option);
+            });
+        }
 
-    .text-truncate-2 {
-        display: -webkit-box;
-        -webkit-line-clamp: 2;
-        -webkit-box-orient: vertical;
-        overflow: hidden;
-    }
-</style>
+        if (stateSelect && districtSelect) {
+            stateSelect.addEventListener('change', updateDistricts);
+            if (stateSelect.value) {
+                updateDistricts();
+            }
+        }
+    });
+</script>
 {% endblock %}

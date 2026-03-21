@@ -56,10 +56,14 @@ class PetRequest(models.Model):
     age = models.PositiveIntegerField()
     age_unit = models.CharField(max_length=10, choices=AGE_UNIT_CHOICES, default='Years')
     size = models.CharField(max_length=10, choices=SIZE_CHOICES)
-    location = models.CharField(max_length=255)
     description = models.TextField()
     contact_information = models.CharField(max_length=255)
     request_type = models.CharField(max_length=10, choices=REQUEST_TYPES)
+    
+    # Location details
+    state = models.CharField(max_length=100, blank=True, null=True)
+    district = models.CharField(max_length=100, blank=True, null=True)
+    location = models.CharField(max_length=255)
     
     # Adoption Specific Fields
     VACCINATION_CHOICES = [

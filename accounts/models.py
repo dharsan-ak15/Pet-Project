@@ -6,6 +6,8 @@ from django.dispatch import receiver
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     phone = models.CharField(max_length=15)
+    is_phone_verified = models.BooleanField(default=False)
+    is_email_verified = models.BooleanField(default=False)
     profile_image = models.ImageField(upload_to='profiles/', blank=True, null=True)
     preferred_pet_type = models.CharField(max_length=10, choices=[('Dog', 'Dog'), ('Cat', 'Cat'), ('Other', 'Other'), ('None', 'None')], default='None')
     city = models.CharField(max_length=100, blank=True, null=True)
@@ -20,6 +22,21 @@ class StaffInviteCode(models.Model):
     
     def __str__(self):
         return self.code
+
+class OTPVerification(models.Model):
+    OTP_TYPES = [
+        ('Email', 'Email'),
+        ('Phone', 'Phone'),
+    ]
+    
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='otps')
+    otp_code = models.CharField(max_length=6)
+    otp_type = models.CharField(max_length=10, choices=OTP_TYPES)
+    created_at = models.DateTimeField(auto_now_add=True)
+    is_used = models.BooleanField(default=False)
+
+    def __str__(self):
+        return f"{self.otp_type} OTP for {self.user.username}"
         
 
 class AdminRequest(models.Model):

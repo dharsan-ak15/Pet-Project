@@ -14,20 +14,15 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
     <!-- SweetAlert2 -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <!-- Custom Modern Styles -->
+    <link rel="stylesheet" href="{% static 'css/index.css' %}">
+    
+    <!-- GSAP & Plugins -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
 
     <style>
-        body {
-            margin: 0;
-            font-family: 'Poppins', sans-serif;
-            display: flex;
-            flex-direction: column;
-            min-height: 100vh;
-            background-color: var(--bs-body-bg);
-            color: var(--bs-body-color);
-            transition: background-color 0.3s ease, color 0.3s ease;
-        }
-
-        /* HERO SECTION */
+        /* Migration/Legacy support for existing components until fully ported */
         .hero-section {
             height: 90vh;
             position: relative;
@@ -50,10 +45,9 @@
             content: "";
             position: absolute;
             inset: 0;
-            background: rgba(0, 0, 0, 0.35);
+            background: rgba(0, 0, 0, 0.4);
             z-index: 1;
             pointer-events: none;
-            /* 👈 THIS FIXES CLICK ISSUE */
         }
 
         .hero-section .container {
@@ -61,124 +55,28 @@
             z-index: 2;
         }
 
-
-        /* SECTION STYLING */
-        .section-title {
-            font-weight: 700;
-        }
-
-        .teal-section {
-            background-color: #0f7c82;
-        }
-
-        /* GLOBAL STYLES & COMPONENTS */
-        a,
-        button,
-        .btn {
-            transition: all 0.3s ease;
-        }
-
-        .btn {
-            border-radius: 8px;
-            font-weight: 500;
-        }
-
-        /* ANIMATIONS */
-        .fade-in-up {
-            animation: fadeInUp 0.8s ease-out forwards;
-            opacity: 0;
-            transform: translateY(20px);
-        }
-
-        .delay-1 {
-            animation-delay: 0.2s;
-        }
-
-        .delay-2 {
-            animation-delay: 0.4s;
-        }
-
-        .delay-3 {
-            animation-delay: 0.6s;
-        }
-
-        @keyframes fadeInUp {
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        .btn-primary {
-            background-color: #0f7c82;
-            border-color: #0f7c82;
-        }
-
-        .btn-primary:hover {
-            background-color: #0b5f63;
-            border-color: #0b5f63;
-            transform: translateY(-2px);
-            box-shadow: 0 4px 8px rgba(15, 124, 130, 0.3);
-        }
-
-        .btn-outline-primary {
-            color: #0f7c82;
-            border-color: #0f7c82;
-        }
-
-        .btn-outline-primary:hover {
-            background-color: #0f7c82;
-            color: white;
-            transform: translateY(-2px);
-        }
-
-        /* CARD STYLING */
-        .card {
-            border: none;
-            border-radius: 12px;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.06);
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-        }
-
-        .card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.12);
-        }
-
-        .card img {
-            border-top-left-radius: 12px;
-            border-top-right-radius: 12px;
-            height: 220px;
-            object-fit: cover;
-        }
-
-        /* NAVBAR */
-        .navbar {
-            padding: 15px 0;
-        }
-
-        .navbar-brand {
-            font-size: 1.3rem;
-        }
-
-        /* COMPLAINT BUTTON */
         .floating-complaint-btn {
             position: fixed;
             bottom: 30px;
             right: 30px;
             z-index: 1050;
-            border-radius: 50px;
-            padding: 12px 20px;
-            box-shadow: 0 4px 15px rgba(220, 53, 69, 0.4);
+            border-radius: var(--radius-pill);
+            padding: 12px 24px;
+            box-shadow: 0 8px 24px rgba(244, 63, 94, 0.3);
             font-weight: 600;
-            transition: transform 0.3s;
+            transition: var(--transition-base);
+            border: none;
+            background-color: var(--danger);
+            color: white;
         }
 
         .floating-complaint-btn:hover {
-            transform: scale(1.05);
+            transform: scale(1.05) translateY(-3px);
+            box-shadow: 0 12px 30px rgba(244, 63, 94, 0.4);
+            background-color: #fb7185; /* Lightened rose */
+            color: white;
         }
 
-        /* Animated Pet Icon in Modals */
         @keyframes petBounce {
             0%, 100% { transform: translateY(0) rotate(0deg); }
             30% { transform: translateY(-6px) rotate(-8deg); }
@@ -209,58 +107,77 @@
             align-items: center;
             cursor: pointer;
         }
+
+        .custom-link:hover {
+            color: #ffffff !important;
+            transition: color 0.3s;
+        }
     </style>
 </head>
 
-<body>
-
+<body class="bg-premium">
+    <div class="noise-overlay"></div>
+    <div class="mesh-gradient"></div>
 
     <!-- NAVBAR -->
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow-sm">
+    <nav class="navbar navbar-expand-lg glass-navbar sticky-top">
         <div class="container">
-            <a class="navbar-brand fw-bold pe-lg-4 border-end border-secondary border-opacity-50"
-                href="{% url 'landing' %}">🐾 Pet Portal</a>
+            <a class="navbar-brand fw-bold pe-lg-4 d-flex align-items-center" href="{% url 'landing' %}">
+                <span class="fs-4 me-2">🐾</span>
+                <span style="color: var(--primary); letter-spacing: -0.5px;">Pet Portal</span>
+            </a>
 
-            <div class="collapse navbar-collapse show">
-                <ul class="navbar-nav me-auto ms-lg-4 gap-lg-2">
+            <button class="navbar-toggler border-0 shadow-none" type="button" data-bs-toggle="collapse" data-bs-target="#navbarMain">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div class="collapse navbar-collapse" id="navbarMain">
+                <ul class="navbar-nav me-auto ms-lg-4 gap-lg-1">
                     {% if user.is_authenticated %}
                     <li class="nav-item">
-                        <a class="nav-link" href="{% url 'search-pets' %}">Search Pets</a>
+                        <a class="nav-link nav-link-modern {% if request.resolver_match.url_name == 'search-pets' %}active-nav{% endif %}" href="{% url 'search-pets' %}">Search Pets</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="{% url 'report-pet' %}">Report Pet</a>
+                        <a class="nav-link nav-link-modern {% if request.resolver_match.url_name == 'report-pet' %}active-nav{% endif %}" href="{% url 'report-pet' %}">Report Pet</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="{% url 'dashboard' %}">Dashboard</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'profile' %}">Profile</a>
+                        <a class="nav-link nav-link-modern {% if request.resolver_match.url_name == 'dashboard' %}active-nav{% endif %}" href="{% url 'dashboard' %}">Dashboard</a>
                     </li>
                     {% endif %}
                 </ul>
 
-                <ul class="navbar-nav ms-auto">
+                <ul class="navbar-nav ms-auto align-items-center gap-2">
                     {% if user.is_authenticated %}
                     {% if user.is_staff %}
                     <li class="nav-item">
-                        <a class="nav-link text-warning fw-bold" href="{% url 'custom-admin-dashboard' %}">Staff
-                            Portal</a>
+                        <a class="btn-premium btn-premium-outline btn-sm py-1 px-3 me-2" href="{% url 'custom-admin-dashboard' %}">
+                            <i class="bi bi-shield-check"></i> Staff Portal
+                        </a>
                     </li>
                     {% endif %}
-                    <li class="nav-item">
-                        <form method="post" action="{% url 'logout' %}">
-                            {% csrf_token %}
-                            <button type="submit" class="btn btn-outline-light btn-sm ms-2">
-                                Logout
-                            </button>
-                        </form>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link nav-link-modern dropdown-toggle d-flex align-items-center gap-2" href="#" id="profileDropdown" role="button" data-bs-toggle="dropdown">
+                            <i class="bi bi-person-circle fs-5"></i> {{ user.username }}
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end border-0 shadow-lg rounded-4 p-2 mt-2">
+                            <li><a class="dropdown-item rounded-3" href="{% url 'profile' %}"><i class="bi bi-person me-2"></i>My Profile</a></li>
+                            <li><hr class="dropdown-divider opacity-50"></li>
+                            <li>
+                                <form method="post" action="{% url 'logout' %}">
+                                    {% csrf_token %}
+                                    <button type="submit" class="dropdown-item rounded-3 text-danger d-flex align-items-center">
+                                        <i class="bi bi-box-arrow-right me-2"></i> Logout
+                                    </button>
+                                </form>
+                            </li>
+                        </ul>
                     </li>
                     {% else %}
                     <li class="nav-item">
-                        <a class="nav-link" href="{% url 'login' %}">Login</a>
+                        <a class="nav-link nav-link-modern" href="{% url 'login' %}">Login</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="{% url 'register' %}">Register</a>
+                        <a class="btn-premium btn-premium-primary" href="{% url 'register' %}">Get Started</a>
                     </li>
                     {% endif %}
                 </ul>
@@ -268,7 +185,7 @@
         </div>
     </nav>
 
-    <main class="flex-grow-1">
+    <main class="flex-grow-1 page-entrance">
         {% block content %}
         {% endblock %}
     </main>
@@ -311,7 +228,7 @@
     </div>
 
     <!-- FOOTER -->
-    <footer class="mt-auto pt-5 pb-4 bg-dark text-white" style="background-color: #232f3e !important;">
+    <footer class="mt-auto pt-5 pb-4 text-white" style="background-color: #1e1b4b !important;">
         <div class="container">
             <div class="row pt-3 pb-5">
                 <!-- Column 1 -->
@@ -395,6 +312,69 @@
             var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
                 return new bootstrap.Tooltip(tooltipTriggerEl)
             })
+
+            // --- GLOBAL GSAP INTERACTIONS ---
+            
+            // Magnetic Buttons
+            const magneticElements = document.querySelectorAll('.magnetic');
+            magneticElements.forEach(el => {
+                el.addEventListener('mousemove', (e) => {
+                    const { offsetX: x, offsetY: y } = e;
+                    const { offsetWidth: width, offsetHeight: height } = el;
+                    const moveX = (x - width / 2) / 2;
+                    const moveY = (y - height / 2) / 2;
+                    gsap.to(el, { x: moveX, y: moveY, duration: 0.3, ease: 'power2.out' });
+                });
+                el.addEventListener('mouseleave', () => {
+                    gsap.to(el, { x: 0, y: 0, duration: 0.5, ease: 'elastic.out(1, 0.3)' });
+                });
+            });
+
+            // 3D Tilt Effect
+            const tiltWrappers = document.querySelectorAll('.tilt-wrapper');
+            tiltWrappers.forEach(wrapper => {
+                const content = wrapper.querySelector('.tilt-content') || wrapper;
+                wrapper.addEventListener('mousemove', (e) => {
+                    const rect = wrapper.getBoundingClientRect();
+                    const x = e.clientX - rect.left;
+                    const y = e.clientY - rect.top;
+                    const centerX = rect.width / 2;
+                    const centerY = rect.height / 2;
+                    const rotateX = ((y - centerY) / centerY) * -10;
+                    const rotateY = ((x - centerX) / centerX) * 10;
+                    gsap.to(content, {
+                        rotateX: rotateX,
+                        rotateY: rotateY,
+                        duration: 0.5,
+                        ease: 'power2.out',
+                        transformPerspective: 1000
+                    });
+                });
+                wrapper.addEventListener('mouseleave', () => {
+                    gsap.to(content, { rotateX: 0, rotateY: 0, duration: 0.5 });
+                });
+            });
+
+            // Scroll Reveals
+            gsap.registerPlugin(ScrollTrigger);
+            const reveals = document.querySelectorAll('.scroll-reveal');
+            reveals.forEach((el, index) => {
+                gsap.from(el, {
+                    scrollTrigger: {
+                        trigger: el,
+                        start: "top 85%",
+                        toggleActions: "play none none none"
+                    },
+                    opacity: 0,
+                    y: 30,
+                    duration: 1,
+                    delay: index * 0.1,
+                    ease: "power3.out"
+                });
+            });
+
+            // Page Entrance
+            gsap.from(".page-entrance", { opacity: 0, duration: 0.8, ease: "power2.out" });
         });
     </script>
     
